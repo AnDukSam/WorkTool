@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>카톡 행사</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { padding: 0 15px 40px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
+        .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
+        .date-controller { display: flex; align-items: center; justify-content: center; gap: 12px; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .date-controller label { font-weight: bold; font-size: 15px; margin-right: 10px; }
+        .date-btn { width: 40px; height: 40px; font-size: 20px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+        #dateInput { width: 60px; height: 40px; text-align: center; font-size: 18px; border: 1px solid #ddd; border-radius: 8px; }
+        #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .header { display: flex; gap: 10px; margin-bottom: 20px; }
+        .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
+        #plusBtn { background-color: #4CAF50; color: white; }
+        #extractBtn { background-color: #2196F3; color: white; }
+        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
+        .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; }
+        select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        .product-select { width: 100%; }
+        .unit-select { flex: 1; min-width: 85px; }
+        .normal-price, .sale-price { flex: 1; min-width: 95px; }
+        .del-btn { position: absolute; top: 10px; right: 10px; background-color: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
+        #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
+        #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="main-title">카톡 행사</div>
+
+    <div class="date-controller">
+        <label>행사 기간</label>
+        <button class="date-btn" id="dateMinus">-</button>
+        <input type="number" id="dateInput" value="1" min="1">
+        <button class="date-btn" id="datePlus">+</button>
+        <span>일간</span>
+    </div>
+
+    <div id="container"></div>
+
+    <div class="header">
+        <button id="plusBtn">상품 추가</button>
+        <button id="extractBtn">텍스트 추출</button>
+    </div>
+
+    <div id="resultArea"></div>
+    <button id="copyBtn">📋 텍스트 복사</button>
+
+    <script>
+        const container = document.getElementById('container');
+        const plusBtn = document.getElementById('plusBtn');
+        const extractBtn = document.getElementById('extractBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const resultArea = document.getElementById('resultArea');
+        const dateInput = document.getElementById('dateInput');
+
+        document.getElementById('dateMinus').onclick = () => { if (dateInput.value > 1) dateInput.value = parseInt(dateInput.value) - 1; };
+        document.getElementById('datePlus').onclick = () => { dateInput.value = parseInt(dateInput.value) + 1; };
+
+        // '한우 소불고기' 및 '한우 불고기'가 모두 제거된 리스트입니다.
+        const productList = [
+            "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심",
+            "----------",
+            "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심",
+            "----------",
+            "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)",
+            "----------",
+            "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹",
+            "----------",
+            "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭"
+        ];
+
+        const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
+
+        plusBtn.onclick = () => {
+            const row = document.createElement('div');
+            row.className = 'row';
+            const currentSelectedItems = Array.from(container.querySelectorAll('.product-select')).map(s => s.value);
+            let lastIdx = -1;
+            if (currentSelectedItems.length > 0) { lastIdx = productList.indexOf(currentSelectedItems[currentSelectedItems.length - 1]); }
+            let nextIdx = (lastIdx + 1) % productList.length;
+            while (productList[nextIdx] === "----------") { nextIdx = (nextIdx + 1) % productList.length; }
+
+            const num = container.children.length + 1;
+            row.innerHTML = `
+                <div class="row-number">품목 ${num}</div>
+                <button class="del-btn">삭제</button>
+                <select class="product-select">
+                    ${productList.map((item, idx) => `<option value="${item}" ${item.includes('---') ? 'disabled' : ''} ${idx === nextIdx ? 'selected' : ''}>${item}</option>`).join('')}
+                </select>
+                <select class="unit-select">
+                    ${unitList.map(u => `<option value="${u}">${u}</option>`).join('')}
+                </select>
+                <input type="number" class="normal-price" placeholder="정상가">
+                <input type="number" class="sale-price" placeholder="판매가">
+            `;
+            const selectEl = row.querySelector('.product-select');
+            let previousValue = selectEl.value;
+            selectEl.onfocus = (e) => { previousValue = e.target.value; };
+            selectEl.onchange = (e) => {
+                const otherSelects = Array.from(container.querySelectorAll('.product-select')).filter(s => s !== selectEl);
+                if (otherSelects.some(s => s.value === e.target.value)) { alert("이미 선택된 상품입니다."); e.target.value = previousValue; }
+                else { previousValue = e.target.value; }
+            };
+            row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
+            container.appendChild(row);
+        };
+
+        window.onload = () => { plusBtn.click(); };
+        function updateNumbers() { container.querySelectorAll('.row-number').forEach((el, idx) => el.textContent = `품목 ${idx + 1}`); }
+
+        function getEventDateText(days) {
+            const week = ['일', '월', '화', '수', '목', '금', '토'];
+            const start = new Date();
+            const end = new Date();
+            end.setDate(start.getDate() + (days - 1));
+            const startYear = start.getFullYear();
+            const startMonth = start.getMonth() + 1;
+            const startDate = start.getDate();
+            const startDay = week[start.getDay()];
+            let dayString = "";
+            for(let i=0; i<days; i++) {
+                let d = new Date();
+                d.setDate(start.getDate() + i);
+                dayString += week[d.getDay()];
+            }
+            let dateInfo = "";
+            if (days === 1) {
+                dateInfo = `${startYear}년 ${startMonth}월 ${startDate}일 ${startDay}요일`;
+            } else {
+                const endMonth = end.getMonth() + 1;
+                const endDate = end.getDate();
+                const dateRange = (startMonth === endMonth)
+                    ? `${startMonth}월 ${startDate} ~ ${endDate}일`
+                    : `${startMonth}월 ${startDate}일 ~ ${endMonth}월 ${endDate}일`;
+                dateInfo = `${startYear}년 ${dateRange} ${dayString}`;
+            }
+            return `📢 정육 카톡 행사 (${dateInfo})`;
+        }
+
+        extractBtn.onclick = () => {
+            const rows = container.querySelectorAll('.row');
+            if (!rows.length) { alert("상품을 추가해주세요."); return; }
+            let isValid = true;
+            let resultText = getEventDateText(parseInt(dateInput.value)) + "\n\n";
+            rows.forEach((row, idx) => {
+                const prod = row.querySelector('.product-select').value;
+                const unit = row.querySelector('.unit-select').value;
+                const norm = row.querySelector('.normal-price').value;
+                const sale = row.querySelector('.sale-price').value;
+                if (!prod || !norm || !sale) { isValid = false; return; }
+                const fmt = (n) => Number(n).toLocaleString();
+                resultText += `${idx + 1}) ${prod} ${unit} ${fmt(norm)}원 👉 ${fmt(sale)}원\n`;
+            });
+            if (!isValid) { alert("상품명과 가격을 모두 입력해주세요."); return; }
+            resultArea.textContent = resultText.trim();
+            resultArea.style.display = "block";
+            copyBtn.style.display = "block";
+            window.scrollTo(0, document.body.scrollHeight);
+        };
+
+        copyBtn.onclick = () => {
+            const textToCopy = resultArea.textContent;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    alert("복사 완료!");
+                }).catch(() => fallbackCopy(textToCopy));
+            } else {
+                fallbackCopy(textToCopy);
+            }
+        };
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                alert("복사 완료!");
+            } catch (err) {
+                alert("복사에 실패했습니다. 결과창을 길게 눌러 직접 복사해주세요.");
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
