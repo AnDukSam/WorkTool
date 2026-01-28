@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>수입고기 발주</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { padding: 0 15px 120px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
+
+        /* 상단 타이틀 바 */
+        .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
+
+        /* 지점 선택 섹션 (드롭다운 스타일) */
+        .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
+        .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; }
+
+        /* 아이템 리스트 스타일 */
+        .tray { display: flex; flex-direction: column; gap: 10px; }
+        .item-row { background-color: white; padding: 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
+        .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
+
+        /* 컨트롤 버튼 스타일 */
+        .right-controls { display: flex; align-items: center; gap: 6px; }
+        .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .right-controls button:active { background-color: #ddd; }
+        .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; }
+        .suffix-display { font-size: 13px; color: #666; width: 35px; text-align: left; margin-left: 2px; }
+
+        /* 결과 출력 영역 */
+        #resultArea { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
+
+        /* 하단 액션 버튼 */
+        #action-buttons { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 15px; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .action-btn { flex: 1; height: 55px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; color: white; cursor: pointer; }
+        #extractBtn { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        #copyBtn { background: #333; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="main-title">수입고기 발주</div>
+
+    <div class="header-setting">
+        <label>발주 지점 선택</label>
+        <select id="branchSelect">
+            <option value="2호점">2호점</option>
+            <option value="만촌점" selected>만촌점</option>
+            <option value="시지점">시지점</option>
+            <option value="온천점">온천점</option>
+            <option value="혁신점">혁신점</option>
+        </select>
+    </div>
+
+    <div class="tray" id="itemTray"></div>
+
+    <div id="resultArea"></div>
+
+    <div id="action-buttons">
+        <button class="action-btn" id="extractBtn">텍스트 추출</button>
+        <button class="action-btn" id="copyBtn">📋 텍스트 복사</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemTray = document.getElementById('itemTray');
+            const extractBtn = document.getElementById('extractBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const resultArea = document.getElementById('resultArea');
+            const branchSelect = document.getElementById('branchSelect');
+
+            const items = [
+                { name: '목전지', unit: '박스' }, { name: '앞다리살', unit: '박스' },
+                { name: '닭정육', unit: '박스' }, { name: '삼겹살', unit: '박스' },
+                { name: '차돌박이', unit: '박스' }, { name: '우삼겹', unit: '박스' },
+                { name: '알목심', unit: '박스' }, { name: 'LA갈비', unit: '박스' },
+                { name: '척갈비', unit: '박스' }
+            ];
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.innerHTML = `
+                    <div class="left-panel-item">${item.name}</div>
+                    <div class="right-controls">
+                        <button class="minus-btn">-</button>
+                        <input type="text" class="number-display" value="0" readonly>
+                        <button class="plus-btn">+</button>
+                        <span class="suffix-display">${item.unit}</span>
+                    </div>
+                `;
+
+                const minusBtn = row.querySelector('.minus-btn');
+                const plusBtn = row.querySelector('.plus-btn');
+                const display = row.querySelector('.number-display');
+
+                minusBtn.onclick = () => {
+                    let val = parseInt(display.value);
+                    if (val > 0) display.value = val - 1;
+                };
+                plusBtn.onclick = () => {
+                    display.value = parseInt(display.value) + 1;
+                };
+                itemTray.appendChild(row);
+            });
+
+            extractBtn.onclick = () => {
+                const branch = branchSelect.value;
+                let resultText = `우리축산 ${branch}입니다.\n\n`;
+                let hasItem = false;
+                let count = 1;
+
+                const rows = document.querySelectorAll('.item-row');
+                rows.forEach(row => {
+                    const name = row.querySelector('.left-panel-item').textContent;
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    const unit = row.querySelector('.suffix-display').textContent;
+
+                    if (val > 0) {
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        hasItem = true;
+                    }
+                });
+
+                if (!hasItem) {
+                    alert("발주할 수량을 먼저 입력해주세요.");
+                    return;
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            };
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
+</body>
+</html>
