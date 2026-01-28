@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>비품 발주</title>
+    <style>
+        /* 기존 디자인 스타일 유지 */
+        * { box-sizing: border-box; }
+        body { padding: 0 15px 120px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
+
+        .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
+
+        .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
+        .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 130px; }
+
+        .category-title { font-size: 16px; font-weight: bold; color: #2E7D32; margin: 20px 0 10px 5px; display: flex; align-items: center; }
+        .category-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background-color: #4CAF50; margin-right: 8px; border-radius: 2px; }
+
+        .tray { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+        .item-row { background-color: white; padding: 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
+        .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
+
+        .right-controls { display: flex; align-items: center; gap: 6px; }
+        .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .right-controls button:active { background-color: #ddd; }
+        .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; }
+        .suffix-display { font-size: 13px; color: #888; width: 35px; text-align: left; margin-left: 2px; }
+
+        #resultArea { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
+
+        #action-buttons { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 15px; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .action-btn { flex: 1; height: 55px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; color: white; cursor: pointer; }
+
+        #extractBtn { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        #copyBtn { background: #333; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="main-title">비품 발주</div>
+
+    <div class="header-setting">
+        <label>발주 지점 선택</label>
+        <select id="branchSelect">
+            <option value="2호점">2호점</option>
+            <option value="만촌점" selected>만촌점</option>
+            <option value="시지점">시지점</option>
+            <option value="온천점">온천점</option>
+            <option value="혁신점">혁신점</option>
+        </select>
+    </div>
+
+    <div id="itemContainer"></div>
+
+    <div id="resultArea"></div>
+
+    <div id="action-buttons">
+        <button class="action-btn" id="extractBtn">텍스트 추출</button>
+        <button class="action-btn" id="copyBtn">📋 텍스트 복사</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemContainer = document.getElementById('itemContainer');
+            const extractBtn = document.getElementById('extractBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const resultArea = document.getElementById('resultArea');
+            const branchSelect = document.getElementById('branchSelect');
+
+            // 품목 데이터 및 접미사 설정
+            const suffixMap = {
+                'LA갈비 스티커(원)': '묶음', '가방(등2호)': '개', '가방(등3호)': '개', '가방(등4호)': '개',
+                '강황 소금(3g)': '박스', '나이스)참소스(300g)': '박스', '나이스)꼬치소스(매운맛)': '박스',
+                '나이스)꼬치소스(순한맛)': '박스', '나이스)숯불갈비맛스테이크': '박스', '나이스)육회소스(30g)': '박스',
+                '나이스)참소스(20g)': '박스', '니트릴장갑(크린스킨 블랙마스터)': '박스', '독일 뼈칼 3165-15 P(2)': '개',
+                '골절기 톱날(JWB-330D)': '개', '모닝랩': '박스', '뭉티기 소스(50g)': '박스', '미국산스티커16': '묶음',
+                '미트페이퍼(그린유엔아이)': '박스', '백설)아이스팩(15x20)': '묶음', '벌집삼겹살 스티커': '묶음',
+                '보냉팩(중/28x35x5)': '묶음', '샤브샤브 육수(50g)': '팩', '세일 스티커': '묶음', '속지(28x37)': '묶음',
+                '속지(32x45)': '묶음', '속지(40x60)': '묶음', '스티로폼(등2호)': '개', '스티로폼(등3호)': '개',
+                '스티로폼(등4호)': '개', '쎄니콜70': '개', '야스리': '개', '월계수 잎': '통', '이개비(단풍모양/녹색)': '박스',
+                '재단 비닐(작업 비닐)': '묶음', '진공 필름(갈비)(25x35)': '묶음', '진공 필름(목살)(25x45)': '묶음',
+                '진공 필름(삼겹살)(40x65)': '묶음', '진공 필름(전지)(35x45)': '묶음', '투명 비닐(30x50)': '묶음',
+                '투명 비닐(9x25)': '묶음', '퓨어채반(2호/검정)': '개', '퓨어채반(3호/검정)': '개', '퓨어채반(4호/검정)': '개',
+                '핑크 솔트(5g)': '박스', '한돈스티커-4': '묶음', '한우스티커(CMSB-02)': '묶음', '흡수지': '박스'
+            };
+
+            const categories = [
+                {
+                    title: '트레이',
+                    items: ['적그물 8호', '적그물 18호', '적그물 77호', '적그물 26호', '적그물 27호', '적그물 E-280', '적그물 E-330', 'SJ-18호(금색)', 'SJ-26호(금색)', 'TY-70(검은색)', 'TY-70(하얀색)', 'DL-212', '경냄비 01442', '가방(등2호)', '가방(등3호)', '가방(등4호)', '퓨어채반(2호/검정)', '퓨어채반(3호/검정)', '퓨어채반(4호/검정)', '스티로폼(등2호)', '스티로폼(등3호)', '스티로폼(등4호)']
+                },
+                {
+                    title: '양념',
+                    items: ['뭉티기 소스(50g)', '나이스)육회소스(30g)', '나이스)참소스(20g)', '나이스)참소스(300g)', '나이스)꼬치소스(순한맛)', '나이스)꼬치소스(매운맛)', '월계수 잎', '핑크 솔트(5g)', '강황 소금(3g)', '샤브샤브 육수(50g)']
+                },
+                {
+                    title: '기타',
+                    items: ['속지(28x37)', '속지(32x45)', '속지(40x60)', '진공 필름(갈비)(25x35)', '진공 필름(목살)(25x45)', '진공 필름(전지)(35x45)', '진공 필름(삼겹살)(40x65)', '투명 비닐(9x25)', '투명 비닐(30x50)', '재단 비닐(작업 비닐)', '한돈스티커-4', '한우스티커(CMSB-02)', '벌집삼겹살 스티커', '세일 스티커', 'LA갈비 스티커(원)', '미국산스티커16', '흡수지', '모닝랩', '니트릴장갑(크린스킨 블랙마스터)', '미트페이퍼(그린유엔아이)', '백설)아이스팩(15x20)', '보냉팩(중/28x35x5)', '쎄니콜70', '나이스)숯불갈비맛스테이크', '이개비(단풍모양/녹색)', '야스리', '독일 뼈칼 3165-15 P(2)', '골절기 톱날(JWB-330D)']
+                }
+            ];
+
+            // 동적 리스트 생성 로직 유지
+            categories.forEach(cat => {
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.textContent = cat.title;
+                itemContainer.appendChild(titleDiv);
+
+                const trayDiv = document.createElement('div');
+                trayDiv.className = 'tray';
+
+                cat.items.forEach(itemName => {
+                    const unit = suffixMap[itemName] || '줄';
+                    const row = document.createElement('div');
+                    row.className = 'item-row';
+                    row.innerHTML = `
+                        <div class="left-panel-item">${itemName}</div>
+                        <div class="right-controls">
+                            <button class="minus-btn">-</button>
+                            <input type="text" class="number-display" value="0" readonly>
+                            <button class="plus-btn">+</button>
+                            <span class="suffix-display">${unit}</span>
+                        </div>
+                    `;
+
+                    const minusBtn = row.querySelector('.minus-btn');
+                    const plusBtn = row.querySelector('.plus-btn');
+                    const display = row.querySelector('.number-display');
+
+                    minusBtn.onclick = () => {
+                        let val = parseInt(display.value);
+                        if (val > 0) display.value = val - 1;
+                    };
+                    plusBtn.onclick = () => {
+                        display.value = parseInt(display.value) + 1;
+                    };
+                    trayDiv.appendChild(row);
+                });
+                itemContainer.appendChild(trayDiv);
+            });
+
+            // 추출 및 복사 함수 유지
+            extractBtn.onclick = () => {
+                const branch = branchSelect.value;
+                let resultText = `우리축산 ${branch}입니다.\n\n`;
+                let hasItem = false;
+                let count = 1;
+
+                const rows = document.querySelectorAll('.item-row');
+                rows.forEach(row => {
+                    const name = row.querySelector('.left-panel-item').textContent;
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    const unit = row.querySelector('.suffix-display').textContent;
+
+                    if (val > 0) {
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        hasItem = true;
+                    }
+                });
+
+                if (!hasItem) {
+                    alert("발주할 수량을 먼저 입력해주세요.");
+                    return;
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            };
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
+</body>
+</html>
