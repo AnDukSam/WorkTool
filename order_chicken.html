@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>닭 발주</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { padding: 0 15px 120px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
+        
+        .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
+        
+        .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
+        .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; }
+
+        .tray { display: flex; flex-direction: column; gap: 10px; }
+        .item-row { 
+            background-color: white; 
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+        .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
+
+        .right-controls { display: flex; align-items: center; gap: 4px; }
+        .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .right-controls button:active { background-color: #ddd; }
+        .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; }
+        
+        .checkbox-control { width: 28px; height: 28px; cursor: pointer; }
+        .suffix-display { font-size: 13px; color: #666; width: 32px; text-align: right; margin-left: 0px; }
+
+        #passBtn { 
+            width: 100%; 
+            margin-top: 20px; 
+            height: 60px; 
+            border-radius: 10px; 
+            border: none;
+            background: #ff5252; 
+            color: #ffffff; 
+            font-weight: bold; 
+            font-size: 16px;
+            cursor: pointer; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #passBtn:active { background: #e53935; transform: scale(0.98); }
+
+        #resultArea { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
+        
+        #action-buttons { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 15px; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .action-btn { flex: 1; height: 55px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; color: white; cursor: pointer; }
+        
+        #extractBtn { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        #copyBtn { background: #333; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="main-title">닭 발주</div>
+
+    <div id="mainContent">
+        <div class="header-setting">
+            <label>발주 지점 선택</label>
+            <select id="branchSelect">
+                <option value="2호점">2호점</option>
+                <option value="만촌점" selected>만촌점</option>
+                <option value="시지점">시지점</option>
+                <option value="온천점">온천점</option>
+                <option value="혁신점">혁신점</option>
+            </select>
+        </div>
+
+        <div class="tray" id="itemTray"></div>
+        <button id="passBtn">발주 없음</button>
+    </div>
+
+    <div id="resultArea"></div>
+
+    <div id="action-buttons">
+        <button class="action-btn" id="extractBtn">텍스트 추출</button>
+        <button class="action-btn" id="copyBtn">📋 텍스트 복사</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const itemTray = document.getElementById('itemTray');
+            const extractBtn = document.getElementById('extractBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const resultArea = document.getElementById('resultArea');
+            const branchSelect = document.getElementById('branchSelect');
+            const passBtn = document.getElementById('passBtn');
+            const mainContent = document.getElementById('mainContent');
+
+            let isPassMode = false;
+
+            const items = [
+                { name: '11호 벌크', unit: '캔', step: 1 },
+                { name: '13호 벌크', unit: '캔', step: 1 },
+                { name: '닭발 편육', unit: '개', step: 5 },
+                { name: '무뼈 닭발(1kg)', unit: '개', step: 10 },
+                { name: '참진 토종닭', unit: '박스', step: 1 },
+                { name: '토종닭 비품', unit: '캔', step: 1 },
+                { name: '영계 벌크', unit: '캔', step: 1 },
+                { name: '황기', unit: '박스', step: 1 },
+                { name: '삼계탕재료', unit: '박스', step: 1 },
+                { name: '닭다리(냉동)', unit: '박스', step: 1 },
+                { name: '닭가슴살(냉동)', unit: '박스', step: 1 },
+                { name: '스티커', type: 'checkbox' }
+            ];
+
+            function getCircleNumber(n) {
+                if (n >= 1 && n <= 20) return String.fromCharCode(0x2460 + n - 1);
+                if (n >= 21 && n <= 35) return String.fromCharCode(0x3251 + n - 21);
+                if (n >= 36 && n <= 50) return String.fromCharCode(0x32B1 + n - 36);
+                return n + ")";
+            }
+
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                
+                if (item.type === 'checkbox') {
+                    row.innerHTML = `
+                        <div class="left-panel-item">${item.name}</div>
+                        <div class="right-controls">
+                            <input type="checkbox" class="checkbox-control">
+                        </div>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <div class="left-panel-item">${item.name}</div>
+                        <div class="right-controls">
+                            <button class="minus-btn">-</button>
+                            <input type="text" class="number-display" value="0" readonly>
+                            <button class="plus-btn">+</button>
+                            <span class="suffix-display">${item.unit}</span>
+                        </div>
+                    `;
+                    const minusBtn = row.querySelector('.minus-btn');
+                    const plusBtn = row.querySelector('.plus-btn');
+                    const display = row.querySelector('.number-display');
+
+                    minusBtn.onclick = () => {
+                        let val = parseInt(display.value);
+                        if (val >= item.step) display.value = val - item.step;
+                    };
+                    plusBtn.onclick = () => {
+                        display.value = parseInt(display.value) + item.step;
+                    };
+                }
+                itemTray.appendChild(row);
+            });
+
+            // "발주 없음" 버튼 클릭 시
+            passBtn.onclick = () => {
+                mainContent.style.display = "none";     // 입력창 숨김
+                extractBtn.style.display = "none";     // 텍스트 추출 버튼 숨김 (버그 수정)
+                isPassMode = true;
+                showResult();
+            };
+
+            extractBtn.onclick = () => {
+                isPassMode = false;
+                showResult();
+            };
+
+            function showResult() {
+                let resultText = "";
+                
+                if (isPassMode) {
+                    resultText = "오늘 패스하겠습니다";
+                } else {
+                    const branch = branchSelect.value;
+                    resultText = `우리축산 ${branch}입니다.\n\n`;
+                    let hasItem = false;
+                    let count = 1;
+
+                    const rows = document.querySelectorAll('.item-row');
+                    rows.forEach(row => {
+                        const name = row.querySelector('.left-panel-item').textContent;
+                        const numDisplay = row.querySelector('.number-display');
+                        const checkBox = row.querySelector('.checkbox-control');
+
+                        if (numDisplay) {
+                            const val = parseInt(numDisplay.value);
+                            const unit = row.querySelector('.suffix-display').textContent;
+                            if (val > 0) {
+                                resultText += `${getCircleNumber(count++)} ${name}: ${val}${unit}\n`;
+                                hasItem = true;
+                            }
+                        } else if (checkBox && checkBox.checked) {
+                            resultText += `${getCircleNumber(count++)} ${name}\n`;
+                            hasItem = true;
+                        }
+                    });
+
+                    if (!hasItem) {
+                        alert("발주할 항목을 선택하거나 수량을 입력해주세요.");
+                        return;
+                    }
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
+</body>
+</html>
