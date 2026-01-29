@@ -5,34 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>비품 발주</title>
     <style>
-        /* 기존 디자인 스타일 유지 */
         * { box-sizing: border-box; }
         body { padding: 0 15px 120px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
 
+        /* 상단 타이틀 */
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
 
+        /* 지점 선택 */
         .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
         .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 130px; }
 
-        .category-title { font-size: 16px; font-weight: bold; color: #2E7D32; margin: 20px 0 10px 5px; display: flex; align-items: center; }
+        /* 카테고리 헤더 */
+        .category-title { font-size: 16px; font-weight: bold; color: #2E7D32; margin: 25px 0 10px 5px; display: flex; align-items: center; }
         .category-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background-color: #4CAF50; margin-right: 8px; border-radius: 2px; }
 
-        .tray { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .tray { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
 
-        .item-row { background-color: white; padding: 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
-        .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
+        /* 품목 카드 스타일 조정 (우측 패딩 축소) */
+        .item-row { background-color: white; padding: 12px 10px 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
+        .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; padding-right: 10px; word-break: keep-all; }
 
-        .right-controls { display: flex; align-items: center; gap: 6px; }
-        .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        /* 컨트롤 및 단위 스타일 수정 */
+        .right-controls { display: flex; align-items: center; gap: 4px; }
+        .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
         .right-controls button:active { background-color: #ddd; }
-        .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; }
-        .suffix-display { font-size: 13px; color: #888; width: 35px; text-align: left; margin-left: 2px; }
+        .number-display { width: 42px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; color: #333; }
 
+        /* 단위 텍스트 여백 수정: 너비를 줄이고 우측 정렬하여 여백 최소화 */
+        .suffix-display { font-size: 13px; color: #888; width: 30px; text-align: right; margin-left: 2px; margin-right: 2px; }
+
+        /* 결과 출력 영역 */
         #resultArea { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
 
+        /* 하단 고정 버튼 */
         #action-buttons { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 15px; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .action-btn { flex: 1; height: 55px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; color: white; cursor: pointer; }
+        .action-btn { flex: 1; height: 55px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; color: white; cursor: pointer; transition: opacity 0.2s; }
+        .action-btn:active { opacity: 0.8; }
 
         #extractBtn { background: linear-gradient(135deg, #2196F3, #1976D2); }
         #copyBtn { background: #333; display: none; }
@@ -70,7 +79,6 @@
             const resultArea = document.getElementById('resultArea');
             const branchSelect = document.getElementById('branchSelect');
 
-            // 품목 데이터 및 접미사 설정
             const suffixMap = {
                 'LA갈비 스티커(원)': '묶음', '가방(등2호)': '개', '가방(등3호)': '개', '가방(등4호)': '개',
                 '강황 소금(3g)': '박스', '나이스)참소스(300g)': '박스', '나이스)꼬치소스(매운맛)': '박스',
@@ -102,7 +110,6 @@
                 }
             ];
 
-            // 동적 리스트 생성 로직 유지
             categories.forEach(cat => {
                 const titleDiv = document.createElement('div');
                 titleDiv.className = 'category-title';
@@ -142,7 +149,6 @@
                 itemContainer.appendChild(trayDiv);
             });
 
-            // 추출 및 복사 함수 유지
             extractBtn.onclick = () => {
                 const branch = branchSelect.value;
                 let resultText = `우리축산 ${branch}입니다.\n\n`;
