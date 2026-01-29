@@ -10,16 +10,14 @@
         
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
         
-        /* 지점 선택 영역 (여백 기준점) */
         .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
         .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; }
 
-        /* 품목 리스트 카드 - 오른쪽 여백을 header-setting과 동일하게 15px로 맞춤 */
         .tray { display: flex; flex-direction: column; gap: 10px; }
         .item-row { 
             background-color: white; 
-            padding: 12px 15px; /* 오른쪽 패딩을 header-setting의 15px와 동일하게 설정 */
+            padding: 12px 15px; 
             border-radius: 12px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
             display: flex; 
@@ -28,14 +26,14 @@
         }
         .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
 
-        /* 수량 컨트롤 및 단위 표시 */
-        .right-controls { display: flex; align-items: center; gap: 6px; }
+        /* 컨트롤 영역 내부 간격 좁힘 */
+        .right-controls { display: flex; align-items: center; gap: 4px; }
         .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .right-controls button:active { background-color: #ddd; }
         .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; }
         
-        /* 단위 표시 영역 여백 조정 */
-        .suffix-display { font-size: 13px; color: #666; width: 35px; text-align: right; margin-left: 2px; }
+        /* 단위 여백을 더 좁힘 */
+        .suffix-display { font-size: 13px; color: #666; width: 32px; text-align: right; margin-left: 0px; }
 
         #resultArea { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
         
@@ -78,10 +76,9 @@
             const resultArea = document.getElementById('resultArea');
             const branchSelect = document.getElementById('branchSelect');
 
-            // 품목 리스트 (삼겹살(수육용) 추가 및 순서 조정)
             const items = [
                 { name: '삼겹살', unit: '박스' },
-                { name: '삼겹살(수육용)', unit: '박스' }, // 삼겹살 아래 추가
+                { name: '삼겹살(수육용)', unit: '박스' },
                 { name: '목살', unit: '박스' },
                 { name: '앞다리살(냉장)', unit: '박스' }, { name: '앞다리살(냉동)', unit: '박스' },
                 { name: '사태', unit: '벌' }, { name: '안심', unit: 'kg' },
