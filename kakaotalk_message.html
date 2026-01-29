@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>카톡 행사</title>
     <style>
-        * { box-sizing: border-box; touch-action: pan-y; } /* 드래그 중 스크롤 방해 최소화 */
+        * { box-sizing: border-box; }
         body { padding: 0 15px 40px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
         .date-controller { display: flex; align-items: center; justify-content: center; gap: 12px; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -20,22 +20,20 @@
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
 
-        /* 품목 Row 스타일 */
-        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; scroll-margin-top: 20px; transition: transform 0.2s, background-color 0.2s; user-select: none; }
-        .row.dragging { opacity: 0.5; background-color: #e8f5e9; transform: scale(1.02); z-index: 10; border: 2px solid #4CAF50; }
-        .row.long-press { background-color: #fff9c4; border: 2px dashed #fbc02d; } /* 길게 누를 때 표시 */
-
-        .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; pointer-events: none; }
+        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
+        .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; }
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .product-select { width: 100%; }
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
-        .del-btn { position: absolute; top: 10px; right: 10px; background-color: #ff5252; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
+
+        /* 제어 버튼 그룹 (위, 아래, 삭제) */
+        .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
+        .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
+        .del-btn { background-color: #ff5252; color: white; border: none; }
 
         #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
-
-        .drag-guide { text-align: center; font-size: 12px; color: #888; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -50,7 +48,6 @@
         <span>일간</span>
     </div>
 
-    <div class="drag-guide">💡 품목을 1초간 누르면 순서를 바꿀 수 있습니다.</div>
     <div id="container"></div>
 
     <div class="header">
@@ -79,97 +76,82 @@
         ];
         const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
 
-        // 공통 날짜 텍스트 생성
         function getEventDateText(days) {
             const week = ['일', '월', '화', '수', '목', '금', '토'];
             const start = new Date();
             const end = new Date();
             end.setDate(start.getDate() + (days - 1));
-            const startMonth = start.getMonth() + 1;
-            const startDate = start.getDate();
-            const startDay = week[start.getDay()];
-            const endMonth = end.getMonth() + 1;
-            const endDate = end.getDate();
-            const endDay = week[end.getDay()];
 
-            let dateInfo = (days === 1)
-                ? `2026년 ${startMonth}월 ${startDate}일 (${startDay})`
-                : `2026년 ${startMonth}월 ${startDate}일 (${startDay}) ~ ${startMonth === endMonth ? '' : endMonth + '월 '}${endDate}일 (${endDay})`;
-            return `📢 정육 카톡 행사 - ${dateInfo}`;
+            const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
+            const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
+
+            if (days === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
+
+            const startTxt = fmtDate(start);
+            const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
+            return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
         }
 
-        // 품목 추가 함수
+        function updateNumbers() {
+            container.querySelectorAll('.row').forEach((el, idx) => {
+                el.querySelector('.row-number').textContent = `품목 ${idx + 1}`;
+            });
+        }
+
         plusBtn.onclick = () => {
             const row = document.createElement('div');
             row.className = 'row';
-            row.draggable = false; // 롱프레스 후 true로 변경
 
-            const currentIdx = container.children.length;
+            // 선택 로직: 첫 품목은 한우 국거리, 그 뒤론 다음 항목
+            let targetItem = "한우 국거리";
+            const lastRow = container.lastElementChild;
+
+            if (lastRow) {
+                const lastVal = lastRow.querySelector('.product-select').value;
+                let lastIdx = productList.indexOf(lastVal);
+                let nextIdx = (lastIdx + 1) % productList.length;
+                // 구분선은 건너뜀
+                while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
+                    nextIdx = (nextIdx + 1) % productList.length;
+                }
+                targetItem = productList[nextIdx];
+            }
+
             row.innerHTML = `
-                <div class="row-number">품목 ${currentIdx + 1}</div>
-                <button class="del-btn">삭제</button>
+                <div class="row-number"></div>
+                <div class="controls">
+                    <button class="control-btn up-btn">↑</button>
+                    <button class="control-btn down-btn">↓</button>
+                    <button class="control-btn del-btn">삭제</button>
+                </div>
                 <select class="product-select">
-                    ${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}
+                    ${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''} ${item === targetItem ? 'selected' : ''}>${item}</option>`).join('')}
                 </select>
                 <select class="unit-select">${unitList.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
                 <input type="number" class="normal-price" placeholder="정상가">
                 <input type="number" class="sale-price" placeholder="판매가">
             `;
 
+            // 이벤트 바인딩
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
-
-            // 드래그 앤 드롭 이벤트 바인딩
-            addDragEvents(row);
+            row.querySelector('.up-btn').onclick = () => {
+                if (row.previousElementSibling) {
+                    container.insertBefore(row, row.previousElementSibling);
+                    updateNumbers();
+                }
+            };
+            row.querySelector('.down-btn').onclick = () => {
+                if (row.nextElementSibling) {
+                    container.insertBefore(row.nextElementSibling, row);
+                    updateNumbers();
+                }
+            };
 
             container.appendChild(row);
+            updateNumbers();
             row.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
-        function updateNumbers() {
-            container.querySelectorAll('.row-number').forEach((el, idx) => {
-                el.textContent = `품목 ${idx + 1}`;
-            });
-        }
-
-        // 드래그 앤 드롭 로직
-        let pressTimer;
-        function addDragEvents(row) {
-            // 모바일 롱프레스 구현
-            row.addEventListener('touchstart', (e) => {
-                if(e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-                pressTimer = setTimeout(() => {
-                    row.classList.add('long-press');
-                    row.draggable = true;
-                }, 800);
-            });
-
-            row.addEventListener('touchend', () => {
-                clearTimeout(pressTimer);
-            });
-
-            row.addEventListener('dragstart', () => {
-                row.classList.add('dragging');
-            });
-
-            row.addEventListener('dragend', () => {
-                row.classList.remove('dragging');
-                row.classList.remove('long-press');
-                row.draggable = false;
-                updateNumbers();
-            });
-        }
-
-        container.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const draggingItem = document.querySelector('.dragging');
-            const siblings = [...container.querySelectorAll('.row:not(.dragging)')];
-            let nextSibling = siblings.find(sibling => {
-                return e.clientY <= sibling.offsetTop + sibling.offsetHeight / 2;
-            });
-            container.insertBefore(draggingItem, nextSibling);
-        });
-
-        // 추출 및 복사
         extractBtn.onclick = () => {
             const rows = container.querySelectorAll('.row');
             if (!rows.length) return alert("품목을 추가해주세요.");
@@ -177,8 +159,8 @@
             rows.forEach((row, idx) => {
                 const prod = row.querySelector('.product-select').value;
                 const unit = row.querySelector('.unit-select').value;
-                const norm = row.querySelector('.normal-price').value;
-                const sale = row.querySelector('.sale-price').value;
+                const norm = row.querySelector('.normal-price').value || 0;
+                const sale = row.querySelector('.sale-price').value || 0;
                 const fmt = (n) => Number(n).toLocaleString();
                 resultText += `${idx + 1}) ${prod} ${unit} ${fmt(norm)}원 👉 ${fmt(sale)}원\n`;
             });
@@ -199,10 +181,10 @@
             });
         };
 
-        dateInput.onchange = () => { if(dateInput.value < 1) dateInput.value = 1; };
         document.getElementById('dateMinus').onclick = () => { if(dateInput.value > 1) dateInput.value--; };
         document.getElementById('datePlus').onclick = () => { dateInput.value++; };
 
+        // 시작 시 품목 하나 추가
         window.onload = () => plusBtn.click();
     </script>
 </body>
