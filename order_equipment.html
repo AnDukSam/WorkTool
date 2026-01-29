@@ -21,18 +21,16 @@
         .category-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background-color: #4CAF50; margin-right: 8px; border-radius: 2px; }
 
         .tray { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-
-        /* 품목 카드 스타일 조정 (우측 패딩 축소) */
+        
+        /* 품목 카드 스타일 */
         .item-row { background-color: white; padding: 12px 10px 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
         .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; padding-right: 10px; word-break: keep-all; }
 
-        /* 컨트롤 및 단위 스타일 수정 */
+        /* 컨트롤 및 단위 스타일 */
         .right-controls { display: flex; align-items: center; gap: 4px; }
         .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
         .right-controls button:active { background-color: #ddd; }
         .number-display { width: 42px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; color: #333; }
-
-        /* 단위 텍스트 여백 수정: 너비를 줄이고 우측 정렬하여 여백 최소화 */
         .suffix-display { font-size: 13px; color: #888; width: 30px; text-align: right; margin-left: 2px; margin-right: 2px; }
 
         /* 결과 출력 영역 */
@@ -110,6 +108,7 @@
                 }
             ];
 
+            // 화면 생성
             categories.forEach(cat => {
                 const titleDiv = document.createElement('div');
                 titleDiv.className = 'category-title';
@@ -149,6 +148,19 @@
                 itemContainer.appendChild(trayDiv);
             });
 
+            // 원문자 변환 함수 (1~50 지원)
+            function getCircledNumber(num) {
+                const circled = [
+                    "", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
+                    "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
+                    "㉑", "㉒", "㉓", "㉔", "㉕", "㉖", "㉗", "㉘", "㉙", "㉚",
+                    "㉛", "㉜", "㉝", "㉞", "㉟", "㊱", "㊲", "㊳", "㊴", "㊵",
+                    "㊶", "㊷", "㊸", "㊹", "㊺", "㊻", "㊼", "㊽", "㊾", "㊿"
+                ];
+                return circled[num] || num + ")"; // 50 초과 시 기본 형식 출력
+            }
+
+            // 텍스트 추출 로직 (원문자 적용)
             extractBtn.onclick = () => {
                 const branch = branchSelect.value;
                 let resultText = `우리축산 ${branch}입니다.\n\n`;
@@ -162,7 +174,7 @@
                     const unit = row.querySelector('.suffix-display').textContent;
 
                     if (val > 0) {
-                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        resultText += `${getCircledNumber(count++)} ${name}: ${val}${unit}\n`;
                         hasItem = true;
                     }
                 });
