@@ -88,10 +88,10 @@
             end.setDate(start.getDate() + (days - 1));
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-            if (days === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
+            if (days === 1) return `🥩 정육 카톡 행사 - ${fmtDate(start)}`;
             const startTxt = fmtDate(start);
             const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
-            return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
+            return `🥩 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
         }
 
         function updateNumbers() {
@@ -183,3 +183,4 @@
     </script>
 </body>
 </html>
+
