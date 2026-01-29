@@ -26,13 +26,11 @@
         }
         .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
 
-        /* 컨트롤 영역 내부 간격 좁힘 */
         .right-controls { display: flex; align-items: center; gap: 4px; }
         .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .right-controls button:active { background-color: #ddd; }
         .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; }
         
-        /* 단위 여백을 더 좁힘 */
         .suffix-display { font-size: 13px; color: #666; width: 32px; text-align: right; margin-left: 0px; }
 
         #resultArea { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
@@ -89,6 +87,18 @@
                 { name: 'B목살', unit: '박스' }
             ];
 
+            // 동그라미 숫자 변환 함수 (1~50 지원)
+            function getCircleNumber(n) {
+                if (n >= 1 && n <= 20) {
+                    return String.fromCharCode(0x2460 + n - 1); // ① ~ ⑳
+                } else if (n >= 21 && n <= 35) {
+                    return String.fromCharCode(0x3251 + n - 21); // ㉑ ~ ㉟
+                } else if (n >= 36 && n <= 50) {
+                    return String.fromCharCode(0x32B1 + n - 36); // ㊱ ~ ㊲... ㊿
+                }
+                return n + ")"; // 50 초과 시 예외 처리
+            }
+
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'item-row';
@@ -129,7 +139,8 @@
                     const unit = row.querySelector('.suffix-display').textContent;
 
                     if (val > 0) {
-                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        // 동그라미 숫자 함수 적용
+                        resultText += `${getCircleNumber(count++)} ${name}: ${val}${unit}\n`;
                         hasItem = true;
                     }
                 });
