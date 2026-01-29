@@ -12,26 +12,20 @@
         .date-controller label { font-weight: bold; font-size: 15px; margin-right: 10px; }
         .date-btn { width: 40px; height: 40px; font-size: 20px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
         #dateInput { width: 60px; height: 40px; text-align: center; font-size: 18px; border: 1px solid #ddd; border-radius: 8px; }
-
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
-
         .header { display: flex; gap: 10px; margin-bottom: 20px; }
         .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
-
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
         .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; }
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .product-select { width: 100%; }
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
-
-        /* 제어 버튼 그룹 (위, 아래, 삭제) */
         .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
         .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
         .del-btn { background-color: #ff5252; color: white; border: none; }
-
         #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
     </style>
@@ -76,17 +70,25 @@
         ];
         const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
 
+        function getCircleNum(n) {
+            const circleNums = [
+                "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
+                "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
+                "㉑", "㉒", "㉓", "㉔", "㉕", "㉖", "㉗", "㉘", "㉙", "㉚",
+                "㉛", "㉜", "㉝", "㉞", "㉟", "㊱", "㊲", "㊳", "㊴", "㊵",
+                "㊶", "㊷", "㊸", "㊹", "㊺", "㊻", "㊼", "㊽", "㊾", "㊿"
+            ];
+            return circleNums[n - 1] || `${n})`;
+        }
+
         function getEventDateText(days) {
             const week = ['일', '월', '화', '수', '목', '금', '토'];
             const start = new Date();
             const end = new Date();
             end.setDate(start.getDate() + (days - 1));
-
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-
             if (days === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
-
             const startTxt = fmtDate(start);
             const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
             return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
@@ -101,22 +103,17 @@
         plusBtn.onclick = () => {
             const row = document.createElement('div');
             row.className = 'row';
-
-            // 선택 로직: 첫 품목은 한우 국거리, 그 뒤론 다음 항목
             let targetItem = "한우 국거리";
             const lastRow = container.lastElementChild;
-
             if (lastRow) {
                 const lastVal = lastRow.querySelector('.product-select').value;
                 let lastIdx = productList.indexOf(lastVal);
                 let nextIdx = (lastIdx + 1) % productList.length;
-                // 구분선은 건너뜀
                 while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
                     nextIdx = (nextIdx + 1) % productList.length;
                 }
                 targetItem = productList[nextIdx];
             }
-
             row.innerHTML = `
                 <div class="row-number"></div>
                 <div class="controls">
@@ -131,8 +128,6 @@
                 <input type="number" class="normal-price" placeholder="정상가">
                 <input type="number" class="sale-price" placeholder="판매가">
             `;
-
-            // 이벤트 바인딩
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             row.querySelector('.up-btn').onclick = () => {
                 if (row.previousElementSibling) {
@@ -146,7 +141,6 @@
                     updateNumbers();
                 }
             };
-
             container.appendChild(row);
             updateNumbers();
             row.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -162,7 +156,8 @@
                 const norm = row.querySelector('.normal-price').value || 0;
                 const sale = row.querySelector('.sale-price').value || 0;
                 const fmt = (n) => Number(n).toLocaleString();
-                resultText += `${idx + 1}) ${prod} ${unit} ${fmt(norm)}원 👉 ${fmt(sale)}원\n`;
+                // → 기호를 ➝ 기호로 변경
+                resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
             });
             resultArea.textContent = resultText.trim();
             resultArea.style.display = "block";
@@ -184,7 +179,6 @@
         document.getElementById('dateMinus').onclick = () => { if(dateInput.value > 1) dateInput.value--; };
         document.getElementById('datePlus').onclick = () => { dateInput.value++; };
 
-        // 시작 시 품목 하나 추가
         window.onload = () => plusBtn.click();
     </script>
 </body>
