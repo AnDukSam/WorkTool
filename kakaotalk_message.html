@@ -17,7 +17,7 @@
         .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
-        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
+        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; scroll-margin-top: 20px; }
         .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; }
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .product-select { width: 100%; }
@@ -43,7 +43,7 @@
     <div id="container"></div>
 
     <div class="header">
-        <button id="plusBtn">상품 추가</button>
+        <button id="plusBtn">품목 추가</button>
         <button id="extractBtn">텍스트 추출</button>
     </div>
 
@@ -61,17 +61,14 @@
         document.getElementById('dateMinus').onclick = () => { if (dateInput.value > 1) dateInput.value = parseInt(dateInput.value) - 1; };
         document.getElementById('datePlus').onclick = () => { dateInput.value = parseInt(dateInput.value) + 1; };
 
-        // '한우 소불고기' 및 '한우 불고기'가 모두 제거된 리스트입니다.
+        // 요청하신 🔺🔺 구분자가 포함된 상품 리스트
         const productList = [
-            "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심",
-            "----------",
-            "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심",
-            "----------",
-            "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)",
-            "----------",
-            "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹",
-            "----------",
-            "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭"
+            "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심", "🔺🔺 한우 🔺🔺",
+            "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심", "🔺🔺 1+ 한우 🔺🔺",
+            "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)", "🔺🔺 한돈 🔺🔺",
+            "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹", "🔺🔺 대패류 🔺🔺",
+            "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "🔺🔺 밀키트 🔺🔺",
+            "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭", "🔺🔺 닭 🔺🔺"
         ];
 
         const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
@@ -83,14 +80,14 @@
             let lastIdx = -1;
             if (currentSelectedItems.length > 0) { lastIdx = productList.indexOf(currentSelectedItems[currentSelectedItems.length - 1]); }
             let nextIdx = (lastIdx + 1) % productList.length;
-            while (productList[nextIdx] === "----------") { nextIdx = (nextIdx + 1) % productList.length; }
+            while (productList[nextIdx] && productList[nextIdx].includes("🔺🔺")) { nextIdx = (nextIdx + 1) % productList.length; }
 
             const num = container.children.length + 1;
             row.innerHTML = `
                 <div class="row-number">품목 ${num}</div>
                 <button class="del-btn">삭제</button>
                 <select class="product-select">
-                    ${productList.map((item, idx) => `<option value="${item}" ${item.includes('---') ? 'disabled' : ''} ${idx === nextIdx ? 'selected' : ''}>${item}</option>`).join('')}
+                    ${productList.map((item, idx) => `<option value="${item}" ${item.includes('🔺🔺') ? 'disabled' : ''} ${idx === nextIdx ? 'selected' : ''}>${item}</option>`).join('')}
                 </select>
                 <select class="unit-select">
                     ${unitList.map(u => `<option value="${u}">${u}</option>`).join('')}
@@ -108,6 +105,9 @@
             };
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             container.appendChild(row);
+
+            // 신규 품목 추가 시 자동 스크롤
+            row.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
         window.onload = () => { plusBtn.click(); };
@@ -118,33 +118,34 @@
             const start = new Date();
             const end = new Date();
             end.setDate(start.getDate() + (days - 1));
+
             const startYear = start.getFullYear();
             const startMonth = start.getMonth() + 1;
             const startDate = start.getDate();
             const startDay = week[start.getDay()];
-            let dayString = "";
-            for(let i=0; i<days; i++) {
-                let d = new Date();
-                d.setDate(start.getDate() + i);
-                dayString += week[d.getDay()];
-            }
+
+            const endMonth = end.getMonth() + 1;
+            const endDate = end.getDate();
+            const endDay = week[end.getDay()];
+
             let dateInfo = "";
             if (days === 1) {
-                dateInfo = `${startYear}년 ${startMonth}월 ${startDate}일 ${startDay}요일`;
+                dateInfo = `${startYear}년 ${startMonth}월 ${startDate}일 (${startDay})`;
             } else {
-                const endMonth = end.getMonth() + 1;
-                const endDate = end.getDate();
-                const dateRange = (startMonth === endMonth)
+                const datePart = (startMonth === endMonth)
                     ? `${startMonth}월 ${startDate} ~ ${endDate}일`
                     : `${startMonth}월 ${startDate}일 ~ ${endMonth}월 ${endDate}일`;
-                dateInfo = `${startYear}년 ${dateRange} ${dayString}`;
+
+                // 새로운 날짜 표시 형식 반영
+                dateInfo = `${startYear}년 ${startMonth}월 ${startDate}일 (${startDay}) ~ ${endMonth === startMonth ? '' : endMonth + '월 '}${endDate}일 (${endDay})`;
             }
-            return `📢 정육 카톡 행사 (${dateInfo})`;
+
+            return `📢 정육 카톡 행사 - ${dateInfo}`;
         }
 
         extractBtn.onclick = () => {
             const rows = container.querySelectorAll('.row');
-            if (!rows.length) { alert("상품을 추가해주세요."); return; }
+            if (!rows.length) { alert("품목을 추가해주세요."); return; }
             let isValid = true;
             let resultText = getEventDateText(parseInt(dateInput.value)) + "\n\n";
             rows.forEach((row, idx) => {
@@ -160,7 +161,7 @@
             resultArea.textContent = resultText.trim();
             resultArea.style.display = "block";
             copyBtn.style.display = "block";
-            window.scrollTo(0, document.body.scrollHeight);
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         };
 
         copyBtn.onclick = () => {
@@ -194,7 +195,4 @@
         }
     </script>
 </body>
-
 </html>
-
-
