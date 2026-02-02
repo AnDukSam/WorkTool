@@ -8,24 +8,37 @@
         * { box-sizing: border-box; }
         body { padding: 0 15px 40px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
-        .date-controller { display: flex; align-items: center; justify-content: center; gap: 12px; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .option-container { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .date-controller { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
         .date-controller label { font-weight: bold; font-size: 15px; margin-right: 10px; }
         .date-btn { width: 40px; height: 40px; font-size: 20px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
         #dateInput { width: 60px; height: 40px; text-align: center; font-size: 18px; border: 1px solid #ddd; border-radius: 8px; }
+
+        .no-price-mode { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid #eee; pt: 10px; margin-top: 5px; padding-top: 10px; }
+        .no-price-mode input[type="checkbox"] { width: 18px; height: 18px; accent-color: #4CAF50; }
+        .no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
+
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .header { display: flex; gap: 10px; margin-bottom: 20px; }
         .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
+
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
         .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; }
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .product-select { width: 100%; }
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
+
+        /* 정상가 숨김 클래스 */
+        .hide-normal-price .normal-price { display: none; }
+
         .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
         .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
         .del-btn { background-color: #ff5252; color: white; border: none; }
+
         #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
     </style>
@@ -34,12 +47,18 @@
 
     <div class="main-title">카톡 행사</div>
 
-    <div class="date-controller">
-        <label>행사 기간</label>
-        <button class="date-btn" id="dateMinus">-</button>
-        <input type="number" id="dateInput" value="1" min="1">
-        <button class="date-btn" id="datePlus">+</button>
-        <span>일간</span>
+    <div class="option-container">
+        <div class="date-controller">
+            <label>행사 기간</label>
+            <button class="date-btn" id="dateMinus">-</button>
+            <input type="number" id="dateInput" value="1" min="1">
+            <button class="date-btn" id="datePlus">+</button>
+            <span>일간</span>
+        </div>
+        <div class="no-price-mode">
+            <input type="checkbox" id="noNormalPrice">
+            <label for="noNormalPrice">정상가 없음 (판매가만 표시)</label>
+        </div>
     </div>
 
     <div id="container"></div>
@@ -59,25 +78,20 @@
         const copyBtn = document.getElementById('copyBtn');
         const resultArea = document.getElementById('resultArea');
         const dateInput = document.getElementById('dateInput');
+        const noNormalPriceCheck = document.getElementById('noNormalPrice');
 
         const productList = [
             "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심", "🟥🟥 한우 🟥🟥",
             "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심", "🟥🟥 1+ 한우 🟥🟥",
             "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)", "🟥🟥 한돈 🟥🟥",
-            "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹", "🟥🟥 대패류 🟥🟥",
-            "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "🟥🟥 밀키트 🟥🟥",
+            "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹(미국산)", "차돌박이(수입산)", "🟥🟥 대패류 🟥🟥",
+            "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "양념 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "🟥🟥 밀키트 🟥🟥",
             "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭", "🟥🟥 닭 🟥🟥"
         ];
         const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
 
         function getCircleNum(n) {
-            const circleNums = [
-                "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
-                "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
-                "㉑", "㉒", "㉓", "㉔", "㉕", "㉖", "㉗", "㉘", "㉙", "㉚",
-                "㉛", "㉜", "㉝", "㉞", "㉟", "㊱", "㊲", "㊳", "㊴", "㊵",
-                "㊶", "㊷", "㊸", "㊹", "㊺", "㊻", "㊼", "㊽", "㊾", "㊿"
-            ];
+            const circleNums = ["①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩","⑪","⑫","⑬","⑭","⑮","⑯","⑰","⑱","⑲","⑳","㉑","㉒","㉓","㉔","㉕","㉖","㉗","㉘","㉙","㉚","㉛","㉜","㉝","㉞","㉟","㊱","㊲","㊳","㊴","㊵","㊶","㊷","㊸","㊹","㊺","㊻","㊼","㊽","㊾","㊿"];
             return circleNums[n - 1] || `${n})`;
         }
 
@@ -88,10 +102,10 @@
             end.setDate(start.getDate() + (days - 1));
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-            if (days === 1) return `🥩 정육 카톡 행사 - ${fmtDate(start)}`;
+            if (days === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
             const startTxt = fmtDate(start);
             const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
-            return `🥩 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
+            return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
         }
 
         function updateNumbers() {
@@ -99,6 +113,15 @@
                 el.querySelector('.row-number').textContent = `품목 ${idx + 1}`;
             });
         }
+
+        // 체크박스 상태에 따라 화면 업데이트
+        noNormalPriceCheck.addEventListener('change', () => {
+            if (noNormalPriceCheck.checked) {
+                container.classList.add('hide-normal-price');
+            } else {
+                container.classList.remove('hide-normal-price');
+            }
+        });
 
         plusBtn.onclick = () => {
             const row = document.createElement('div');
@@ -130,16 +153,10 @@
             `;
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             row.querySelector('.up-btn').onclick = () => {
-                if (row.previousElementSibling) {
-                    container.insertBefore(row, row.previousElementSibling);
-                    updateNumbers();
-                }
+                if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); }
             };
             row.querySelector('.down-btn').onclick = () => {
-                if (row.nextElementSibling) {
-                    container.insertBefore(row.nextElementSibling, row);
-                    updateNumbers();
-                }
+                if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); }
             };
             container.appendChild(row);
             updateNumbers();
@@ -150,14 +167,20 @@
             const rows = container.querySelectorAll('.row');
             if (!rows.length) return alert("품목을 추가해주세요.");
             let resultText = getEventDateText(parseInt(dateInput.value)) + "\n\n";
+            const isNoNormal = noNormalPriceCheck.checked;
+
             rows.forEach((row, idx) => {
                 const prod = row.querySelector('.product-select').value;
                 const unit = row.querySelector('.unit-select').value;
                 const norm = row.querySelector('.normal-price').value || 0;
                 const sale = row.querySelector('.sale-price').value || 0;
                 const fmt = (n) => Number(n).toLocaleString();
-                // → 기호를 ➝ 기호로 변경
-                resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
+
+                if (isNoNormal) {
+                    resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ➝ ${fmt(sale)}원\n`;
+                } else {
+                    resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
+                }
             });
             resultArea.textContent = resultText.trim();
             resultArea.style.display = "block";
@@ -183,4 +206,3 @@
     </script>
 </body>
 </html>
-
