@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>카톡 행사 관리자</title>
+    <title>카톡 행사</title>
     <style>
         * { box-sizing: border-box; }
         body { padding: 0 15px 40px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
@@ -17,6 +17,7 @@
         #saveListBtn { background: #4CAF50; color: white; }
         #toggleAdminBtn { background: #666; color: white; width: 100%; padding: 8px; border-radius: 8px; border: none; margin-bottom: 10px; font-size: 13px; }
 
+        /* 설정 영역 디자인 */
         .option-container { background: #fff; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
         .date-section { display: flex; flex-direction: column; gap: 12px; }
         .date-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -29,6 +30,7 @@
         .no-price-mode input[type="checkbox"] { width: 18px; height: 18px; accent-color: #4CAF50; }
         .no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
+        /* 품목 리스트 영역 */
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
         .row.completed { background-color: #fff9c4; border: 1px solid #ffe082; }
@@ -106,7 +108,7 @@
     <button id="copyBtn">📋 텍스트 복사</button>
 
     <script>
-        // 기본 품목 데이터 (로컬 저장소에 없을 때 사용)
+        // 기본 품목 데이터
         const defaultProducts = [
             "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심", "🟥🟥 한우 🟥🟥",
             "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심", "🟥🟥 1+ 한우 🟥🟥",
@@ -132,19 +134,17 @@
         const toggleAdminBtn = document.getElementById('toggleAdminBtn');
         const saveListBtn = document.getElementById('saveListBtn');
 
-        // 관리자 모드 토글
         toggleAdminBtn.onclick = () => {
             const isVisible = adminSection.style.display === 'block';
             adminSection.style.display = isVisible ? 'none' : 'block';
             if (!isVisible) rawProductList.value = currentProductList.join('\n');
         };
 
-        // 품목 리스트 저장
         saveListBtn.onclick = () => {
             const newList = rawProductList.value.split('\n').map(item => item.trim()).filter(item => item !== "");
             currentProductList = newList;
             localStorage.setItem('meatProducts', JSON.stringify(newList));
-            alert('품목 리스트가 저장되었습니다. 다음 품목 추가부터 적용됩니다.');
+            alert('품목 리스트가 저장되었습니다.');
             adminSection.style.display = 'none';
         };
 
