@@ -11,7 +11,6 @@
 
         .option-container { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .date-controller { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
-        .date-controller label { font-weight: bold; font-size: 15px; margin-right: 10px; }
         .date-btn { width: 40px; height: 40px; font-size: 20px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
         #dateInput { width: 60px; height: 40px; text-align: center; font-size: 18px; border: 1px solid #ddd; border-radius: 8px; }
 
@@ -20,23 +19,32 @@
         .no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
-        .header { display: flex; gap: 10px; margin-bottom: 20px; }
-        .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
-        #plusBtn { background-color: #4CAF50; color: white; }
-        #extractBtn { background-color: #2196F3; color: white; }
 
-        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; }
-        .row-number { font-weight: bold; color: #4CAF50; width: 100%; font-size: 14px; margin-bottom: 5px; }
+        /* 품목 Row 스타일 */
+        .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
+        .row.completed { background-color: #fff9c4; } /* 입력 완료 시 노란 배경 */
+
+        .row-header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+        .row-number-box { display: flex; align-items: center; gap: 10px; }
+        .row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
+        .manual-input-box { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; cursor: pointer; }
+        .manual-input-box input { width: 14px; height: 14px; cursor: pointer; }
+
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
-        .product-select { width: 100%; }
+        .product-select, .product-manual { width: 100%; }
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
 
         .hide-normal-price .normal-price { display: none; }
 
-        .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
+        .controls { display: flex; gap: 4px; }
         .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
         .del-btn { background-color: #ff5252; color: white; border: none; }
+
+        .header { display: flex; gap: 10px; margin-bottom: 20px; }
+        .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
+        #plusBtn { background-color: #4CAF50; color: white; }
+        #extractBtn { background-color: #2196F3; color: white; }
 
         #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
@@ -113,9 +121,20 @@
             });
         }
 
+        function checkCompletion(row) {
+            const isNoNormal = noNormalPriceCheck.checked;
+            const normVal = row.querySelector('.normal-price').value;
+            const saleVal = row.querySelector('.sale-price').value;
+
+            let isComplete = isNoNormal ? (saleVal !== "") : (normVal !== "" && saleVal !== "");
+            if (isComplete) row.classList.add('completed');
+            else row.classList.remove('completed');
+        }
+
         noNormalPriceCheck.addEventListener('change', () => {
             if (noNormalPriceCheck.checked) container.classList.add('hide-normal-price');
             else container.classList.remove('hide-normal-price');
+            container.querySelectorAll('.row').forEach(row => checkCompletion(row));
         });
 
         plusBtn.onclick = () => {
@@ -124,31 +143,55 @@
             let targetItem = "한우 국거리";
             const lastRow = container.lastElementChild;
             if (lastRow) {
-                const lastVal = lastRow.querySelector('.product-select').value;
+                const lastVal = lastRow.querySelector('.product-select') ? lastRow.querySelector('.product-select').value : "";
                 let lastIdx = productList.indexOf(lastVal);
-                let nextIdx = (lastIdx + 1) % productList.length;
-                while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
-                    nextIdx = (nextIdx + 1) % productList.length;
+                if (lastIdx !== -1) {
+                    let nextIdx = (lastIdx + 1) % productList.length;
+                    while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
+                        nextIdx = (nextIdx + 1) % productList.length;
+                    }
+                    targetItem = productList[nextIdx];
                 }
-                targetItem = productList[nextIdx];
             }
+
             row.innerHTML = `
-                <div class="row-number"></div>
-                <div class="controls">
-                    <button class="control-btn up-btn">↑</button>
-                    <button class="control-btn down-btn">↓</button>
-                    <button class="control-btn del-btn">삭제</button>
+                <div class="row-header">
+                    <div class="row-number-box">
+                        <span class="row-number"></span>
+                        <label class="manual-input-box"><input type="checkbox" class="manual-check"> 직접 입력</label>
+                    </div>
+                    <div class="controls">
+                        <button class="control-btn up-btn">↑</button>
+                        <button class="control-btn down-btn">↓</button>
+                        <button class="control-btn del-btn">삭제</button>
+                    </div>
                 </div>
-                <select class="product-select">
-                    ${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''} ${item === targetItem ? 'selected' : ''}>${item}</option>`).join('')}
-                </select>
+                <div style="width:100%" class="product-input-area">
+                    <select class="product-select">
+                        ${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''} ${item === targetItem ? 'selected' : ''}>${item}</option>`).join('')}
+                    </select>
+                </div>
                 <select class="unit-select">${unitList.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
                 <input type="number" class="normal-price" placeholder="정상가">
                 <input type="number" class="sale-price" placeholder="판매가">
             `;
+
+            const manualCheck = row.querySelector('.manual-check');
+            const inputArea = row.querySelector('.product-input-area');
+
+            manualCheck.onchange = () => {
+                if (manualCheck.checked) {
+                    inputArea.innerHTML = `<input type="text" class="product-manual" placeholder="상품명을 직접 입력하세요">`;
+                } else {
+                    inputArea.innerHTML = `<select class="product-select">${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}</select>`;
+                }
+            };
+
+            row.addEventListener('input', () => checkCompletion(row));
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             row.querySelector('.up-btn').onclick = () => { if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); } };
             row.querySelector('.down-btn').onclick = () => { if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); } };
+
             container.appendChild(row);
             updateNumbers();
             row.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -157,24 +200,31 @@
         extractBtn.onclick = () => {
             const rows = container.querySelectorAll('.row');
             if (!rows.length) return alert("품목을 추가해주세요.");
-            let resultText = getEventDateText(parseInt(dateInput.value)) + "\n\n";
+
             const isNoNormal = noNormalPriceCheck.checked;
+            let resultText = getEventDateText(parseInt(dateInput.value)) + "\n\n";
 
-            rows.forEach((row, idx) => {
-                const prod = row.querySelector('.product-select').value;
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const manualCheck = row.querySelector('.manual-check').checked;
+                const prod = manualCheck ? row.querySelector('.product-manual').value : row.querySelector('.product-select').value;
                 const unit = row.querySelector('.unit-select').value;
-                const norm = row.querySelector('.normal-price').value || 0;
-                const sale = row.querySelector('.sale-price').value || 0;
-                const fmt = (n) => Number(n).toLocaleString();
+                const norm = row.querySelector('.normal-price').value;
+                const sale = row.querySelector('.sale-price').value;
 
+                // 필수 입력 체크
+                if (!prod) { alert(`${i+1}번 품목의 상품명을 입력해주세요.`); return; }
+                if (!isNoNormal && !norm) { alert(`${i+1}번 품목의 정상가를 입력해주세요.`); return; }
+                if (!sale) { alert(`${i+1}번 품목의 판매가를 입력해주세요.`); return; }
+
+                const fmt = (n) => Number(n).toLocaleString();
                 if (isNoNormal) {
-                    // 정상가 없음 모드: 화살표 없이 공백으로 연결
-                    resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(sale)}원\n`;
+                    resultText += `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(sale)}원\n`;
                 } else {
-                    // 정상가 모드: 화살표 포함
-                    resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
+                    resultText += `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
                 }
-            });
+            }
+
             resultArea.textContent = resultText.trim();
             resultArea.style.display = "block";
             copyBtn.style.display = "block";
