@@ -9,23 +9,29 @@
         body { padding: 0 15px 40px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
 
-        .option-container { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .date-controller { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .date-controller label { font-weight: bold; font-size: 14px; }
-        .date-btn { width: 34px; height: 34px; font-size: 18px; background-color: #eee; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .small-input { width: 45px; height: 34px; text-align: center; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; }
+        /* 설정 영역 디자인 개선 */
+        .option-container { background: #fff; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
 
-        .no-price-mode { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px; }
+        .date-section { display: flex; flex-direction: column; gap: 12px; }
+        .date-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .date-label { font-weight: bold; font-size: 14px; color: #333; display: flex; align-items: center; gap: 5px; min-width: 80px; }
+        .date-controls { display: flex; align-items: center; gap: 6px; }
+
+        .date-btn { width: 36px; height: 36px; font-size: 18px; background-color: #f8f8f8; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; color: #333; transition: background 0.2s; }
+        .date-btn:active { background-color: #e0e0e0; }
+        .small-input { width: 50px; height: 36px; text-align: center; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; font-weight: bold; color: #2E7D32; }
+        .unit-text { font-size: 14px; color: #666; min-width: 50px; }
+
+        .no-price-mode { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid #eee; margin-top: 12px; padding-top: 12px; }
         .no-price-mode input[type="checkbox"] { width: 18px; height: 18px; accent-color: #4CAF50; }
         .no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
+        /* 품목 Row */
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
-
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
-        .row.completed { background-color: #fff9c4; }
+        .row.completed { background-color: #fff9c4; border: 1px solid #ffe082; }
 
         .row-header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-        .row-number-box { display: flex; align-items: center; gap: 10px; }
         .row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
         .manual-input-box { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; cursor: pointer; }
 
@@ -40,7 +46,7 @@
         .del-btn { background-color: #ff5252; color: white; border: none; }
 
         .header { display: flex; gap: 10px; margin-bottom: 20px; }
-        .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
+        .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
 
@@ -53,20 +59,29 @@
     <div class="main-title">카톡 행사</div>
 
     <div class="option-container">
-        <div class="date-controller">
-            <label>행사 기간</label>
-            <button class="date-btn" id="startMinus">-</button>
-            <input type="number" id="startOffset" class="small-input" value="0" min="0">
-            <button class="date-btn" id="startPlus">+</button>
-            <span>일 후부터</span>
-            <button class="date-btn" id="durationMinus">-</button>
-            <input type="number" id="durationInput" class="small-input" value="1" min="1">
-            <button class="date-btn" id="durationPlus">+</button>
-            <span>일간</span>
+        <div class="date-section">
+            <div class="date-row">
+                <span class="date-label">📅 시작일</span>
+                <div class="date-controls">
+                    <button class="date-btn" id="startMinus">-</button>
+                    <input type="number" id="startOffset" class="small-input" value="0" min="0">
+                    <button class="date-btn" id="startPlus">+</button>
+                    <span class="unit-text">일 후부터</span>
+                </div>
+            </div>
+            <div class="date-row">
+                <span class="date-label">⏱️ 기간</span>
+                <div class="date-controls">
+                    <button class="date-btn" id="durationMinus">-</button>
+                    <input type="number" id="durationInput" class="small-input" value="1" min="1">
+                    <button class="date-btn" id="durationPlus">+</button>
+                    <span class="unit-text">일간 진행</span>
+                </div>
+            </div>
         </div>
         <div class="no-price-mode">
             <input type="checkbox" id="noNormalPrice">
-            <label for="noNormalPrice">정상가 없음 (판매가만 표시)</label>
+            <label for="noNormalPrice">정상가 생략 모드 (판매가만 추출)</label>
         </div>
     </div>
 
@@ -109,15 +124,11 @@
             const week = ['일', '월', '화', '수', '목', '금', '토'];
             const start = new Date();
             start.setDate(start.getDate() + offset);
-
             const end = new Date(start);
             end.setDate(end.getDate() + (duration - 1));
-
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-
             if (duration === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
-
             const startTxt = fmtDate(start);
             const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
             return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
@@ -240,7 +251,6 @@
             });
         };
 
-        // 날짜 컨트롤러 이벤트
         document.getElementById('startMinus').onclick = () => { if(startOffsetInput.value > 0) startOffsetInput.value--; };
         document.getElementById('startPlus').onclick = () => { startOffsetInput.value++; };
         document.getElementById('durationMinus').onclick = () => { if(durationInput.value > 1) durationInput.value--; };
