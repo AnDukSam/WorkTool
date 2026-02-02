@@ -10,9 +10,10 @@
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
 
         .option-container { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .date-controller { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 15px; }
-        .date-btn { width: 40px; height: 40px; font-size: 20px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-        #dateInput { width: 60px; height: 40px; text-align: center; font-size: 18px; border: 1px solid #ddd; border-radius: 8px; }
+        .date-controller { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .date-controller label { font-weight: bold; font-size: 14px; }
+        .date-btn { width: 34px; height: 34px; font-size: 18px; background-color: #eee; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .small-input { width: 45px; height: 34px; text-align: center; font-size: 16px; border: 1px solid #ddd; border-radius: 6px; }
 
         .no-price-mode { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px; }
         .no-price-mode input[type="checkbox"] { width: 18px; height: 18px; accent-color: #4CAF50; }
@@ -20,15 +21,13 @@
 
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
 
-        /* 품목 Row 스타일 */
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
-        .row.completed { background-color: #fff9c4; } /* 입력 완료 시 노란 배경 */
+        .row.completed { background-color: #fff9c4; }
 
         .row-header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .row-number-box { display: flex; align-items: center; gap: 10px; }
         .row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
         .manual-input-box { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; cursor: pointer; }
-        .manual-input-box input { width: 14px; height: 14px; cursor: pointer; }
 
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .product-select, .product-manual { width: 100%; }
@@ -36,7 +35,6 @@
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
 
         .hide-normal-price .normal-price { display: none; }
-
         .controls { display: flex; gap: 4px; }
         .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
         .del-btn { background-color: #ff5252; color: white; border: none; }
@@ -57,9 +55,13 @@
     <div class="option-container">
         <div class="date-controller">
             <label>행사 기간</label>
-            <button class="date-btn" id="dateMinus">-</button>
-            <input type="number" id="dateInput" value="1" min="1">
-            <button class="date-btn" id="datePlus">+</button>
+            <button class="date-btn" id="startMinus">-</button>
+            <input type="number" id="startOffset" class="small-input" value="0" min="0">
+            <button class="date-btn" id="startPlus">+</button>
+            <span>일 후부터</span>
+            <button class="date-btn" id="durationMinus">-</button>
+            <input type="number" id="durationInput" class="small-input" value="1" min="1">
+            <button class="date-btn" id="durationPlus">+</button>
             <span>일간</span>
         </div>
         <div class="no-price-mode">
@@ -84,7 +86,8 @@
         const extractBtn = document.getElementById('extractBtn');
         const copyBtn = document.getElementById('copyBtn');
         const resultArea = document.getElementById('resultArea');
-        const dateInput = document.getElementById('dateInput');
+        const startOffsetInput = document.getElementById('startOffset');
+        const durationInput = document.getElementById('durationInput');
         const noNormalPriceCheck = document.getElementById('noNormalPrice');
 
         const productList = [
@@ -102,14 +105,19 @@
             return circleNums[n - 1] || `${n})`;
         }
 
-        function getEventDateText(days) {
+        function getEventDateText(offset, duration) {
             const week = ['일', '월', '화', '수', '목', '금', '토'];
             const start = new Date();
-            const end = new Date();
-            end.setDate(start.getDate() + (days - 1));
+            start.setDate(start.getDate() + offset);
+
+            const end = new Date(start);
+            end.setDate(end.getDate() + (duration - 1));
+
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-            if (days === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
+
+            if (duration === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
+
             const startTxt = fmtDate(start);
             const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
             return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
@@ -125,7 +133,6 @@
             const isNoNormal = noNormalPriceCheck.checked;
             const normVal = row.querySelector('.normal-price').value;
             const saleVal = row.querySelector('.sale-price').value;
-
             let isComplete = isNoNormal ? (saleVal !== "") : (normVal !== "" && saleVal !== "");
             if (isComplete) row.classList.add('completed');
             else row.classList.remove('completed');
@@ -143,14 +150,16 @@
             let targetItem = "한우 국거리";
             const lastRow = container.lastElementChild;
             if (lastRow) {
-                const lastVal = lastRow.querySelector('.product-select') ? lastRow.querySelector('.product-select').value : "";
-                let lastIdx = productList.indexOf(lastVal);
-                if (lastIdx !== -1) {
-                    let nextIdx = (lastIdx + 1) % productList.length;
-                    while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
-                        nextIdx = (nextIdx + 1) % productList.length;
+                const sel = lastRow.querySelector('.product-select');
+                if(sel){
+                    let lastIdx = productList.indexOf(sel.value);
+                    if (lastIdx !== -1) {
+                        let nextIdx = (lastIdx + 1) % productList.length;
+                        while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
+                            nextIdx = (nextIdx + 1) % productList.length;
+                        }
+                        targetItem = productList[nextIdx];
                     }
-                    targetItem = productList[nextIdx];
                 }
             }
 
@@ -178,13 +187,9 @@
 
             const manualCheck = row.querySelector('.manual-check');
             const inputArea = row.querySelector('.product-input-area');
-
             manualCheck.onchange = () => {
-                if (manualCheck.checked) {
-                    inputArea.innerHTML = `<input type="text" class="product-manual" placeholder="상품명을 직접 입력하세요">`;
-                } else {
-                    inputArea.innerHTML = `<select class="product-select">${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}</select>`;
-                }
+                if (manualCheck.checked) inputArea.innerHTML = `<input type="text" class="product-manual" placeholder="상품명 직접 입력">`;
+                else inputArea.innerHTML = `<select class="product-select">${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}</select>`;
             };
 
             row.addEventListener('input', () => checkCompletion(row));
@@ -200,9 +205,8 @@
         extractBtn.onclick = () => {
             const rows = container.querySelectorAll('.row');
             if (!rows.length) return alert("품목을 추가해주세요.");
-
             const isNoNormal = noNormalPriceCheck.checked;
-            let resultText = getEventDateText(parseInt(dateInput.value)) + "\n\n";
+            let resultText = getEventDateText(parseInt(startOffsetInput.value), parseInt(durationInput.value)) + "\n\n";
 
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
@@ -212,17 +216,12 @@
                 const norm = row.querySelector('.normal-price').value;
                 const sale = row.querySelector('.sale-price').value;
 
-                // 필수 입력 체크
-                if (!prod) { alert(`${i+1}번 품목의 상품명을 입력해주세요.`); return; }
-                if (!isNoNormal && !norm) { alert(`${i+1}번 품목의 정상가를 입력해주세요.`); return; }
-                if (!sale) { alert(`${i+1}번 품목의 판매가를 입력해주세요.`); return; }
+                if (!prod) { alert(`${i+1}번 상품명을 입력해주세요.`); return; }
+                if (!isNoNormal && !norm) { alert(`${i+1}번 정상가를 입력해주세요.`); return; }
+                if (!sale) { alert(`${i+1}번 판매가를 입력해주세요.`); return; }
 
                 const fmt = (n) => Number(n).toLocaleString();
-                if (isNoNormal) {
-                    resultText += `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(sale)}원\n`;
-                } else {
-                    resultText += `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
-                }
+                resultText += isNoNormal ? `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(sale)}원\n` : `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
             }
 
             resultArea.textContent = resultText.trim();
@@ -233,8 +232,7 @@
 
         copyBtn.onclick = () => {
             const text = resultArea.textContent;
-            navigator.clipboard.writeText(text).then(() => alert("복사 완료!"))
-            .catch(() => {
+            navigator.clipboard.writeText(text).then(() => alert("복사 완료!")).catch(() => {
                 const t = document.createElement("textarea");
                 t.value = text; document.body.appendChild(t); t.select();
                 document.execCommand('copy'); document.body.removeChild(t);
@@ -242,8 +240,12 @@
             });
         };
 
-        document.getElementById('dateMinus').onclick = () => { if(dateInput.value > 1) dateInput.value--; };
-        document.getElementById('datePlus').onclick = () => { dateInput.value++; };
+        // 날짜 컨트롤러 이벤트
+        document.getElementById('startMinus').onclick = () => { if(startOffsetInput.value > 0) startOffsetInput.value--; };
+        document.getElementById('startPlus').onclick = () => { startOffsetInput.value++; };
+        document.getElementById('durationMinus').onclick = () => { if(durationInput.value > 1) durationInput.value--; };
+        document.getElementById('durationPlus').onclick = () => { durationInput.value++; };
+
         window.onload = () => plusBtn.click();
     </script>
 </body>
