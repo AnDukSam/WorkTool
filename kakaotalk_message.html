@@ -15,7 +15,7 @@
         .date-btn { width: 40px; height: 40px; font-size: 20px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
         #dateInput { width: 60px; height: 40px; text-align: center; font-size: 18px; border: 1px solid #ddd; border-radius: 8px; }
 
-        .no-price-mode { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid #eee; pt: 10px; margin-top: 5px; padding-top: 10px; }
+        .no-price-mode { display: flex; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px; }
         .no-price-mode input[type="checkbox"] { width: 18px; height: 18px; accent-color: #4CAF50; }
         .no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
@@ -32,7 +32,6 @@
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
 
-        /* 정상가 숨김 클래스 */
         .hide-normal-price .normal-price { display: none; }
 
         .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
@@ -114,13 +113,9 @@
             });
         }
 
-        // 체크박스 상태에 따라 화면 업데이트
         noNormalPriceCheck.addEventListener('change', () => {
-            if (noNormalPriceCheck.checked) {
-                container.classList.add('hide-normal-price');
-            } else {
-                container.classList.remove('hide-normal-price');
-            }
+            if (noNormalPriceCheck.checked) container.classList.add('hide-normal-price');
+            else container.classList.remove('hide-normal-price');
         });
 
         plusBtn.onclick = () => {
@@ -152,12 +147,8 @@
                 <input type="number" class="sale-price" placeholder="판매가">
             `;
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
-            row.querySelector('.up-btn').onclick = () => {
-                if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); }
-            };
-            row.querySelector('.down-btn').onclick = () => {
-                if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); }
-            };
+            row.querySelector('.up-btn').onclick = () => { if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); } };
+            row.querySelector('.down-btn').onclick = () => { if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); } };
             container.appendChild(row);
             updateNumbers();
             row.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -177,8 +168,10 @@
                 const fmt = (n) => Number(n).toLocaleString();
 
                 if (isNoNormal) {
-                    resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ➝ ${fmt(sale)}원\n`;
+                    // 정상가 없음 모드: 화살표 없이 공백으로 연결
+                    resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(sale)}원\n`;
                 } else {
+                    // 정상가 모드: 화살표 포함
                     resultText += `${getCircleNum(idx + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
                 }
             });
@@ -201,7 +194,6 @@
 
         document.getElementById('dateMinus').onclick = () => { if(dateInput.value > 1) dateInput.value--; };
         document.getElementById('datePlus').onclick = () => { dateInput.value++; };
-
         window.onload = () => plusBtn.click();
     </script>
 </body>
