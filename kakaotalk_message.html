@@ -8,16 +8,7 @@
         * { box-sizing: border-box; }
         body { padding: 0 15px 40px 15px; margin: 0; font-family: 'Malgun Gothic', sans-serif; background-color: #f5f5f5; }
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
-
-        /* 품목 편집 영역 */
-        .admin-section { background: #333; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; }
-        .admin-section textarea { width: 100%; height: 200px; margin-top: 10px; font-size: 14px; padding: 10px; border-radius: 5px; border: none; line-height: 1.5; }
-        .admin-btn-group { display: flex; gap: 5px; margin-top: 10px; }
-        .admin-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        #saveListBtn { background: #4CAF50; color: white; }
-        #toggleAdminBtn { background: #666; color: white; width: 100%; padding: 8px; border-radius: 8px; border: none; margin-bottom: 10px; font-size: 13px; }
-
-        /* 설정 영역 디자인 */
+        
         .option-container { background: #fff; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
         .date-section { display: flex; flex-direction: column; gap: 12px; }
         .date-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -30,10 +21,9 @@
         .no-price-mode input[type="checkbox"] { width: 18px; height: 18px; accent-color: #4CAF50; }
         .no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
-        /* 품목 리스트 영역 */
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
-        .row.completed { background-color: #fff9c4; border: 1px solid #ffe082; }
+        .row.completed { background-color: #fff9c4; border: 1px solid #ffe082; } 
         .row-header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
         .manual-input-box { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; cursor: pointer; }
@@ -42,17 +32,17 @@
         .product-select, .product-manual { width: 100%; }
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
-
+        
         .hide-normal-price .normal-price { display: none; }
         .controls { display: flex; gap: 4px; }
         .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
         .del-btn { background-color: #ff5252; color: white; border: none; }
-
+        
         .header { display: flex; gap: 10px; margin-bottom: 20px; }
         .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
-
+        
         #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
     </style>
@@ -60,15 +50,6 @@
 <body>
 
     <div class="main-title">카톡 행사</div>
-
-    <button id="toggleAdminBtn">⚙️ 품목 리스트 편집 (직접 수정)</button>
-    <div class="admin-section" id="adminSection">
-        <div style="font-size: 12px; color: #bbb;">한 줄에 하나씩 품목명을 적어주세요. 카테고리는 🟥🟥 기호를 포함하세요.</div>
-        <textarea id="rawProductList"></textarea>
-        <div class="admin-btn-group">
-            <button id="saveListBtn" class="admin-btn">저장 및 적용</button>
-        </div>
-    </div>
 
     <div class="option-container">
         <div class="date-section">
@@ -108,8 +89,7 @@
     <button id="copyBtn">📋 텍스트 복사</button>
 
     <script>
-        // 기본 품목 데이터
-        const defaultProducts = [
+        const productList = [
             "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심", "🟥🟥 한우 🟥🟥",
             "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심", "🟥🟥 1+ 한우 🟥🟥",
             "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)", "🟥🟥 한돈 🟥🟥",
@@ -117,8 +97,7 @@
             "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "양념 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "🟥🟥 밀키트 🟥🟥",
             "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭", "🟥🟥 닭 🟥🟥"
         ];
-
-        let currentProductList = JSON.parse(localStorage.getItem('meatProducts')) || defaultProducts;
+        const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
 
         const container = document.getElementById('container');
         const plusBtn = document.getElementById('plusBtn');
@@ -128,27 +107,6 @@
         const startOffsetInput = document.getElementById('startOffset');
         const durationInput = document.getElementById('durationInput');
         const noNormalPriceCheck = document.getElementById('noNormalPrice');
-
-        const adminSection = document.getElementById('adminSection');
-        const rawProductList = document.getElementById('rawProductList');
-        const toggleAdminBtn = document.getElementById('toggleAdminBtn');
-        const saveListBtn = document.getElementById('saveListBtn');
-
-        toggleAdminBtn.onclick = () => {
-            const isVisible = adminSection.style.display === 'block';
-            adminSection.style.display = isVisible ? 'none' : 'block';
-            if (!isVisible) rawProductList.value = currentProductList.join('\n');
-        };
-
-        saveListBtn.onclick = () => {
-            const newList = rawProductList.value.split('\n').map(item => item.trim()).filter(item => item !== "");
-            currentProductList = newList;
-            localStorage.setItem('meatProducts', JSON.stringify(newList));
-            alert('품목 리스트가 저장되었습니다.');
-            adminSection.style.display = 'none';
-        };
-
-        const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
 
         function getCircleNum(n) {
             const circleNums = ["①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩","⑪","⑫","⑬","⑭","⑮","⑯","⑰","⑱","⑲","⑳","㉑","㉒","㉓","㉔","㉕","㉖","㉗","㉘","㉙","㉚","㉛","㉜","㉝","㉞","㉟","㊱","㊲","㊳","㊴","㊵","㊶","㊷","㊸","㊹","㊺","㊻","㊼","㊽","㊾","㊿"];
@@ -193,21 +151,21 @@
         plusBtn.onclick = () => {
             const row = document.createElement('div');
             row.className = 'row';
-
-            // 기본값 설정: 리스트 중 '한우 국거리'가 있으면 선택, 없으면 첫 번째 항목 선택
-            let targetItem = currentProductList.find(item => item === "한우 국거리") || currentProductList[0];
-
+            
+            // 첫 번째 추가 시 '한우 국거리' 우선 선택
+            let targetItem = productList.find(item => item === "한우 국거리") || productList[0];
+            
             const lastRow = container.lastElementChild;
             if (lastRow) {
                 const sel = lastRow.querySelector('.product-select');
                 if(sel){
-                    let lastIdx = currentProductList.indexOf(sel.value);
+                    let lastIdx = productList.indexOf(sel.value);
                     if (lastIdx !== -1) {
-                        let nextIdx = (lastIdx + 1) % currentProductList.length;
-                        while(currentProductList[nextIdx] && currentProductList[nextIdx].includes("🟥🟥")) {
-                            nextIdx = (nextIdx + 1) % currentProductList.length;
+                        let nextIdx = (lastIdx + 1) % productList.length;
+                        while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
+                            nextIdx = (nextIdx + 1) % productList.length;
                         }
-                        targetItem = currentProductList[nextIdx];
+                        targetItem = productList[nextIdx];
                     }
                 }
             }
@@ -226,7 +184,7 @@
                 </div>
                 <div style="width:100%" class="product-input-area">
                     <select class="product-select">
-                        ${currentProductList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''} ${item === targetItem ? 'selected' : ''}>${item}</option>`).join('')}
+                        ${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''} ${item === targetItem ? 'selected' : ''}>${item}</option>`).join('')}
                     </select>
                 </div>
                 <select class="unit-select">${unitList.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
@@ -238,14 +196,14 @@
             const inputArea = row.querySelector('.product-input-area');
             manualCheck.onchange = () => {
                 if (manualCheck.checked) inputArea.innerHTML = `<input type="text" class="product-manual" placeholder="상품명 직접 입력">`;
-                else inputArea.innerHTML = `<select class="product-select">${currentProductList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}</select>`;
+                else inputArea.innerHTML = `<select class="product-select">${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}</select>`;
             };
 
             row.addEventListener('input', () => checkCompletion(row));
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             row.querySelector('.up-btn').onclick = () => { if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); } };
             row.querySelector('.down-btn').onclick = () => { if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); } };
-
+            
             container.appendChild(row);
             updateNumbers();
             row.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -264,7 +222,7 @@
                 const unit = row.querySelector('.unit-select').value;
                 const norm = row.querySelector('.normal-price').value;
                 const sale = row.querySelector('.sale-price').value;
-
+                
                 if (!prod) { alert(`${i+1}번 상품명을 입력해주세요.`); return; }
                 if (!isNoNormal && !norm) { alert(`${i+1}번 정상가를 입력해주세요.`); return; }
                 if (!sale) { alert(`${i+1}번 판매가를 입력해주세요.`); return; }
