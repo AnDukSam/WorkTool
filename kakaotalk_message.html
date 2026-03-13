@@ -25,11 +25,15 @@
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
         .row.completed { background-color: #fff9c4; border: 1px solid #ffe082; } 
 
-        .row-header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-        .row-number-box { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .row-header { width: 100%; display: flex; flex-direction: column; gap: 5px; }
         .row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
-        .check-box-label { display: flex; align-items: center; gap: 3px; font-size: 11px; color: #666; cursor: pointer; }
-        .check-box-label input { width: 13px; height: 13px; cursor: pointer; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 5px; }
+        .check-box-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; cursor: pointer; width: fit-content; }
+        .check-box-label input { width: 16px; height: 16px; cursor: pointer; }
+
+        .controls { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; }
+        .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
+        .del-btn { background-color: #ff5252; color: white; border: none; }
 
         select, input { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .product-select, .product-manual { width: 100%; }
@@ -37,9 +41,6 @@
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
 
         .hide-normal-price .normal-price { display: none; }
-        .controls { display: flex; gap: 4px; }
-        .control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
-        .del-btn { background-color: #ff5252; color: white; border: none; }
 
         .header { display: flex; gap: 10px; margin-bottom: 20px; }
         .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
@@ -174,16 +175,16 @@
 
             row.innerHTML = `
                 <div class="row-header">
-                    <div class="row-number-box">
-                        <span class="row-number"></span>
+                    <span class="row-number"></span>
+                    <div class="checkbox-group">
                         <label class="check-box-label"><input type="checkbox" class="manual-check"> 상품명 직접 입력</label>
                         <label class="check-box-label"><input type="checkbox" class="limit-check"> 한정판매</label>
                     </div>
-                    <div class="controls">
-                        <button class="control-btn up-btn">↑</button>
-                        <button class="control-btn down-btn">↓</button>
-                        <button class="control-btn del-btn">삭제</button>
-                    </div>
+                </div>
+                <div class="controls">
+                    <button class="control-btn up-btn">↑</button>
+                    <button class="control-btn down-btn">↓</button>
+                    <button class="control-btn del-btn">삭제</button>
                 </div>
                 <div style="width:100%" class="product-input-area">
                     <select class="product-select">
