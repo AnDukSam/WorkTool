@@ -109,6 +109,8 @@
                 { name: '삼계탕재료', unit: '박스', step: 1 },
                 { name: '닭다리(냉동)', unit: '박스', step: 1 },
                 { name: '닭가슴살(냉동)', unit: '박스', step: 1 },
+                { name: '닭염통꼬치(1kg)', unit: '박스', step: 1 }, // 단위를 박스로 수정
+                { name: '닭염통꼬치(500g)', unit: '박스', step: 1 }, // 단위를 박스로 수정
                 { name: '스티커', type: 'checkbox' }
             ];
 
@@ -122,7 +124,7 @@
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'item-row';
-                
+
                 if (item.type === 'checkbox') {
                     row.innerHTML = `
                         <div class="left-panel-item">${item.name}</div>
@@ -155,10 +157,9 @@
                 itemTray.appendChild(row);
             });
 
-            // "발주 없음" 버튼 클릭 시
             passBtn.onclick = () => {
-                mainContent.style.display = "none";     // 입력창 숨김
-                extractBtn.style.display = "none";     // 텍스트 추출 버튼 숨김 (버그 수정)
+                mainContent.style.display = "none";
+                extractBtn.style.display = "none";
                 isPassMode = true;
                 showResult();
             };
@@ -170,7 +171,7 @@
 
             function showResult() {
                 let resultText = "";
-                
+
                 if (isPassMode) {
                     resultText = "오늘 패스하겠습니다";
                 } else {
