@@ -16,25 +16,53 @@
         body {
             font-family: 'Pretendard', sans-serif;
             background-color: var(--bg-color);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 10px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         .container { width: 100%; max-width: 800px; }
 
+        /* 상단 설정 영역 레이아웃 */
+        .top-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
         textarea {
-            width: 100%;
+            flex: 1;
             height: 120px;
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 12px;
             font-size: 16px;
             box-sizing: border-box;
-            margin-bottom: 15px;
             outline: none;
+        }
+
+        /* 색상 선택기 스타일 */
+        .color-controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+        }
+
+        .color-field {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        input[type="color"] {
+            width: 40px; height: 40px;
+            border: none; cursor: pointer; background: none;
         }
 
         .grid-container {
@@ -47,6 +75,7 @@
         }
 
         @media (max-width: 600px) {
+            .top-section { flex-direction: column; }
             .grid-container { grid-template-columns: repeat(4, 1fr); }
         }
 
@@ -61,55 +90,47 @@
             cursor: pointer;
             border: 1px solid #dee2e6;
             -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
+            transition: transform 0.1s;
         }
 
         .grid-item .item-text { font-size: 11px; font-weight: bold; text-align: center; color: #333; padding: 2px; }
         .grid-item .item-num { font-size: 9px; color: var(--primary-color); margin-top: 2px; }
 
-        /* 특수 버튼 스타일 (개체호출, 개체편집) */
-        .grid-item.special {
-            background-color: var(--special-bg);
-            cursor: default; /* 클릭 불가 표시 */
-            border: none;
-        }
+        .grid-item.special { background-color: var(--special-bg); cursor: default; border: none; }
         .grid-item.special .item-text { color: var(--special-text); }
 
-        /* 모달 스타일 */
         #menuModal {
-            display: none;
-            position: fixed;
+            display: none; position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            justify-content: center;
-            align-items: flex-end;
+            background: rgba(0,0,0,0.5); z-index: 9999;
+            justify-content: center; align-items: flex-end;
         }
 
         .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 500px;
-            max-height: 70vh;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            overflow-y: auto;
-            padding: 20px;
+            background: white; width: 100%; max-width: 500px;
+            max-height: 70vh; border-top-left-radius: 20px;
+            border-top-right-radius: 20px; overflow-y: auto; padding: 20px;
         }
 
-        .menu-item {
-            padding: 15px;
-            border-bottom: 1px solid #f1f3f5;
-            display: flex;
-            justify-content: space-between;
-            font-size: 16px;
-        }
+        .menu-item { padding: 15px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <textarea id="dataInput" placeholder="[번호][탭][상품명]을 입력하세요."></textarea>
+    <div class="top-section">
+        <textarea id="dataInput" placeholder="[번호][탭][상품명] 입력"></textarea>
+        <div class="color-controls">
+            <div class="color-field">
+                <span>배경</span>
+                <input type="color" id="bgColorPicker" value="#ffffff">
+            </div>
+            <div class="color-field">
+                <span>글자</span>
+                <input type="color" id="textColorPicker" value="#333333">
+            </div>
+        </div>
+    </div>
     <div class="grid-container" id="shortcutGrid"></div>
 </div>
 
@@ -124,63 +145,81 @@
     const gridContainer = document.getElementById('shortcutGrid');
     const menuModal = document.getElementById('menuModal');
     const modalList = document.getElementById('modalList');
-    let targetCell = null;
+    const bgColorPicker = document.getElementById('bgColorPicker');
+    const textColorPicker = document.getElementById('textColorPicker');
 
-    const TOTAL_CELLS = 72; // 8x9
+    let targetCell = null;
+    let timer;
+    const TOTAL_CELLS = 72;
 
     for (let i = 1; i <= TOTAL_CELLS; i++) {
         const item = document.createElement('div');
         item.className = 'grid-item';
 
-        // 맨 오른쪽에서 두 번째 (71번)와 맨 오른쪽 (72번) 처리
-        if (i === TOTAL_CELLS - 1) {
+        if (i === TOTAL_CELLS - 1 || i === TOTAL_CELLS) {
             item.classList.add('special');
-            item.innerHTML = `<span class="item-text">개체호출</span>`;
-        } else if (i === TOTAL_CELLS) {
-            item.classList.add('special');
-            item.innerHTML = `<span class="item-text">개체편집</span>`;
+            item.innerHTML = `<span class="item-text">${i === TOTAL_CELLS-1 ? '개체호출' : '개체편집'}</span>`;
         } else {
             item.innerHTML = `<span class="item-text"></span><span class="item-num"></span>`;
-            item.onclick = () => openModal(item);
-        }
 
+            // 롱 프레스 및 클릭 핸들러
+            const start = (e) => {
+                timer = setTimeout(() => {
+                    // 롱 프레스 성공: 색상 변경
+                    item.style.backgroundColor = bgColorPicker.value;
+                    item.querySelector('.item-text').style.color = textColorPicker.value;
+                    timer = null;
+                    if(navigator.vibrate) navigator.vibrate(30); // 약한 진동 피드백
+                }, 800);
+            };
+
+            const cancel = (e) => {
+                if (timer) {
+                    clearTimeout(timer);
+                    // 일반 클릭으로 처리
+                    if (e.type === 'touchend' || e.type === 'mouseup') openModal(item);
+                    timer = null;
+                }
+            };
+
+            item.addEventListener('touchstart', (e) => { e.preventDefault(); start(e); });
+            item.addEventListener('touchend', cancel);
+            item.addEventListener('mousedown', start);
+            item.addEventListener('mouseup', cancel);
+            item.addEventListener('mouseleave', () => { if(timer) clearTimeout(timer); });
+        }
         gridContainer.appendChild(item);
     }
 
     function openModal(cell) {
         targetCell = cell;
         const rawData = dataInput.value.trim();
-        if (!rawData) return alert("데이터를 입력해주세요.");
+        if (!rawData) return;
 
         const lines = rawData.split('\n');
         let itemList = lines.map(line => {
             const parts = line.split('\t');
             return parts.length >= 2 ? { num: parts[0].trim(), name: parts[1].trim() } : null;
-        }).filter(item => item !== null);
+        }).filter(it => it !== null);
 
         itemList.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
 
         modalList.innerHTML = '';
-        itemList.forEach(item => {
+        itemList.forEach(it => {
             const div = document.createElement('div');
             div.className = 'menu-item';
-            div.innerHTML = `<span>${item.name}</span><span style="color:#4a90e2">(${item.num})</span>`;
+            div.innerHTML = `<span>${it.name}</span><span style="color:#4a90e2">(${it.num})</span>`;
             div.onclick = () => {
-                cell.querySelector('.item-text').textContent = item.name;
-                cell.querySelector('.item-num').textContent = item.num;
+                cell.querySelector('.item-text').textContent = it.name;
+                cell.querySelector('.item-num').textContent = it.num;
                 closeModal();
             };
             modalList.appendChild(div);
         });
-
         menuModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-        menuModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
+    function closeModal() { menuModal.style.display = 'none'; }
 </script>
 
 </body>
