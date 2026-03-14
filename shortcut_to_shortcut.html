@@ -3,223 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>저울 단축키 지정</title>
+    <title>저울 단축키 지정 전문 도구</title>
     <style>
         :root {
             --primary-color: #4a90e2;
             --bg-color: #f8f9fa;
-            --grid-item-bg: #ffffff;
-            --special-bg: #555555;
-            --special-text: #ffffff;
+            --border-color: #dee2e6;
         }
 
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0; padding: 10px;
-            display: flex; flex-direction: column; align-items: center;
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 900px; }
+
+        /* 상단 5:5 분할 레이아웃 */
+        .top-area { display: flex; gap: 20px; margin-bottom: 20px; height: 160px; }
+        .input-box { flex: 1; }
+        .settings-box {
+            flex: 1; border: 2px dashed #ccc; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: #fff; position: relative;
         }
 
-        .container { width: 100%; max-width: 800px; }
+        textarea { width: 100%; height: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; resize: none; }
 
-        /* 상단 설정 영역 레이아웃 */
-        .top-section {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+        /* 설정창 내 컨트롤 스타일 */
+        .control-panel { display: flex; align-items: center; gap: 20px; }
+        .arrow-btn {
+            background: #eee; border: none; border-radius: 50%; width: 40px; height: 40px;
+            cursor: pointer; font-size: 20px; font-weight: bold; transition: 0.2s;
+        }
+        .arrow-btn:hover { background: #ddd; }
+
+        /* 미리보기용 div (그리드 아이템과 동일 스타일) */
+        .preview-item {
+            width: 80px; height: 80px; border-radius: 10px; border: 2px solid #333;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #fff; font-weight: bold; text-align: center; font-size: 12px;
         }
 
-        textarea {
-            flex: 1;
-            height: 120px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
+        /* 하단 그리드 */
+        .grid-container { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; background-color: #e9ecef; padding: 10px; border-radius: 15px; }
+        .grid-item {
+            aspect-ratio: 1/1; background: #fff; border-radius: 8px; border: 1px solid #dee2e6;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.1s; overflow: hidden;
         }
+        .grid-item .item-text { font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: center; }
+        .grid-item .item-num { font-size: 9px; color: var(--primary-color); }
+        .grid-item.special { background: #555; color: #fff; border: none; cursor: default; }
 
-        /* 색상 선택기 스타일 */
-        .color-controls {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #ddd;
-        }
-
-        .color-field {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        input[type="color"] {
-            width: 40px; height: 40px;
-            border: none; cursor: pointer; background: none;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 6px;
-            background-color: #e9ecef;
-            padding: 8px;
-            border-radius: 12px;
-        }
+        /* 모달 */
+        #menuModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 60vh; border-top-left-radius: 25px; border-top-right-radius: 25px; overflow-y: auto; padding: 25px; }
+        .menu-item { padding: 15px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; cursor: pointer; }
 
         @media (max-width: 600px) {
-            .top-section { flex-direction: column; }
+            .top-area { flex-direction: column; height: auto; }
+            .settings-box { height: 150px; }
             .grid-container { grid-template-columns: repeat(4, 1fr); }
         }
-
-        .grid-item {
-            aspect-ratio: 1 / 1;
-            background-color: var(--grid-item-bg);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 1px solid #dee2e6;
-            -webkit-tap-highlight-color: transparent;
-            transition: transform 0.1s;
-        }
-
-        .grid-item .item-text { font-size: 11px; font-weight: bold; text-align: center; color: #333; padding: 2px; }
-        .grid-item .item-num { font-size: 9px; color: var(--primary-color); margin-top: 2px; }
-
-        .grid-item.special { background-color: var(--special-bg); cursor: default; border: none; }
-        .grid-item.special .item-text { color: var(--special-text); }
-
-        #menuModal {
-            display: none; position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 9999;
-            justify-content: center; align-items: flex-end;
-        }
-
-        .modal-content {
-            background: white; width: 100%; max-width: 500px;
-            max-height: 70vh; border-top-left-radius: 20px;
-            border-top-right-radius: 20px; overflow-y: auto; padding: 20px;
-        }
-
-        .menu-item { padding: 15px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-section">
-        <textarea id="dataInput" placeholder="[번호][탭][상품명] 입력"></textarea>
-        <div class="color-controls">
-            <div class="color-field">
-                <span>배경</span>
-                <input type="color" id="bgColorPicker" value="#ffffff">
-            </div>
-            <div class="color-field">
-                <span>글자</span>
-                <input type="color" id="textColorPicker" value="#333333">
-            </div>
+    <div class="top-area">
+        <div class="input-box">
+            <textarea id="dataInput" placeholder="[번호][탭][상품명] 입력..."></textarea>
+        </div>
+        <div class="settings-box" id="settingsBox">
+            <div id="emptyMsg">그리드에서 설정된 항목을 클릭하세요.</div>
         </div>
     </div>
+
     <div class="grid-container" id="shortcutGrid"></div>
 </div>
 
-<div id="menuModal" onclick="closeModal()">
+<div id="menuModal" onclick="this.style.display='none'">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div id="modalList"></div>
     </div>
 </div>
 
 <script>
+    const colors = ["#ffffff", "#ff4d4d", "#ffdb4d", "#4d94ff"]; // 기본, 빨강, 노랑, 파랑
     const dataInput = document.getElementById('dataInput');
+    const settingsBox = document.getElementById('settingsBox');
     const gridContainer = document.getElementById('shortcutGrid');
-    const menuModal = document.getElementById('menuModal');
     const modalList = document.getElementById('modalList');
-    const bgColorPicker = document.getElementById('bgColorPicker');
-    const textColorPicker = document.getElementById('textColorPicker');
 
-    let targetCell = null;
-    let timer;
-    const TOTAL_CELLS = 72;
+    let activeCell = null;
+    let colorIndex = 0;
 
-    for (let i = 1; i <= TOTAL_CELLS; i++) {
+    // 그리드 생성
+    for (let i = 1; i <= 72; i++) {
         const item = document.createElement('div');
         item.className = 'grid-item';
+        item.dataset.colorIdx = "0";
 
-        if (i === TOTAL_CELLS - 1 || i === TOTAL_CELLS) {
+        if (i >= 71) {
             item.classList.add('special');
-            item.innerHTML = `<span class="item-text">${i === TOTAL_CELLS-1 ? '개체호출' : '개체편집'}</span>`;
+            item.innerHTML = `<span class="item-text">${i === 71 ? '개체호출' : '개체편집'}</span>`;
         } else {
             item.innerHTML = `<span class="item-text"></span><span class="item-num"></span>`;
-
-            // 롱 프레스 및 클릭 핸들러
-            const start = (e) => {
-                timer = setTimeout(() => {
-                    // 롱 프레스 성공: 색상 변경
-                    item.style.backgroundColor = bgColorPicker.value;
-                    item.querySelector('.item-text').style.color = textColorPicker.value;
-                    timer = null;
-                    if(navigator.vibrate) navigator.vibrate(30); // 약한 진동 피드백
-                }, 800);
-            };
-
-            const cancel = (e) => {
-                if (timer) {
-                    clearTimeout(timer);
-                    // 일반 클릭으로 처리
-                    if (e.type === 'touchend' || e.type === 'mouseup') openModal(item);
-                    timer = null;
-                }
-            };
-
-            item.addEventListener('touchstart', (e) => { e.preventDefault(); start(e); });
-            item.addEventListener('touchend', cancel);
-            item.addEventListener('mousedown', start);
-            item.addEventListener('mouseup', cancel);
-            item.addEventListener('mouseleave', () => { if(timer) clearTimeout(timer); });
+            item.onclick = () => handleCellClick(item);
         }
         gridContainer.appendChild(item);
     }
 
+    function handleCellClick(cell) {
+        const name = cell.querySelector('.item-text').textContent;
+        if (!name) {
+            openModal(cell);
+        } else {
+            loadSettings(cell);
+        }
+    }
+
     function openModal(cell) {
-        targetCell = cell;
         const rawData = dataInput.value.trim();
-        if (!rawData) return;
+        if (!rawData) return alert("데이터를 먼저 입력하세요.");
 
-        const lines = rawData.split('\n');
-        let itemList = lines.map(line => {
-            const parts = line.split('\t');
-            return parts.length >= 2 ? { num: parts[0].trim(), name: parts[1].trim() } : null;
-        }).filter(it => it !== null);
-
-        itemList.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+        const items = rawData.split('\n').map(line => {
+            const p = line.split('\t');
+            return p.length >= 2 ? { n: p[1].trim(), id: p[0].trim() } : null;
+        }).filter(x => x).sort((a,b) => a.n.localeCompare(b.n, 'ko'));
 
         modalList.innerHTML = '';
-        itemList.forEach(it => {
+        items.forEach(item => {
             const div = document.createElement('div');
             div.className = 'menu-item';
-            div.innerHTML = `<span>${it.name}</span><span style="color:#4a90e2">(${it.num})</span>`;
+            div.innerHTML = `<span>${item.n}</span><span>(${item.id})</span>`;
             div.onclick = () => {
-                cell.querySelector('.item-text').textContent = it.name;
-                cell.querySelector('.item-num').textContent = it.num;
-                closeModal();
+                cell.querySelector('.item-text').textContent = item.n;
+                cell.querySelector('.item-num').textContent = item.id;
+                document.getElementById('menuModal').style.display = 'none';
+                loadSettings(cell); // 선택 후 바로 설정창 로드
             };
             modalList.appendChild(div);
         });
-        menuModal.style.display = 'flex';
+        document.getElementById('menuModal').style.display = 'flex';
     }
 
-    function closeModal() { menuModal.style.display = 'none'; }
+    function loadSettings(cell) {
+        activeCell = cell;
+        colorIndex = parseInt(cell.dataset.colorIdx);
+        const name = cell.querySelector('.item-text').textContent;
+        const num = cell.querySelector('.item-num').textContent;
+
+        settingsBox.innerHTML = `
+            <div class="control-panel">
+                <button class="arrow-btn" onclick="changeColor(-1)">◀</button>
+                <div class="preview-item" id="preview" style="background-color: ${colors[colorIndex]}">
+                    <span>${name}</span>
+                    <span style="font-size:10px; color:#666">(${num})</span>
+                </div>
+                <button class="arrow-btn" onclick="changeColor(1)">▶</button>
+            </div>
+        `;
+    }
+
+    function changeColor(dir) {
+        if (!activeCell) return;
+
+        colorIndex = (colorIndex + dir + colors.length) % colors.length;
+        const newColor = colors[colorIndex];
+
+        // 미리보기 및 실제 그리드 셀에 적용
+        document.getElementById('preview').style.backgroundColor = newColor;
+        activeCell.style.backgroundColor = newColor;
+        activeCell.dataset.colorIdx = colorIndex;
+
+        // 노란색이나 파란색일 때 글자색 자동 조정 (선택사항)
+        if (colorIndex === 1 || colorIndex === 3) { // 빨강, 파랑은 흰색 글씨
+            activeCell.querySelector('.item-text').style.color = "#fff";
+        } else {
+            activeCell.querySelector('.item-text').style.color = "#333";
+        }
+    }
 </script>
 
 </body>
