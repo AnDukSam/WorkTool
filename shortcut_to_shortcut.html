@@ -23,7 +23,6 @@
 
         textarea { width: 100%; flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 14px; box-sizing: border-box; resize: none; }
 
-        /* 정렬 옵션 중앙 정렬 수정 */
         .sort-options { display: flex; gap: 20px; justify-content: center; font-size: 14px; font-weight: bold; color: #555; margin-bottom: 5px; }
         .sort-options label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
@@ -96,7 +95,7 @@
 26  한우 갈비업진
 27  한우 곱창
 28  한우 국거리
-29  한우 국거리
+29  한우 꼬리
 30  한우 꽃갈비살
 31  한우 꽃등심
 32  한우 꾸리살
@@ -565,7 +564,6 @@
         activeCell = cell;
         const bgIdx = parseInt(cell.dataset.bgIdx);
         const textIdx = parseInt(cell.dataset.textIdx);
-        // '상품 미지정' 글자 제거 수정
         const name = cell.querySelector('.item-text').textContent || "";
         updateSettingsUI(name, bgIdx, textIdx);
     }
