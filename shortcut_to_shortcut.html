@@ -8,57 +8,57 @@
         :root {
             --primary-color: #4a90e2;
             --bg-color: #f8f9fa;
-            --border-color: #dee2e6;
         }
 
         body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 900px; }
 
-        /* 상단 5:5 분할 레이아웃 */
-        .top-area { display: flex; gap: 20px; margin-bottom: 20px; height: 160px; }
-        .input-box { flex: 1; }
+        .top-area { display: flex; gap: 20px; margin-bottom: 10px; min-height: 180px; }
+        .input-box { flex: 1; display: flex; flex-direction: column; gap: 10px; }
         .settings-box {
             flex: 1; border: 2px dashed #ccc; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            background: #fff; position: relative;
+            background: #fff; position: relative; padding: 10px;
         }
 
-        textarea { width: 100%; height: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 15px; box-sizing: border-box; resize: none; }
+        textarea { width: 100%; flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 14px; box-sizing: border-box; resize: none; }
 
-        /* 설정창 내 컨트롤 스타일 */
-        .control-panel { display: flex; align-items: center; gap: 20px; }
+        /* 정렬 옵션 중앙 정렬 수정 */
+        .sort-options { display: flex; gap: 20px; justify-content: center; font-size: 14px; font-weight: bold; color: #555; margin-bottom: 5px; }
+        .sort-options label { cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+        .control-panel { display: flex; align-items: center; gap: 20px; text-align: center; }
+        .color-section { display: flex; flex-direction: column; gap: 8px; align-items: center; min-width: 90px; }
+        .arrow-group { display: flex; gap: 5px; }
+
         .arrow-btn {
-            background: #eee; border: none; border-radius: 50%; width: 40px; height: 40px;
-            cursor: pointer; font-size: 20px; font-weight: bold; transition: 0.2s;
+            background: #f0f0f0; border: 1px solid #ddd; border-radius: 6px; width: 35px; height: 35px;
+            cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.1s;
         }
-        .arrow-btn:hover { background: #ddd; }
+        .arrow-btn:active { background: #e0e0e0; transform: scale(0.9); }
+        .section-label { font-size: 12px; color: #333; font-weight: bold; margin-top: 2px; }
 
-        /* 미리보기용 div (그리드 아이템과 동일 스타일) */
-        .preview-item {
-            width: 80px; height: 80px; border-radius: 10px; border: 2px solid #333;
+        .preview-item, .grid-item {
+            width: 90px; height: 90px; border-radius: 10px; border: 1px solid #dee2e6;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: #fff; font-weight: bold; text-align: center; font-size: 12px;
+            background: #fff; text-align: center; box-sizing: border-box;
+            overflow: hidden; padding: 5px;
         }
 
-        /* 하단 그리드 */
-        .grid-container { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; background-color: #e9ecef; padding: 10px; border-radius: 15px; }
-        .grid-item {
-            aspect-ratio: 1/1; background: #fff; border-radius: 8px; border: 1px solid #dee2e6;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.1s; overflow: hidden;
-        }
-        .grid-item .item-text { font-size: 11px; font-weight: bold; margin-bottom: 2px; text-align: center; }
-        .grid-item .item-num { font-size: 9px; color: var(--primary-color); }
-        .grid-item.special { background: #555; color: #fff; border: none; cursor: default; }
+        .preview-item .item-text { font-size: 16px; font-weight: 800; line-height: 1.2; word-break: break-all; }
+        .grid-item .item-text { font-size: 12px; font-weight: 800; line-height: 1.2; word-break: break-all; margin-bottom: 2px; }
+        .grid-item .item-num { font-size: 10px; font-weight: normal; opacity: 0.8; }
 
-        /* 모달 */
-        #menuModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-end; }
-        .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 60vh; border-top-left-radius: 25px; border-top-right-radius: 25px; overflow-y: auto; padding: 25px; }
-        .menu-item { padding: 15px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; cursor: pointer; }
+        .grid-container { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; background-color: #e9ecef; padding: 10px; border-radius: 15px; margin-top: 10px; }
+        .grid-item { aspect-ratio: 1/1; width: auto; height: auto; cursor: pointer; transition: 0.1s; }
+        .grid-item.special { background: #555 !important; border: none; cursor: default; color: #fff !important; }
+
+        #menuModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: flex-end; }
+        .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 70vh; border-top-left-radius: 25px; border-top-right-radius: 25px; overflow-y: auto; padding: 25px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
+        .menu-item { padding: 15px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; cursor: pointer; font-size: 16px; }
 
         @media (max-width: 600px) {
-            .top-area { flex-direction: column; height: auto; }
-            .settings-box { height: 150px; }
+            .top-area { flex-direction: column; }
             .grid-container { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
@@ -68,13 +68,415 @@
 <div class="container">
     <div class="top-area">
         <div class="input-box">
-            <textarea id="dataInput" placeholder="[번호][탭][상품명] 입력..."></textarea>
+            <textarea id="dataInput" placeholder="[품번][탭][상품명] 형식으로 입력해주세요.">1  LA갈비
+2   갈비살(미국산)
+3   곰탕용 고기
+4   등심국거리(미국산)
+5   부채살(구이용)
+6   부채살(스테이크용)
+7   분쇄육(호주산)
+8   살치살(미국산)
+9   샤브샤브용(미국산)
+10  샤브샤브용(호주산)
+11  소불고기용(미국산)
+12  소불고기용(호주산)
+13  알목심(미국산)
+14  와규(일본산)
+15  우삼겹
+16  육전용(미국산)
+17  전각국거리(미국산)
+18  전각분쇄육(미국산)
+19  전각불고기용(미국산)
+20  차돌박이
+21  척갈비
+22  한우 가짜안창
+23  한우 갈비
+24  한우 갈비본살
+25  한우 갈비살
+26  한우 갈비업진
+27  한우 곱창
+28  한우 국거리
+29  한우 국거리
+30  한우 꽃갈비살
+31  한우 꽃등심
+32  한우 꾸리살
+33  한우 늑간살
+34  한우 다짐육
+35  한우 대창
+36  한우 도가니
+37  한우 등뼈
+38  한우 막구이
+39  한우 머리
+40  한우 모둠구이
+41  한우 모둠뼈
+42  한우 목심
+43  한우 뭉티기(생고기)
+44  한우 반골
+45  한우 보섭살
+46  한우 부채살
+47  한우 분쇄육
+48  한우 불고기용
+49  한우 사골
+50  한우 사태
+51  한우 산적용
+52  한우 살치살
+53  한우 삼각살
+54  한우 새우살
+55  한우 생간
+56  한우 샤브샤브용
+57  한우 설깃살
+58  한우 설도
+59  한우 스지
+60  한우 아랫등심
+61  한우 아롱사태
+62  한우 안심
+63  한우 안창살
+64  한우 앞다리살
+65  한우 양
+66  한우 양념소갈비
+67  한우 양지
+68  한우 양지국거리
+69  한우 업진살
+70  한우 우둔살
+71  한우 우족
+72  한우 윗등심
+73  한우 육사시미
+74  한우 육전용
+75  한우 육회
+76  한우 잡뼈
+77  한우 잡채용
+78  한우 장조림용
+79  한우 전각
+80  한우 제비추리
+81  한우 찌개용
+82  한우 차돌박이
+83  한우 채끝살
+84  한우 천엽
+85  한우 치마살
+86  한우 치마양지
+87  한우 카레용
+88  한우 토시살
+89  한우 특수부위
+90  한우 홍두깨
+91  소 예비 품번
+92  소 예비 품번
+93  소 예비 품번
+94  소 예비 품번
+95  소 예비 품번
+96  소 예비 품번
+97  소 예비 품번
+98  소 예비 품번
+99  소 예비 품번
+100 소 예비 품번
+101 소 예비 품번
+102 소 예비 품번
+103 소 예비 품번
+104 소 예비 품번
+105 소 예비 품번
+106 소 예비 품번
+107 소 예비 품번
+108 소 예비 품번
+109 소 예비 품번
+110 소 예비 품번
+111 대패목살(국내산)
+112 대패삼겹살(국내산)
+113 대패삼겹살(브라질산)
+114 대패삼겹살(스페인산)
+115 대패삼겹살(칠레산)
+116 대패삼겹살(캐나다산)
+117 목살(칠레산)
+118 목살(캐나다산)
+119 목전지(미국산)
+120 삼겹살(이베리코)
+121 삼겹살(칠레산)
+122 삼겹살(캐나다산)
+123 옛날삼겹살(칠레산)
+124 칼집목살(칠레산)
+125 칼집삼겹살(브라질산)
+126 칼집삼겹살(스페인산)
+127 칼집삼겹살(칠레산)
+128 칼집삼겹살(캐나다산)
+129 한돈 가브리살
+130 한돈 갈매기살
+131 한돈 갈비
+132 한돈 갈비(냉동)
+133 한돈 꼬들살
+134 한돈 꽃삼겹살
+135 한돈 눈꽃목살
+136 한돈 눈꽃삼겹살
+137 한돈 다짐육
+138 한돈 돈마호크
+139 한돈 뒷고기
+140 한돈 뒷다리살(구이용)
+141 한돈 뒷다리살(냉동)
+142 한돈 뒷다리살(불고기용)
+143 한돈 뒷다리살(수육용)
+144 한돈 뒷통살
+145 한돈 등갈비
+146 한돈 등뼈
+147 한돈 등뼈(냉동)
+148 한돈 등심
+149 한돈 망고목살
+150 한돈 모둠구이
+151 한돈 목살
+152 한돈 목살 스테이크
+153 한돈 미니족
+154 한돈 분쇄육
+155 한돈 뼈삼겹살
+156 한돈 뼈없는 삼겹살
+157 한돈 사태
+158 한돈 삼겹살
+159 한돈 삼겹살(수육용)
+160 한돈 생갈비구이
+161 한돈 생대패목살
+162 한돈 생대패삼겹살
+163 한돈 안심
+164 한돈 앞다리살(구이용)
+165 한돈 앞다리살(불고기용)
+166 한돈 앞다리살(수육용)
+167 한돈 잡채용
+168 한돈 장조림용
+169 한돈 제주식 오겹살
+170 한돈 찌개용
+171 한돈 카레용
+172 한돈 칼집목살
+173 한돈 칼집삼겹살
+174 한돈 한입갈비삼겹살
+175 한돈 한입목살
+176 한돈 항정살
+177 한돈 꽃목살
+178 돼지 예비 품번
+179 돼지 예비 품번
+180 돼지 예비 품번
+181 돼지 예비 품번
+182 돼지 예비 품번
+183 돼지 예비 품번
+184 돼지 예비 품번
+185 돼지 예비 품번
+186 돼지 예비 품번
+187 돼지 예비 품번
+188 돼지 예비 품번
+189 돼지 예비 품번
+190 돼지 예비 품번
+191 돼지 예비 품번
+192 돼지 예비 품번
+193 돼지 예비 품번
+194 돼지 예비 품번
+195 돼지 예비 품번
+196 돼지 예비 품번
+197 돼지 예비 품번
+198 돼지 예비 품번
+199 돼지 예비 품번
+200 돼지 예비 품번
+201 닭가슴살
+202 닭날개
+203 닭다리
+204 닭안심
+205 닭똥집
+206 영계
+207 올품 생닭(11호)
+208 올품 생닭(12호)
+209 올품 생닭(13호)
+210 올품 생닭(14호)
+211 하림 생닭(11호)
+212 하림 생닭(12호)
+213 하림 생닭(13호)
+214 하림 생닭(14호)
+215 하림 영계
+216 하림 토종닭(16호)
+217 하림 토종닭(17호)
+218 하림 토종닭(18호)
+219 하림 토종닭(냉동)
+220 하림 토종닭(1.1kg)
+221 닭 예비 품번
+222 닭 예비 품번
+223 닭 예비 품번
+224 닭 예비 품번
+225 닭 예비 품번
+226 닭 예비 품번
+227 닭 예비 품번
+228 닭 예비 품번
+229 닭 예비 품번
+230 닭 예비 품번
+231 닭 예비 품번
+232 닭 예비 품번
+233 닭 예비 품번
+234 닭 예비 품번
+235 닭 예비 품번
+236 닭 예비 품번
+237 닭 예비 품번
+238 닭 예비 품번
+239 닭 예비 품번
+240 닭 예비 품번
+241 LA갈비식 양념 돼지갈비
+242 고추장 목살
+243 고추장 목살(미국산)
+244 고추장 불고기
+245 고추장 불고기(미국산)
+246 고추장 삼겹살
+247 고추장 삼겹살(미국산)
+248 닭갈비
+249 북성로 불고기
+250 북성로 불고기(미국산)
+251 뼈없는 닭갈비(브라질산)
+252 양념 LA갈비
+253 양념 돼지갈비
+254 양념 돼지갈비(미국산)
+255 양념 소불고기
+256 양념 소불고기(미국산)
+257 양념 오리불고기
+258 양념육 예비 품번
+259 양념육 예비 품번
+260 양념육 예비 품번
+261 양념육 예비 품번
+262 양념육 예비 품번
+263 양념육 예비 품번
+264 양념육 예비 품번
+265 양념육 예비 품번
+266 양념육 예비 품번
+267 양념육 예비 품번
+268 양념육 예비 품번
+269 양념육 예비 품번
+270 양념육 예비 품번
+271 돼지 짜글이
+272 맛있는 부대찌개
+273 모둠햄 부대찌개
+274 밀푀유나베
+275 사골 곰탕
+276 사골 곰탕(고기 포함)
+277 양념 닭발
+278 무뼈 양념닭발
+279 차돌 된장찌개
+280 큐브 스테이크
+281 한돈 목살꼬치
+282 한돈 삼겹살꼬치
+283 돼지찌개
+284 밀키트 예비 품번
+285 밀키트 예비 품번
+286 밀키트 예비 품번
+287 밀키트 예비 품번
+288 밀키트 예비 품번
+289 밀키트 예비 품번
+290 밀키트 예비 품번
+291 밀키트 예비 품번
+292 밀키트 예비 품번
+293 밀키트 예비 품번
+294 밀키트 예비 품번
+295 밀키트 예비 품번
+296 밀키트 예비 품번
+297 밀키트 예비 품번
+298 밀키트 예비 품번
+299 밀키트 예비 품번
+300 밀키트 예비 품번
+301 고구마 치즈돈가스
+302 고기만두 돈가스
+303 골목식당 치즈롤카츠
+304 구워먹는 치즈
+305 궁중떡갈비
+306 김치만두 돈가스
+307 단족발
+308 단호박 치즈돈가스
+309 닭발 편육
+310 대패오리
+311 돼지 막창
+312 돼지껍데기
+313 등심돈가스
+314 뼈없는 앞발슬라이스
+315 생오리(반마리)
+316 생오리(한마리)
+317 양념 편육
+318 연잎삼겹살
+319 염통 꼬치
+320 염통 꼬치(냉동)
+321 오리훈제슬라이스
+322 치즈돈가스
+323 카레돈가스
+324 파채+소스
+325 편육
+326 기타 예비 품번
+327 한방 족발
+328 훈제 통닭
+329 밴드상품(냉장)(1)
+330 밴드상품(냉장)(2)
+331 밴드상품(냉장)(3)
+332 밴드상품(냉장)(4)
+333 밴드상품(냉장)(5)
+334 밴드상품(냉장)(6)
+335 밴드상품(냉장)(7)
+336 밴드상품(냉장)(8)
+337 밴드상품(냉장)(9)
+338 밴드상품(냉장)(10)
+339 밴드상품(냉동)(1)
+340 밴드상품(냉동)(2)
+341 밴드상품(냉동)(3)
+342 밴드상품(냉동)(4)
+343 밴드상품(냉동)(5)
+344 밴드상품(냉동)(6)
+345 밴드상품(냉동)(7)
+346 밴드상품(냉동)(8)
+347 밴드상품(냉동)(9)
+348 밴드상품(냉동)(10)
+349 한우총괄
+350 한돈총괄
+351 양념총괄
+352 정육총괄
+353 기타 예비 품번
+354 기타 예비 품번
+355 기타 예비 품번
+356 기타 예비 품번
+357 기타 예비 품번
+358 기타 예비 품번
+359 기타 예비 품번
+360 기타 예비 품번
+361 기타 예비 품번
+362 기타 예비 품번
+363 기타 예비 품번
+364 기타 예비 품번
+365 기타 예비 품번
+366 기타 예비 품번
+367 기타 예비 품번
+368 기타 예비 품번
+369 기타 예비 품번
+370 기타 예비 품번
+371 LA갈비 선물세트
+372 정육 선물세트
+373 한우 꽃등심세트
+374 한우 모둠구이세트
+375 한우 보신세트
+376 한우 사골세트
+377 한우 선물세트
+378 한우 수육세트
+379 한우 우족세트
+380 한우 정육세트
+381 한돈 모둠세트
+382 한돈 수육세트
+383 정육 예비 품번
+384 정육 예비 품번
+385 정육 예비 품번
+386 정육 예비 품번
+387 정육 예비 품번
+388 정육 예비 품번
+389 정육 예비 품번
+390 정육 예비 품번
+391 정육 예비 품번
+392 정육 예비 품번
+393 정육 예비 품번
+394 정육 예비 품번
+395 정육 예비 품번
+396 정육 예비 품번
+397 정육 예비 품번
+398 결제 완료
+399 서비스
+400 예약 상품</textarea>
+            <div class="sort-options">
+                <label><input type="radio" name="sortOrder" value="num" checked> 품번순</label>
+                <label><input type="radio" name="sortOrder" value="name"> 상품명순</label>
+            </div>
         </div>
         <div class="settings-box" id="settingsBox">
-            <div id="emptyMsg">그리드에서 설정된 항목을 클릭하세요.</div>
+            <div style="color:#999; font-size:14px;">설정할 버튼을 클릭하세요</div>
         </div>
     </div>
-
     <div class="grid-container" id="shortcutGrid"></div>
 </div>
 
@@ -85,20 +487,20 @@
 </div>
 
 <script>
-    const colors = ["#ffffff", "#ff4d4d", "#ffdb4d", "#4d94ff"]; // 기본, 빨강, 노랑, 파랑
-    const dataInput = document.getElementById('dataInput');
+    const bgColors = ["#ffffff", "#cccccc", "#48d3fe", "#39b7fb", "#2a9df8", "#b3e2c5", "#ffcccc", "#ff99cc", "#cc99cc"];
+    const textColors = ["#000000", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#ff00ff", "#ffffff", "#cccccc"];
+
     const settingsBox = document.getElementById('settingsBox');
     const gridContainer = document.getElementById('shortcutGrid');
     const modalList = document.getElementById('modalList');
 
     let activeCell = null;
-    let colorIndex = 0;
 
-    // 그리드 생성
     for (let i = 1; i <= 72; i++) {
         const item = document.createElement('div');
         item.className = 'grid-item';
-        item.dataset.colorIdx = "0";
+        item.dataset.bgIdx = "0";
+        item.dataset.textIdx = "0";
 
         if (i >= 71) {
             item.classList.add('special');
@@ -111,33 +513,48 @@
     }
 
     function handleCellClick(cell) {
-        const name = cell.querySelector('.item-text').textContent;
-        if (!name) {
-            openModal(cell);
-        } else {
-            loadSettings(cell);
-        }
+        openModal(cell);
+        loadSettings(cell);
     }
 
     function openModal(cell) {
-        const rawData = dataInput.value.trim();
+        activeCell = cell;
+        const rawData = document.getElementById('dataInput').value.trim();
         if (!rawData) return alert("데이터를 먼저 입력하세요.");
 
+        const sortType = document.querySelector('input[name="sortOrder"]:checked').value;
+
         const items = rawData.split('\n').map(line => {
-            const p = line.split('\t');
-            return p.length >= 2 ? { n: p[1].trim(), id: p[0].trim() } : null;
-        }).filter(x => x).sort((a,b) => a.n.localeCompare(b.n, 'ko'));
+            const p = line.split(/\t| {2,}/);
+            if (p.length >= 2) {
+                return {
+                    n: p[1].trim(),
+                    id: parseInt(p[0].trim()),
+                    rawId: p[0].trim()
+                };
+            }
+            return null;
+        }).filter(x => x);
+
+        if (sortType === 'num') {
+            items.sort((a, b) => a.id - b.id);
+        } else {
+            items.sort((a, b) => a.n.localeCompare(b.n, 'ko'));
+        }
 
         modalList.innerHTML = '';
         items.forEach(item => {
             const div = document.createElement('div');
             div.className = 'menu-item';
-            div.innerHTML = `<span>${item.n}</span><span>(${item.id})</span>`;
+            div.innerHTML = `<span>${item.n}</span><span style="font-size:12px; color:#999;">(${item.rawId})</span>`;
             div.onclick = () => {
                 cell.querySelector('.item-text').textContent = item.n;
-                cell.querySelector('.item-num').textContent = item.id;
+                cell.querySelector('.item-num').textContent = item.rawId;
+
+                const previewText = document.querySelector('#preview .item-text');
+                if (previewText) previewText.textContent = item.n;
+
                 document.getElementById('menuModal').style.display = 'none';
-                loadSettings(cell); // 선택 후 바로 설정창 로드
             };
             modalList.appendChild(div);
         });
@@ -146,39 +563,58 @@
 
     function loadSettings(cell) {
         activeCell = cell;
-        colorIndex = parseInt(cell.dataset.colorIdx);
-        const name = cell.querySelector('.item-text').textContent;
-        const num = cell.querySelector('.item-num').textContent;
+        const bgIdx = parseInt(cell.dataset.bgIdx);
+        const textIdx = parseInt(cell.dataset.textIdx);
+        // '상품 미지정' 글자 제거 수정
+        const name = cell.querySelector('.item-text').textContent || "";
+        updateSettingsUI(name, bgIdx, textIdx);
+    }
 
+    function updateSettingsUI(name, bgIdx, textIdx) {
         settingsBox.innerHTML = `
             <div class="control-panel">
-                <button class="arrow-btn" onclick="changeColor(-1)">◀</button>
-                <div class="preview-item" id="preview" style="background-color: ${colors[colorIndex]}">
-                    <span>${name}</span>
-                    <span style="font-size:10px; color:#666">(${num})</span>
+                <div class="color-section">
+                    <div class="arrow-group">
+                        <button class="arrow-btn" onclick="updateBg(-1)">◀</button>
+                        <button class="arrow-btn" onclick="updateBg(1)">▶</button>
+                    </div>
+                    <span class="section-label" id="bgLabel">배경색(${bgIdx + 1})</span>
                 </div>
-                <button class="arrow-btn" onclick="changeColor(1)">▶</button>
+                <div class="preview-item" id="preview" style="background-color: ${bgColors[bgIdx]}">
+                    <span class="item-text" style="color: ${textColors[textIdx]}">${name}</span>
+                </div>
+                <div class="color-section">
+                    <div class="arrow-group">
+                        <button class="arrow-btn" onclick="updateText(-1)">◀</button>
+                        <button class="arrow-btn" onclick="updateText(1)">▶</button>
+                    </div>
+                    <span class="section-label" id="textLabel">글자색(${textIdx + 1})</span>
+                </div>
             </div>
         `;
     }
 
-    function changeColor(dir) {
+    function updateBg(dir) {
         if (!activeCell) return;
+        let idx = (parseInt(activeCell.dataset.bgIdx) + dir + bgColors.length) % bgColors.length;
+        activeCell.dataset.bgIdx = idx;
+        const color = bgColors[idx];
+        const preview = document.getElementById('preview');
+        if (preview) preview.style.backgroundColor = color;
+        document.getElementById('bgLabel').textContent = `배경색(${idx + 1})`;
+        activeCell.style.backgroundColor = color;
+    }
 
-        colorIndex = (colorIndex + dir + colors.length) % colors.length;
-        const newColor = colors[colorIndex];
-
-        // 미리보기 및 실제 그리드 셀에 적용
-        document.getElementById('preview').style.backgroundColor = newColor;
-        activeCell.style.backgroundColor = newColor;
-        activeCell.dataset.colorIdx = colorIndex;
-
-        // 노란색이나 파란색일 때 글자색 자동 조정 (선택사항)
-        if (colorIndex === 1 || colorIndex === 3) { // 빨강, 파랑은 흰색 글씨
-            activeCell.querySelector('.item-text').style.color = "#fff";
-        } else {
-            activeCell.querySelector('.item-text').style.color = "#333";
-        }
+    function updateText(dir) {
+        if (!activeCell) return;
+        let idx = (parseInt(activeCell.dataset.textIdx) + dir + textColors.length) % textColors.length;
+        activeCell.dataset.textIdx = idx;
+        const color = textColors[idx];
+        const previewText = document.querySelector('#preview .item-text');
+        if (previewText) previewText.style.color = color;
+        document.getElementById('textLabel').textContent = `글자색(${idx + 1})`;
+        activeCell.querySelector('.item-text').style.color = color;
+        activeCell.querySelector('.item-num').style.color = color;
     }
 </script>
 
