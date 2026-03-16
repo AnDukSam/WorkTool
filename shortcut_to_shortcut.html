@@ -11,10 +11,12 @@
             --danger-color: #e74c3c;
         }
 
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        /* 1. 전체 페이지 스크롤 잠금 해제 */
+        html, body { margin: 0; padding: 0; }
         body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; }
 
-        .container { width: 100%; max-width: 950px; height: 100vh; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
+        /* 2. 컨테이너가 화면을 넘어갈 수 있도록 height: 100vh -> min-height: 100vh 로 변경 */
+        .container { width: 100%; max-width: 950px; min-height: 100vh; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
 
         .header-area { flex-shrink: 0; }
         .top-area { display: flex; gap: 20px; margin-bottom: 15px; height: 160px; }
@@ -46,7 +48,17 @@
         .item-text { font-size: 12px; font-weight: 800; line-height: 1.2; word-break: break-all; margin-bottom: 2px; pointer-events: none; }
         .item-num { font-size: 10px; font-weight: normal; opacity: 0.7; pointer-events: none; }
 
-        .scrollable-grid-area { flex: 1; overflow-y: auto; background: #dee2e6; border-radius: 15px; padding: 15px; box-sizing: border-box; }
+        /* 3. 그리드 영역에 최소/최대 높이를 주어 내부 스크롤 유지 */
+        .scrollable-grid-area {
+            flex: 1;
+            overflow-y: auto;
+            background: #dee2e6;
+            border-radius: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            min-height: 500px; /* 화면이 작아도 최소 이 높이는 보장하여 내부 스크롤 생성 */
+            max-height: 70vh;  /* 화면이 클 때는 화면의 70%까지만 차지 */
+        }
         .page-section { margin-bottom: 30px; }
 
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -547,6 +559,7 @@
     const bgColors = ["#ffffff", "#cccccc", "#48d3fe", "#39b7fb", "#2a9df8", "#b3e2c5", "#ffcccc", "#ff99cc", "#cc99cc"];
     const textColors = ["#000000", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#ff00ff", "#ffffff", "#cccccc"];
 
+    // 초기 색상 설정
     const initialStyles = {
         28:{bg:7}, 68:{bg:7}, 34:{bg:7}, 31:{bg:7}, 83:{bg:7}, 61:{bg:7}, 50:{bg:7}, 46:{bg:7},
         69:{bg:7}, 52:{bg:7}, 85:{bg:7}, 30:{bg:7}, 25:{bg:7}, 62:{bg:7}, 80:{bg:7}, 40:{bg:7},
@@ -594,14 +607,13 @@
     let draggedData = null;
     let allItemsMap = new Map();
 
-    // 빈 줄 명시적 무시 및 파싱
     function getParsedItems() {
         const rawData = document.getElementById('dataInput').value.trim();
         return rawData.split('\n').map(line => {
-            if (!line.trim()) return null; // 빈 줄 무시
+            if (!line.trim()) return null;
             const match = line.trim().match(/^(\d+)\s+(.+)$/);
             if (match) return { id: match[1], n: match[2].trim(), sortId: parseInt(match[1], 10) };
-            return null; // 양식이 안 맞는 줄 무시
+            return null;
         }).filter(x => x);
     }
 
@@ -623,7 +635,6 @@
 
             if (nameEl && nameEl.textContent) {
                 const currentName = nameEl.textContent;
-
                 if (nameToIdMap.has(currentName)) {
                     const newId = nameToIdMap.get(currentName);
                     numEl.textContent = `(${newId})`;
@@ -642,11 +653,11 @@
         if (activeCell) loadSettings(activeCell);
     }
 
+    // --- 리셋 로직 (확인 팝업 추가) ---
     function resetPage(pageId, mode) {
-        // 확인창 팝업 로직 유지
         let confirmMsg = mode === 'all'
             ? "해당 페이지의 모든 버튼과 색상을 초기화하시겠습니까?\n(개체호출, 개체편집 버튼 제외)"
-            : "해당 페이지의 모든 색상을 초기화하시겠습니까?";
+            : "해당 페이지의 모든 배경색과 글자색을 초기화하시겠습니까?";
 
         if (!confirm(confirmMsg)) return;
 
