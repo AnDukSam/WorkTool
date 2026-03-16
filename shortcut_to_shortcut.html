@@ -8,12 +8,16 @@
         :root {
             --primary-color: #4a90e2;
             --bg-color: #f8f9fa;
+            --danger-color: #e74c3c;
         }
 
-        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 900px; }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); display: flex; flex-direction: column; align-items: center; }
 
-        .top-area { display: flex; gap: 20px; margin-bottom: 15px; height: 180px; }
+        .container { width: 100%; max-width: 950px; height: 100vh; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
+
+        .header-area { flex-shrink: 0; }
+        .top-area { display: flex; gap: 20px; margin-bottom: 15px; height: 160px; }
         .input-box { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .settings-box {
             flex: 1; border: 2px dashed #ccc; border-radius: 12px;
@@ -22,149 +26,734 @@
         }
 
         textarea { width: 100%; flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 12px; font-size: 14px; box-sizing: border-box; resize: none; }
-        .sort-options { display: flex; gap: 15px; justify-content: center; font-size: 13px; font-weight: bold; color: #666; }
+        .sort-options { display: flex; gap: 20px; justify-content: center; font-size: 14px; font-weight: bold; color: #555; margin-bottom: 5px; }
 
-        /* 상품 바구니 영역 (그리드와 디자인 통일) */
-        .item-pool-container {
-            width: 100%;
-            background: #fff;
-            border-radius: 12px;
-            border: 1px solid #dee2e6;
-            margin-bottom: 15px;
-            padding: 10px;
-            box-sizing: border-box;
-            user-select: none; /* 드래그 스크롤 시 텍스트 선택 방지 */
-        }
-        .item-pool-title { font-size: 12px; font-weight: bold; color: #888; margin-bottom: 8px; }
+        .middle-area { display: flex; gap: 15px; margin-bottom: 15px; align-items: stretch; height: 130px; flex-shrink: 0; }
+        .item-pool-container { flex: 1; background: #fff; border-radius: 12px; border: 1px solid #dee2e6; padding: 10px; box-sizing: border-box; overflow: hidden; }
+        .temp-storage-container { width: 220px; background: #e9ecef; border-radius: 12px; border: 2px dashed #adb5bd; padding: 10px; box-sizing: border-box; }
+        .area-title { font-size: 12px; font-weight: bold; color: #666; margin-bottom: 8px; text-align: center; }
 
-        .item-pool {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 5px;
-            cursor: grab;
-            scrollbar-width: none; /* 스크롤바 숨기기 (선택사항) */
-        }
+        .item-pool { display: flex; gap: 10px; padding: 5px; overflow-x: auto; cursor: grab; scrollbar-width: none; }
         .item-pool::-webkit-scrollbar { display: none; }
-        .item-pool:active { cursor: grabbing; }
+        .temp-storage { display: flex; gap: 10px; padding: 5px; }
 
-        .pool-item {
-            flex: 0 0 auto;
-            width: 85px; height: 85px; /* 하단 그리드와 크기 통일 */
-            background: #f8f9fa;
-            border: 1px solid #ced4da;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 800;
-            text-align: center;
-            line-height: 1.2;
-            word-break: break-all;
-            padding: 5px;
-            box-sizing: border-box;
+        .pool-item, .grid-item, .temp-item {
+            flex: 0 0 auto; width: 85px; height: 85px; background: #fff; border: 1px solid #dee2e6; border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            box-sizing: border-box; padding: 5px; overflow: hidden;
         }
+        .temp-item { background: rgba(255,255,255,0.5); border: 2px dashed #ccc; cursor: pointer; }
+        .item-text { font-size: 12px; font-weight: 800; line-height: 1.2; word-break: break-all; margin-bottom: 2px; pointer-events: none; }
+        .item-num { font-size: 10px; font-weight: normal; opacity: 0.7; pointer-events: none; }
 
-        /* 하단 그리드 */
-        .grid-container { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; background-color: #e9ecef; padding: 10px; border-radius: 15px; }
-        .grid-item { aspect-ratio: 1/1; background: #fff; border-radius: 8px; border: 1px solid #dee2e6; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; position: relative; overflow: hidden; }
-        .grid-item.drag-over { background-color: #e3f2fd !important; border: 2px solid var(--primary-color); }
-        .grid-item .item-text { font-size: 12px; font-weight: 800; line-height: 1.2; text-align: center; pointer-events: none; }
-        .grid-item .item-num { font-size: 10px; opacity: 0.7; pointer-events: none; }
-        .grid-item.special { background: #555 !important; color: #fff !important; cursor: default; }
+        .scrollable-grid-area { flex: 1; overflow-y: auto; background: #dee2e6; border-radius: 15px; padding: 15px; box-sizing: border-box; }
+        .page-section { margin-bottom: 30px; }
 
-        /* 컨트롤 영역 */
-        .control-panel { display: flex; align-items: center; gap: 15px; }
-        .arrow-btn { background: #f0f0f0; border: 1px solid #ddd; border-radius: 6px; width: 32px; height: 32px; cursor: pointer; }
-        .preview-item { width: 85px; height: 85px; border-radius: 10px; border: 1px solid #dee2e6; display: flex; justify-content: center; align-items: center; background: #fff; text-align: center; padding: 5px; font-size: 15px; font-weight: 800; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .page-title { font-size: 18px; font-weight: 900; color: #333; margin: 0; padding-left: 5px; border-left: 5px solid var(--primary-color); }
+        .page-actions { display: flex; gap: 8px; }
+        .page-btn { padding: 6px 12px; font-size: 12px; font-weight: bold; border: 1px solid #ccc; border-radius: 6px; background: #fff; cursor: pointer; transition: 0.1s; }
+        .page-btn:hover { background: #f1f3f5; }
+        .page-btn.btn-reset { color: var(--danger-color); border-color: var(--danger-color); }
+        .page-btn.btn-reset:hover { background: #fdf3f2; }
+
+        .grid-container { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+
+        .grid-item { aspect-ratio: 1/1; width: auto; height: auto; cursor: pointer; transition: 0.1s; position: relative; }
+        .grid-item.drag-over, .temp-item.drag-over { background-color: #e3f2fd !important; border: 2px solid var(--primary-color); }
+        .grid-item.special { background: #555 !important; color: #fff !important; cursor: default; border: none; }
+
+        .control-panel { display: flex; align-items: center; gap: 15px; text-align: center; }
+        .color-section { display: flex; flex-direction: column; gap: 8px; align-items: center; min-width: 80px; }
+        .arrow-group { display: flex; gap: 5px; }
+        .arrow-btn { background: #f0f0f0; border: 1px solid #ddd; border-radius: 6px; width: 35px; height: 35px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .preview-item { width: 90px; height: 90px; border-radius: 10px; border: 1px solid #dee2e6; display: flex; justify-content: center; align-items: center; background: #fff; text-align: center; padding: 5px; font-size: 16px; font-weight: 800; }
 
         #menuModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: flex-end; }
         .modal-content { background: #fff; width: 100%; max-width: 500px; max-height: 70vh; border-top-left-radius: 25px; border-top-right-radius: 25px; overflow-y: auto; padding: 25px; }
+        .delete-btn { width: 100%; padding: 15px; background-color: var(--danger-color); color: white; border: none; border-radius: 12px; font-weight: bold; margin-bottom: 15px; cursor: pointer; font-size: 16px; }
         .menu-item { padding: 15px; border-bottom: 1px solid #f1f3f5; display: flex; justify-content: space-between; cursor: pointer; }
 
-        @media (max-width: 600px) {
-            .top-area { flex-direction: column; height: auto; }
+        @media (max-width: 768px) {
             .grid-container { grid-template-columns: repeat(4, 1fr); }
+            .middle-area { height: auto; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-area">
-        <div class="input-box">
-            <textarea id="dataInput" oninput="refreshItemPool()">1  LA갈비
+    <div class="header-area">
+        <div class="top-area">
+            <div class="input-box">
+                <textarea id="dataInput" oninput="refreshItemPool()">1  LA갈비
 2   갈비살(미국산)
 3   곰탕용 고기
-... (중략) ...
+4   등심국거리(미국산)
+5   부채살(구이용)
+6   부채살(스테이크용)
+7   분쇄육(호주산)
+8   살치살(미국산)
+9   샤브샤브용(미국산)
+10  샤브샤브용(호주산)
+11  소불고기용(미국산)
+12  소불고기용(호주산)
+13  알목심(미국산)
+14  와규(일본산)
+15  우삼겹
+16  육전용(미국산)
+17  전각국거리(미국산)
+18  전각분쇄육(미국산)
+19  전각불고기용(미국산)
+20  차돌박이
+21  척갈비
+22  한우 가짜안창
+23  한우 갈비
+24  한우 갈비본살
+25  한우 갈비살
+26  한우 갈비업진
+27  한우 곱창
+28  한우 국거리
+29  한우 꼬리
+30  한우 꽃갈비살
+31  한우 꽃등심
+32  한우 꾸리살
+33  한우 늑간살
+34  한우 다짐육
+35  한우 대창
+36  한우 도가니
+37  한우 등뼈
+38  한우 막구이
+39  한우 머리
+40  한우 모둠구이
+41  한우 모둠뼈
+42  한우 목심
+43  한우 뭉티기(생고기)
+44  한우 반골
+45  한우 보섭살
+46  한우 부채살
+47  한우 분쇄육
+48  한우 불고기용
+49  한우 사골
+50  한우 사태
+51  한우 산적용
+52  한우 살치살
+53  한우 삼각살
+54  한우 새우살
+55  한우 생간
+56  한우 샤브샤브용
+57  한우 설깃살
+58  한우 설도
+59  한우 스지
+60  한우 아랫등심
+61  한우 아롱사태
+62  한우 안심
+63  한우 안창살
+64  한우 앞다리살
+65  한우 양
+66  한우 양념소갈비
+67  한우 양지
+68  한우 양지국거리
+69  한우 업진살
+70  한우 우둔살
+71  한우 우족
+72  한우 윗등심
+73  한우 육사시미
+74  한우 육전용
+75  한우 육회
+76  한우 잡뼈
+77  한우 잡채용
+78  한우 장조림용
+79  한우 전각
+80  한우 제비추리
+81  한우 찌개용
+82  한우 차돌박이
+83  한우 채끝살
+84  한우 천엽
+85  한우 치마살
+86  한우 치마양지
+87  한우 카레용
+88  한우 토시살
+89  한우 특수부위
+90  한우 홍두깨
+91  소 예비 품번
+92  소 예비 품번
+93  소 예비 품번
+94  소 예비 품번
+95  소 예비 품번
+96  소 예비 품번
+97  소 예비 품번
+98  소 예비 품번
+99  소 예비 품번
+100 소 예비 품번
+101 소 예비 품번
+102 소 예비 품번
+103 소 예비 품번
+104 소 예비 품번
+105 소 예비 품번
+106 소 예비 품번
+107 소 예비 품번
+108 소 예비 품번
+109 소 예비 품번
+110 소 예비 품번
+111 대패목살(국내산)
+112 대패삼겹살(국내산)
+113 대패삼겹살(브라질산)
+114 대패삼겹살(스페인산)
+115 대패삼겹살(칠레산)
+116 대패삼겹살(캐나다산)
+117 목살(칠레산)
+118 목살(캐나다산)
+119 목전지(미국산)
+120 삼겹살(이베리코)
+121 삼겹살(칠레산)
+122 삼겹살(캐나다산)
+123 옛날삼겹살(칠레산)
+124 칼집목살(칠레산)
+125 칼집삼겹살(브라질산)
+126 칼집삼겹살(스페인산)
+127 칼집삼겹살(칠레산)
+128 칼집삼겹살(캐나다산)
+129 한돈 가브리살
+130 한돈 갈매기살
+131 한돈 갈비
+132 한돈 갈비(냉동)
+133 한돈 꼬들살
+134 한돈 꽃삼겹살
+135 한돈 눈꽃목살
+136 한돈 눈꽃삼겹살
+137 한돈 다짐육
+138 한돈 돈마호크
+139 한돈 뒷고기
+140 한돈 뒷다리살(구이용)
+141 한돈 뒷다리살(냉동)
+142 한돈 뒷다리살(불고기용)
+143 한돈 뒷다리살(수육용)
+144 한돈 뒷통살
+145 한돈 등갈비
+146 한돈 등뼈
+147 한돈 등뼈(냉동)
+148 한돈 등심
+149 한돈 망고목살
+150 한돈 모둠구이
+151 한돈 목살
+152 한돈 목살 스테이크
+153 한돈 미니족
+154 한돈 분쇄육
+155 한돈 뼈삼겹살
+156 한돈 뼈없는 삼겹살
+157 한돈 사태
+158 한돈 삼겹살
+159 한돈 삼겹살(수육용)
+160 한돈 생갈비구이
+161 한돈 생대패목살
+162 한돈 생대패삼겹살
+163 한돈 안심
+164 한돈 앞다리살(구이용)
+165 한돈 앞다리살(불고기용)
+166 한돈 앞다리살(수육용)
+167 한돈 잡채용
+168 한돈 장조림용
+169 한돈 제주식 오겹살
+170 한돈 찌개용
+171 한돈 카레용
+172 한돈 칼집목살
+173 한돈 칼집삼겹살
+174 한돈 한입갈비삼겹살
+175 한돈 한입목살
+176 한돈 항정살
+177 한돈 꽃목살
+178 돼지 예비 품번
+179 돼지 예비 품번
+180 돼지 예비 품번
+181 돼지 예비 품번
+182 돼지 예비 품번
+183 돼지 예비 품번
+184 돼지 예비 품번
+185 돼지 예비 품번
+186 돼지 예비 품번
+187 돼지 예비 품번
+188 돼지 예비 품번
+189 돼지 예비 품번
+190 돼지 예비 품번
+191 돼지 예비 품번
+192 돼지 예비 품번
+193 돼지 예비 품번
+194 돼지 예비 품번
+195 돼지 예비 품번
+196 돼지 예비 품번
+197 돼지 예비 품번
+198 돼지 예비 품번
+199 돼지 예비 품번
+200 돼지 예비 품번
+201 닭가슴살
+202 닭날개
+203 닭다리
+204 닭안심
+205 닭똥집
+206 영계
+207 올품 생닭(11호)
+208 올품 생닭(12호)
+209 올품 생닭(13호)
+210 올품 생닭(14호)
+211 하림 생닭(11호)
+212 하림 생닭(12호)
+213 하림 생닭(13호)
+214 하림 생닭(14호)
+215 하림 영계
+216 하림 토종닭(16호)
+217 하림 토종닭(17호)
+218 하림 토종닭(18호)
+219 하림 토종닭(냉동)
+220 하림 토종닭(1.1kg)
+221 닭 예비 품번
+222 닭 예비 품번
+223 닭 예비 품번
+224 닭 예비 품번
+225 닭 예비 품번
+226 닭 예비 품번
+227 닭 예비 품번
+228 닭 예비 품번
+229 닭 예비 품번
+230 닭 예비 품번
+231 닭 예비 품번
+232 닭 예비 품번
+233 닭 예비 품번
+234 닭 예비 품번
+235 닭 예비 품번
+236 닭 예비 품번
+237 닭 예비 품번
+238 닭 예비 품번
+239 닭 예비 품번
+240 닭 예비 품번
+241 LA갈비식 양념 돼지갈비
+242 고추장 목살
+243 고추장 목살(미국산)
+244 고추장 불고기
+245 고추장 불고기(미국산)
+246 고추장 삼겹살
+247 고추장 삼겹살(미국산)
+248 닭갈비
+249 북성로 불고기
+250 북성로 불고기(미국산)
+251 뼈없는 닭갈비(브라질산)
+252 양념 LA갈비
+253 양념 돼지갈비
+254 양념 돼지갈비(미국산)
+255 양념 소불고기
+256 양념 소불고기(미국산)
+257 양념 오리불고기
+258 양념육 예비 품번
+259 양념육 예비 품번
+260 양념육 예비 품번
+261 양념육 예비 품번
+262 양념육 예비 품번
+263 양념육 예비 품번
+264 양념육 예비 품번
+265 양념육 예비 품번
+266 양념육 예비 품번
+267 양념육 예비 품번
+268 양념육 예비 품번
+269 양념육 예비 품번
+270 양념육 예비 품번
+271 돼지 짜글이
+272 맛있는 부대찌개
+273 모둠햄 부대찌개
+274 밀푀유나베
+275 사골 곰탕
+276 사골 곰탕(고기 포함)
+277 양념 닭발
+278 무뼈 양념닭발
+279 차돌 된장찌개
+280 큐브 스테이크
+281 한돈 목살꼬치
+282 한돈 삼겹살꼬치
+283 돼지찌개
+284 밀키트 예비 품번
+285 밀키트 예비 품번
+286 밀키트 예비 품번
+287 밀키트 예비 품번
+288 밀키트 예비 품번
+289 밀키트 예비 품번
+290 밀키트 예비 품번
+291 밀키트 예비 품번
+292 밀키트 예비 품번
+293 밀키트 예비 품번
+294 밀키트 예비 품번
+295 밀키트 예비 품번
+296 밀키트 예비 품번
+297 밀키트 예비 품번
+298 밀키트 예비 품번
+299 밀키트 예비 품번
+300 밀키트 예비 품번
+301 고구마 치즈돈가스
+302 고기만두 돈가스
+303 골목식당 치즈롤카츠
+304 구워먹는 치즈
+305 궁중떡갈비
+306 김치만두 돈가스
+307 단족발
+308 단호박 치즈돈가스
+309 닭발 편육
+310 대패오리
+311 돼지 막창
+312 돼지껍데기
+313 등심돈가스
+314 뼈없는 앞발슬라이스
+315 생오리(반마리)
+316 생오리(한마리)
+317 양념 편육
+318 연잎삼겹살
+319 염통 꼬치
+320 염통 꼬치(냉동)
+321 오리훈제슬라이스
+322 치즈돈가스
+323 카레돈가스
+324 파채+소스
+325 편육
+326 기타 예비 품번
+327 한방 족발
+328 훈제 통닭
+329 밴드상품(냉장)(1)
+330 밴드상품(냉장)(2)
+331 밴드상품(냉장)(3)
+332 밴드상품(냉장)(4)
+333 밴드상품(냉장)(5)
+334 밴드상품(냉장)(6)
+335 밴드상품(냉장)(7)
+336 밴드상품(냉장)(8)
+337 밴드상품(냉장)(9)
+338 밴드상품(냉장)(10)
+339 밴드상품(냉동)(1)
+340 밴드상품(냉동)(2)
+341 밴드상품(냉동)(3)
+342 밴드상품(냉동)(4)
+343 밴드상품(냉동)(5)
+344 밴드상품(냉동)(6)
+345 밴드상품(냉동)(7)
+346 밴드상품(냉동)(8)
+347 밴드상품(냉동)(9)
+348 밴드상품(냉동)(10)
+349 한우총괄
+350 한돈총괄
+351 양념총괄
+352 정육총괄
+353 기타 예비 품번
+354 기타 예비 품번
+355 기타 예비 품번
+356 기타 예비 품번
+357 기타 예비 품번
+358 기타 예비 품번
+359 기타 예비 품번
+360 기타 예비 품번
+361 기타 예비 품번
+362 기타 예비 품번
+363 기타 예비 품번
+364 기타 예비 품번
+365 기타 예비 품번
+366 기타 예비 품번
+367 기타 예비 품번
+368 기타 예비 품번
+369 기타 예비 품번
+370 기타 예비 품번
+371 LA갈비 선물세트
+372 정육 선물세트
+373 한우 꽃등심세트
+374 한우 모둠구이세트
+375 한우 보신세트
+376 한우 사골세트
+377 한우 선물세트
+378 한우 수육세트
+379 한우 우족세트
+380 한우 정육세트
+381 한돈 모둠세트
+382 한돈 수육세트
+383 정육 예비 품번
+384 정육 예비 품번
+385 정육 예비 품번
+386 정육 예비 품번
+387 정육 예비 품번
+388 정육 예비 품번
+389 정육 예비 품번
+390 정육 예비 품번
+391 정육 예비 품번
+392 정육 예비 품번
+393 정육 예비 품번
+394 정육 예비 품번
+395 정육 예비 품번
+396 정육 예비 품번
+397 정육 예비 품번
+398 결제 완료
+399 서비스
 400 예약 상품</textarea>
-            <div class="sort-options">
-                <label><input type="radio" name="sortOrder" value="num" checked onchange="refreshItemPool()"> 품번순</label>
-                <label><input type="radio" name="sortOrder" value="name" onchange="refreshItemPool()"> 상품명순</label>
+                <div class="sort-options">
+                    <label><input type="radio" name="sortOrder" value="num" checked onchange="refreshItemPool()"> 품번순</label>
+                    <label><input type="radio" name="sortOrder" value="name" onchange="refreshItemPool()"> 상품명순</label>
+                </div>
+            </div>
+            <div id="settingsBox" class="settings-box">
+                <div style="color:#999; font-size:13px;">버튼을 클릭하여 설정</div>
             </div>
         </div>
-        <div class="settings-box" id="settingsBox">
-            <div style="color:#999; font-size:13px;">버튼을 클릭하여 설정</div>
+
+        <div class="middle-area">
+            <div class="item-pool-container">
+                <div class="area-title">상품 바구니 (좌우 드래그)</div>
+                <div class="item-pool" id="itemPool"></div>
+            </div>
+            <div class="temp-storage-container">
+                <div class="area-title">임시 보관함</div>
+                <div class="temp-storage" id="tempStorage">
+                    <div class="temp-item" draggable="true" ondragstart="onGridDragStart(event, this)" ondrop="dropToTemp(event, this)" ondragover="allowDrop(event)" ondragleave="leaveTemp(this)" onclick="handleCellClick(this)"></div>
+                    <div class="temp-item" draggable="true" ondragstart="onGridDragStart(event, this)" ondrop="dropToTemp(event, this)" ondragover="allowDrop(event)" ondragleave="leaveTemp(this)" onclick="handleCellClick(this)"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="item-pool-container">
-        <div class="item-pool-title">상품 바구니 (좌우 드래그 스크롤 / 항목을 그리드로 드래그)</div>
-        <div class="item-pool" id="itemPool"></div>
-    </div>
+    <div class="scrollable-grid-area">
+        <div class="page-section">
+            <div class="page-header">
+                <div class="page-title">페이지 1</div>
+                <div class="page-actions">
+                    <button class="page-btn" onclick="resetPage('gridPage1', 'color')">색상 리셋</button>
+                    <button class="page-btn btn-reset" onclick="resetPage('gridPage1', 'all')">버튼 리셋</button>
+                </div>
+            </div>
+            <div class="grid-container" id="gridPage1"></div>
+        </div>
 
-    <div class="grid-container" id="shortcutGrid"></div>
+        <div class="page-section">
+            <div class="page-header">
+                <div class="page-title">페이지 2</div>
+                <div class="page-actions">
+                    <button class="page-btn" onclick="resetPage('gridPage2', 'color')">색상 리셋</button>
+                    <button class="page-btn btn-reset" onclick="resetPage('gridPage2', 'all')">버튼 리셋</button>
+                </div>
+            </div>
+            <div class="grid-container" id="gridPage2"></div>
+        </div>
+    </div>
 </div>
 
 <div id="menuModal" onclick="this.style.display='none'">
-    <div class="modal-content" onclick="event.stopPropagation()"><div id="modalList"></div></div>
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="delete-btn" onclick="deleteItem()">선택 항목 삭제</button>
+        <div id="modalList"></div>
+    </div>
 </div>
 
 <script>
     const bgColors = ["#ffffff", "#cccccc", "#48d3fe", "#39b7fb", "#2a9df8", "#b3e2c5", "#ffcccc", "#ff99cc", "#cc99cc"];
     const textColors = ["#000000", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#ff00ff", "#ffffff", "#cccccc"];
 
+    const initialStyles = {
+        28:{bg:7}, 68:{bg:7}, 34:{bg:7}, 31:{bg:7}, 83:{bg:7}, 61:{bg:7}, 50:{bg:7}, 46:{bg:7},
+        69:{bg:7}, 52:{bg:7}, 85:{bg:7}, 30:{bg:7}, 25:{bg:7}, 62:{bg:7}, 80:{bg:7}, 40:{bg:7},
+        89:{bg:7}, 38:{bg:7}, 82:{bg:7},
+        48:{bg:6}, 78:{bg:6}, 74:{bg:6}, 51:{bg:6}, 75:{bg:6},
+        158:{bg:2}, 159:{bg:2}, 173:{bg:2}, 156:{bg:2}, 169:{bg:2}, 162:{bg:2}, 148:{bg:2}, 163:{bg:2},
+        151:{bg:2}, 172:{bg:2}, 177:{bg:2}, 170:{bg:2}, 171:{bg:2}, 167:{bg:2}, 154:{bg:2}, 145:{bg:2},
+        166:{bg:2}, 165:{bg:2}, 143:{bg:2}, 157:{bg:2}, 176:{bg:2}, 129:{bg:2}, 131:{bg:2}, 146:{bg:2},
+        254:{bg:4}, 250:{bg:4}, 245:{bg:4}, 251:{bg:4}, 256:{bg:4}, 257:{bg:4}, 252:{bg:4},
+        150:{bg:2},
+        112:{bg:8}, 115:{bg:8}, 111:{bg:8}, 15:{bg:8}, 310:{bg:8}, 1:{bg:8}, 20:{bg:8},
+        211:{bg:5}, 213:{bg:5}, 216:{bg:5},
+        11:{bg:4, tx:7}, 119:{bg:4, tx:7},
+
+        54:{bg:7}, 63:{bg:7}, 77:{bg:7}, 43:{bg:7}, 53:{bg:7},
+        23:{bg:7}, 36:{bg:7}, 29:{bg:7}, 71:{bg:7},
+        371:{bg:4, tx:4}, 373:{bg:4, tx:4}, 377:{bg:4, tx:4}, 352:{bg:4, tx:4}
+    };
+
+    const p1Config = [
+        28, 68, 34, 31, 83, 61, 50, 46,
+        69, 52, 85, 30, 25, 62, 80, 40,
+        89, 38, 82, 48, 78, 74, 51, 75,
+        158, 159, 173, 156, 169, 162, 148, 163,
+        151, 172, 177, 170, 171, 167, 154, 145,
+        166, 165, 143, 157, 176, 129, 131, 146,
+        254, 250, 245, 251, 256, 257, 252, 150,
+        112, 115, 111, 15, 310, 1, 20, null,
+        211, 213, 216, 11, 119, null
+    ];
+
+    const p2Config = [
+        275, 276, 324, 278, 279, 283, 274, 325,
+        2, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null,
+        54, 63, 77, 43, 53, null, null, null,
+        23, 36, 29, 71, null, null, null, null,
+        null, null, 371, 373, 377, 352
+    ];
+
     let activeCell = null;
     let draggedData = null;
+    let allItemsMap = new Map();
 
-    // 그리드 생성
-    const gridContainer = document.getElementById('shortcutGrid');
-    for (let i = 1; i <= 72; i++) {
-        const item = document.createElement('div');
-        item.className = 'grid-item';
-        item.dataset.bgIdx = "0";
-        item.dataset.textIdx = "0";
-
-        if (i >= 71) {
-            item.classList.add('special');
-            item.innerHTML = `<span class="item-text">${i === 71 ? '개체호출' : '개체편집'}</span>`;
-        } else {
-            item.innerHTML = `<span class="item-text"></span><span class="item-num"></span>`;
-            item.draggable = true;
-            item.onclick = () => handleCellClick(item);
-            item.ondragstart = (e) => {
-                const name = item.querySelector('.item-text').textContent;
-                if(!name) { e.preventDefault(); return; }
-                draggedData = { type: 'GRID', source: item };
-            };
-            item.ondragover = (e) => { e.preventDefault(); item.classList.add('drag-over'); };
-            item.ondragleave = () => item.classList.remove('drag-over');
-            item.ondrop = (e) => { e.preventDefault(); item.classList.remove('drag-over'); handleDrop(item); };
-        }
-        gridContainer.appendChild(item);
+    // 빈 줄 명시적 무시 및 파싱
+    function getParsedItems() {
+        const rawData = document.getElementById('dataInput').value.trim();
+        return rawData.split('\n').map(line => {
+            if (!line.trim()) return null; // 빈 줄 무시
+            const match = line.trim().match(/^(\d+)\s+(.+)$/);
+            if (match) return { id: match[1], n: match[2].trim(), sortId: parseInt(match[1], 10) };
+            return null; // 양식이 안 맞는 줄 무시
+        }).filter(x => x);
     }
 
-    // 상품 바구니 갱신 및 드래그 스크롤 적용
-    function refreshItemPool() {
-        const pool = document.getElementById('itemPool');
-        const rawData = document.getElementById('dataInput').value.trim();
-        const sortType = document.querySelector('input[name="sortOrder"]:checked').value;
+    function initDataMap() {
+        allItemsMap.clear();
+        getParsedItems().forEach(item => allItemsMap.set(item.id, item.n));
+    }
 
-        const items = rawData.split('\n').map(line => {
-            const p = line.split(/\t| {2,}/);
-            return p.length >= 2 ? { n: p[1].trim(), id: p[0].trim(), sortId: parseInt(p[0]) } : null;
-        }).filter(x => x);
+    function syncGridsWithNewData() {
+        const newItems = getParsedItems();
+        const nameToIdMap = new Map();
+        newItems.forEach(item => nameToIdMap.set(item.n, item.id));
+
+        const allCells = document.querySelectorAll('.grid-item:not(.special), .temp-item');
+
+        allCells.forEach(cell => {
+            const nameEl = cell.querySelector('.item-text');
+            const numEl = cell.querySelector('.item-num');
+
+            if (nameEl && nameEl.textContent) {
+                const currentName = nameEl.textContent;
+
+                if (nameToIdMap.has(currentName)) {
+                    const newId = nameToIdMap.get(currentName);
+                    numEl.textContent = `(${newId})`;
+                } else {
+                    nameEl.textContent = '';
+                    numEl.textContent = '';
+                    cell.dataset.bgIdx = "0";
+                    cell.dataset.textIdx = "0";
+                    cell.style.backgroundColor = "#ffffff";
+                    nameEl.style.color = "#000000";
+                    numEl.style.color = "#000000";
+                }
+            }
+        });
+
+        if (activeCell) loadSettings(activeCell);
+    }
+
+    function resetPage(pageId, mode) {
+        // 확인창 팝업 로직 유지
+        let confirmMsg = mode === 'all'
+            ? "해당 페이지의 모든 버튼과 색상을 초기화하시겠습니까?\n(개체호출, 개체편집 버튼 제외)"
+            : "해당 페이지의 모든 색상을 초기화하시겠습니까?";
+
+        if (!confirm(confirmMsg)) return;
+
+        const container = document.getElementById(pageId);
+        const items = container.querySelectorAll('.grid-item:not(.special)');
+
+        items.forEach(cell => {
+            if (mode === 'all') {
+                cell.innerHTML = `<span class="item-text"></span><span class="item-num"></span>`;
+            }
+            cell.dataset.bgIdx = "0";
+            cell.dataset.textIdx = "0";
+            cell.style.backgroundColor = bgColors[0];
+
+            const nameEl = cell.querySelector('.item-text');
+            const numEl = cell.querySelector('.item-num');
+            if (nameEl) nameEl.style.color = textColors[0];
+            if (numEl) numEl.style.color = textColors[0];
+        });
+
+        if (activeCell && container.contains(activeCell)) {
+            loadSettings(activeCell);
+        }
+    }
+
+    function createGrid(containerId, config, count) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const item = document.createElement('div');
+            item.className = 'grid-item';
+
+            let bgIdx = 0;
+            let txIdx = 0;
+
+            if (i >= count - 2) {
+                item.classList.add('special');
+                item.innerHTML = `<span class="item-text">${i === count - 2 ? '개체호출' : '개체편집'}</span>`;
+            } else {
+                const pid = config[i];
+                if (pid && initialStyles[pid]) {
+                    if (initialStyles[pid].bg !== undefined) bgIdx = initialStyles[pid].bg;
+                    if (initialStyles[pid].tx !== undefined) txIdx = initialStyles[pid].tx;
+                }
+
+                item.dataset.bgIdx = bgIdx;
+                item.dataset.textIdx = txIdx;
+                item.style.backgroundColor = bgColors[bgIdx];
+
+                if (pid && allItemsMap.has(pid.toString())) {
+                    item.innerHTML = `<span class="item-text" style="color:${textColors[txIdx]}">${allItemsMap.get(pid.toString())}</span><span class="item-num" style="color:${textColors[txIdx]}">(${pid})</span>`;
+                } else {
+                    item.innerHTML = `<span class="item-text"></span><span class="item-num"></span>`;
+                }
+
+                item.draggable = true;
+                item.onclick = () => handleCellClick(item);
+                item.ondragstart = (e) => onGridDragStart(e, item);
+                item.ondragover = (e) => { e.preventDefault(); item.classList.add('drag-over'); };
+                item.ondragleave = () => item.classList.remove('drag-over');
+                item.ondrop = (e) => { e.preventDefault(); item.classList.remove('drag-over'); handleUniversalDrop(item); };
+            }
+            container.appendChild(item);
+        }
+    }
+
+    function onGridDragStart(e, el) { if(!el.querySelector('.item-text')?.textContent) { e.preventDefault(); return; } draggedData = { type: 'CELL', source: el }; }
+    function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+    function leaveTemp(el) { el.classList.remove('drag-over'); }
+    function dropToTemp(e, target) { e.preventDefault(); target.classList.remove('drag-over'); handleUniversalDrop(target); }
+
+    function handleUniversalDrop(target) {
+        if (!draggedData) return;
+        if (draggedData.type === 'POOL') {
+            target.innerHTML = `<span class="item-text">${draggedData.name}</span><span class="item-num">(${draggedData.id})</span>`;
+
+            let bgIdx = 0, txIdx = 0;
+            if (initialStyles[draggedData.id]) {
+                if (initialStyles[draggedData.id].bg !== undefined) bgIdx = initialStyles[draggedData.id].bg;
+                if (initialStyles[draggedData.id].tx !== undefined) txIdx = initialStyles[draggedData.id].tx;
+            }
+            target.dataset.bgIdx = bgIdx; target.dataset.textIdx = txIdx; target.style.backgroundColor = bgColors[bgIdx];
+            if(target.querySelector('.item-text')) {
+                target.querySelector('.item-text').style.color = textColors[txIdx];
+                target.querySelector('.item-num').style.color = textColors[txIdx];
+            }
+        } else if (draggedData.type === 'CELL') {
+            const s = draggedData.source; const t = target;
+            const temp = { html: t.innerHTML, bgIdx: t.dataset.bgIdx || "0", textIdx: t.dataset.textIdx || "0", bgColor: t.style.backgroundColor, textColor: t.querySelector('.item-text')?.style.color || "#000000" };
+
+            t.innerHTML = s.innerHTML; t.dataset.bgIdx = s.dataset.bgIdx; t.dataset.textIdx = s.dataset.textIdx; t.style.backgroundColor = s.style.backgroundColor;
+            if(t.querySelector('.item-text')) { t.querySelector('.item-text').style.color = s.querySelector('.item-text').style.color; t.querySelector('.item-num').style.color = s.querySelector('.item-text').style.color; }
+
+            s.innerHTML = temp.html; s.dataset.bgIdx = temp.bgIdx; s.dataset.textIdx = temp.textIdx; s.style.backgroundColor = temp.bgColor;
+            if(s.querySelector('.item-text')) { s.querySelector('.item-text').style.color = temp.textColor; s.querySelector('.item-num').style.color = temp.textColor; }
+        }
+        loadSettings(target);
+        draggedData = null;
+    }
+
+    function refreshItemPool() {
+        initDataMap();
+        syncGridsWithNewData();
+
+        const pool = document.getElementById('itemPool');
+        const items = getParsedItems();
+        const sortType = document.querySelector('input[name="sortOrder"]:checked').value;
 
         if (sortType === 'num') items.sort((a, b) => a.sortId - b.sortId);
         else items.sort((a, b) => a.n.localeCompare(b.n, 'ko'));
@@ -173,73 +762,84 @@
         items.forEach(item => {
             const div = document.createElement('div');
             div.className = 'pool-item';
-            div.textContent = item.n;
+            div.innerHTML = `<span class="item-text">${item.n}</span><span class="item-num">(${item.id})</span>`;
             div.draggable = true;
             div.ondragstart = () => { draggedData = { type: 'POOL', name: item.n, id: item.id }; };
             pool.appendChild(div);
         });
     }
 
-    // --- 드래그 스크롤 로직 ---
     const pool = document.getElementById('itemPool');
-    let isDown = false;
-    let startX;
-    let scrollLeft;
+    let isDown = false, startX, scrollLeft;
+    pool.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - pool.offsetLeft; scrollLeft = pool.scrollLeft; });
+    pool.addEventListener('mouseleave', () => isDown = false); pool.addEventListener('mouseup', () => isDown = false);
+    pool.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - pool.offsetLeft; const walk = (x - startX) * 2; pool.scrollLeft = scrollLeft - walk; });
 
-    pool.addEventListener('mousedown', (e) => {
-        isDown = true;
-        startX = e.pageX - pool.offsetLeft;
-        scrollLeft = pool.scrollLeft;
-    });
-    pool.addEventListener('mouseleave', () => { isDown = false; });
-    pool.addEventListener('mouseup', () => { isDown = false; });
-    pool.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - pool.offsetLeft;
-        const walk = (x - startX) * 2; // 스크롤 속도
-        pool.scrollLeft = scrollLeft - walk;
-    });
+    function handleCellClick(cell) { activeCell = cell; openModal(cell); loadSettings(cell); }
 
-    function handleDrop(target) {
-        if (!draggedData) return;
-        if (draggedData.type === 'POOL') {
-            target.querySelector('.item-text').textContent = draggedData.name;
-            target.querySelector('.item-num').textContent = draggedData.id;
-        } else if (draggedData.type === 'GRID') {
-            const source = draggedData.source;
-            const temp = {
-                name: target.querySelector('.item-text').textContent,
-                num: target.querySelector('.item-num').textContent,
-                bg: target.dataset.bgIdx, tx: target.dataset.textIdx,
-                bgColor: target.style.backgroundColor, txColor: target.querySelector('.item-text').style.color
+    function openModal(cell) {
+        const items = getParsedItems();
+        const sortType = document.querySelector('input[name="sortOrder"]:checked').value;
+
+        if (sortType === 'num') items.sort((a, b) => a.sortId - b.sortId);
+        else items.sort((a, b) => a.n.localeCompare(b.n, 'ko'));
+
+        const modalList = document.getElementById('modalList');
+        modalList.innerHTML = '';
+        items.forEach(item => {
+            const div = document.createElement('div'); div.className = 'menu-item';
+            div.innerHTML = `<span>${item.n}</span><span style="font-size:12px;color:#999">(${item.id})</span>`;
+            div.onclick = () => {
+                cell.innerHTML = `<span class="item-text">${item.n}</span><span class="item-num">(${item.id})</span>`;
+                let bgIdx = 0, txIdx = 0;
+                if(initialStyles[item.id]) {
+                    if (initialStyles[item.id].bg !== undefined) bgIdx = initialStyles[item.id].bg;
+                    if (initialStyles[item.id].tx !== undefined) txIdx = initialStyles[item.id].tx;
+                }
+                cell.dataset.bgIdx = bgIdx; cell.dataset.textIdx = txIdx; cell.style.backgroundColor = bgColors[bgIdx];
+                if(cell.querySelector('.item-text')) {
+                    cell.querySelector('.item-text').style.color = textColors[txIdx];
+                    cell.querySelector('.item-num').style.color = textColors[txIdx];
+                }
+                loadSettings(cell);
+                document.getElementById('menuModal').style.display = 'none';
             };
-            // 서로 교체 로직 생략(위와 동일)
-            swapData(source, target, temp);
-        }
-        loadSettings(target);
-        draggedData = null;
+            modalList.appendChild(div);
+        });
+        document.getElementById('menuModal').style.display = 'flex';
     }
 
-    function swapData(s, t, temp) {
-        // 데이터 교체 상세 구현 (생략된 이전 로직과 동일)
-        t.querySelector('.item-text').textContent = s.querySelector('.item-text').textContent;
-        t.querySelector('.item-num').textContent = s.querySelector('.item-num').textContent;
-        t.dataset.bgIdx = s.dataset.bgIdx; t.dataset.textIdx = s.dataset.textIdx;
-        t.style.backgroundColor = s.style.backgroundColor;
-        t.querySelector('.item-text').style.color = s.querySelector('.item-text').style.color;
-
-        s.querySelector('.item-text').textContent = temp.name;
-        s.querySelector('.item-num').textContent = temp.num;
-        s.dataset.bgIdx = temp.bg; s.dataset.textIdx = temp.tx;
-        s.style.backgroundColor = temp.bgColor;
-        s.querySelector('.item-text').style.color = temp.txColor;
+    function deleteItem() {
+        if (!activeCell) return;
+        activeCell.innerHTML = `<span class="item-text"></span><span class="item-num"></span>`;
+        activeCell.dataset.bgIdx = "0"; activeCell.dataset.textIdx = "0"; activeCell.style.backgroundColor = "#ffffff";
+        document.getElementById('menuModal').style.display = 'none'; loadSettings(activeCell);
     }
 
-    // 초기화
-    window.onload = refreshItemPool;
-    function handleCellClick(cell) { openModal(cell); loadSettings(cell); }
-    // (기존 openModal, loadSettings, updateBg, updateText 함수 유지)
+    function loadSettings(cell) {
+        const nameEl = cell.querySelector('.item-text');
+        if(!nameEl || !nameEl.textContent) { document.getElementById('settingsBox').innerHTML = `<div style="color:#999; font-size:13px;">버튼을 클릭하여 설정</div>`; return; }
+        activeCell = cell;
+        const bgIdx = parseInt(cell.dataset.bgIdx || 0);
+        const textIdx = parseInt(cell.dataset.textIdx || 0);
+        const name = nameEl.textContent;
+        document.getElementById('settingsBox').innerHTML = `
+            <div class="control-panel">
+                <div class="color-section"><div class="arrow-group"><button class="arrow-btn" onclick="updateBg(-1)">◀</button><button class="arrow-btn" onclick="updateBg(1)">▶</button></div><span class="section-label" id="bgLabel">배경색(${bgIdx+1})</span></div>
+                <div class="preview-item" id="preview" style="background-color:${bgColors[bgIdx]}; color:${textColors[textIdx]}">${name}</div>
+                <div class="color-section"><div class="arrow-group"><button class="arrow-btn" onclick="updateText(-1)">◀</button><button class="arrow-btn" onclick="updateText(1)">▶</button></div><span class="section-label" id="textLabel">글자색(${textIdx+1})</span></div>
+            </div>`;
+    }
+
+    function updateBg(dir) { let idx = (parseInt(activeCell.dataset.bgIdx || 0) + dir + bgColors.length) % bgColors.length; activeCell.dataset.bgIdx = idx; activeCell.style.backgroundColor = bgColors[idx]; loadSettings(activeCell); }
+    function updateText(dir) { let idx = (parseInt(activeCell.dataset.textIdx || 0) + dir + textColors.length) % textColors.length; activeCell.dataset.textIdx = idx; activeCell.querySelector('.item-text').style.color = textColors[idx]; activeCell.querySelector('.item-num').style.color = textColors[idx]; loadSettings(activeCell); }
+
+    window.onload = () => {
+        initDataMap();
+        createGrid('gridPage1', p1Config, 72);
+        createGrid('gridPage2', p2Config, 72);
+        refreshItemPool();
+    };
 </script>
 </body>
 </html>
