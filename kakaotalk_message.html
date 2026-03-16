@@ -117,18 +117,27 @@
             return circleNums[n - 1] || `${n})`;
         }
 
+        // 날짜 텍스트 생성 로직 수정 (헤더 이모지 및 줄바꿈 반영)
         function getEventDateText(offset, duration) {
             const week = ['일', '월', '화', '수', '목', '금', '토'];
             const start = new Date();
             start.setDate(start.getDate() + offset);
             const end = new Date(start);
             end.setDate(end.getDate() + (duration - 1));
+
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-            if (duration === 1) return `📢 정육 카톡 행사 - ${fmtDate(start)}`;
-            const startTxt = fmtDate(start);
-            const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
-            return `📢 정육 카톡 행사 - ${startTxt} ~ ${endTxt}`;
+
+            let dateRange = "";
+            if (duration === 1) {
+                dateRange = fmtDate(start);
+            } else {
+                const startTxt = fmtDate(start);
+                const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
+                dateRange = `${startTxt} ~ ${endTxt}`;
+            }
+
+            return `📢 정육 카톡 행사\n🥩 기간: ${dateRange}`;
         }
 
         function updateNumbers() {
