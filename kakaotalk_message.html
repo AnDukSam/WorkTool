@@ -24,7 +24,7 @@
         #container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
         .row.completed { background-color: #fff9c4; border: 1px solid #ffe082; } 
-
+        
         .row-header { width: 100%; display: flex; flex-direction: column; gap: 5px; }
         .row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
         .checkbox-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 5px; }
@@ -39,14 +39,15 @@
         .product-select, .product-manual { width: 100%; }
         .unit-select { flex: 1; min-width: 85px; }
         .normal-price, .sale-price { flex: 1; min-width: 95px; }
-
+        
         .hide-normal-price .normal-price { display: none; }
-
+        
         .header { display: flex; gap: 10px; margin-bottom: 20px; }
         .header button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; }
         #plusBtn { background-color: #4CAF50; color: white; }
         #extractBtn { background-color: #2196F3; color: white; }
-
+        #resetBtn { background-color: #9e9e9e; color: white; }
+        
         #resultArea { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #copyBtn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; }
     </style>
@@ -86,6 +87,7 @@
 
     <div class="header">
         <button id="plusBtn">품목 추가</button>
+        <button id="resetBtn">🧹 전체 삭제</button>
         <button id="extractBtn">텍스트 추출</button>
     </div>
 
@@ -93,18 +95,12 @@
     <button id="copyBtn">📋 텍스트 복사</button>
 
     <script>
-        const productList = [
-            "한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심", "🟥🟥 한우 🟥🟥",
-            "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심", "🟥🟥 1+ 한우 🟥🟥",
-            "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)", "🟥🟥 한돈 🟥🟥",
-            "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹(미국산)", "차돌박이(수입산)", "🟥🟥 대패류 🟥🟥",
-            "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "양념 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "🟥🟥 밀키트 🟥🟥",
-            "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭", "🟥🟥 닭 🟥🟥"
-        ];
+        const productList = ["한우 곰탕", "한우 국거리", "한우 꽃등심", "한우 불고기용", "한우 육회", "한우 육회(소스 포함)", "한우 채끝등심", "🟥🟥 한우 🟥🟥", "1+ 한우 국거리", "1+ 한우 꽃등심", "1+ 한우 육회", "1+ 한우 육회(소스 포함)", "1+ 한우 채끝등심", "🟥🟥 1+ 한우 🟥🟥", "한돈 갈비", "한돈 등갈비", "한돈 등뼈", "한돈 목살", "한돈 사태", "한돈 삼겹살", "한돈 앞다리살(수육용)", "🟥🟥 한돈 🟥🟥", "대패삼겹살(국내산)", "대패삼겹살(수입산)", "대패삼겹살(칠레산)", "우삼겹(미국산)", "차돌박이(수입산)", "🟥🟥 대패류 🟥🟥", "양념 돼지갈비", "북성로 불고기", "뼈없는 닭갈비", "고추장 불고기", "양념 소불고기", "양념 LA갈비", "LA갈비식 양념 돼지갈비", "다향 훈제오리", "닭발 편육", "양념 편육", "무뼈 양념닭발", "흑마늘 오리훈제", "🟥🟥 밀키트 🟥🟥", "하림 생닭(11호)", "하림 생닭(13호)", "하림 영계", "하림 토종닭", "🟥🟥 닭 🟥🟥"];
         const unitList = ['100g', '1팩', '1봉(600g 이상)', '1통', '1마리', '2마리'];
 
         const container = document.getElementById('container');
         const plusBtn = document.getElementById('plusBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const extractBtn = document.getElementById('extractBtn');
         const copyBtn = document.getElementById('copyBtn');
         const resultArea = document.getElementById('resultArea');
@@ -112,114 +108,132 @@
         const durationInput = document.getElementById('durationInput');
         const noNormalPriceCheck = document.getElementById('noNormalPrice');
 
+        // --- 자동 저장 및 불러오기 로직 ---
+        function saveAllData() {
+            const rows = [];
+            container.querySelectorAll('.row').forEach(row => {
+                const manualCheck = row.querySelector('.manual-check').checked;
+                rows.push({
+                    manual: manualCheck,
+                    limit: row.querySelector('.limit-check').checked,
+                    prod: manualCheck ? row.querySelector('.product-manual').value : row.querySelector('.product-select').value,
+                    unit: row.querySelector('.unit-select').value,
+                    norm: row.querySelector('.normal-price').value,
+                    sale: row.querySelector('.sale-price').value
+                });
+            });
+
+            const data = {
+                startOffset: startOffsetInput.value,
+                duration: durationInput.value,
+                noNormal: noNormalPriceCheck.checked,
+                items: rows
+            };
+            localStorage.setItem('kakaoPromoData', JSON.stringify(data));
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('kakaoPromoData');
+            if (!saved) {
+                plusBtn.click();
+                return;
+            }
+            const data = JSON.parse(saved);
+            startOffsetInput.value = data.startOffset;
+            durationInput.value = data.duration;
+            noNormalPriceCheck.checked = data.noNormal;
+            if (data.noNormal) container.classList.add('hide-normal-price');
+
+            data.items.forEach(item => addRow(item));
+        }
+
+        // --- 기존 로직 수정 ---
         function getCircleNum(n) {
             const circleNums = ["①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩","⑪","⑫","⑬","⑭","⑮","⑯","⑰","⑱","⑲","⑳","㉑","㉒","㉓","㉔","㉕","㉖","㉗","㉘","㉙","㉚","㉛","㉜","㉝","㉞","㉟","㊱","㊲","㊳","㊴","㊵","㊶","㊷","㊸","㊹","㊺","㊻","㊼","㊽","㊾","㊿"];
             return circleNums[n - 1] || `${n})`;
         }
 
-        // 날짜 텍스트 생성 로직 수정 (헤더 이모지 및 줄바꿈 반영)
         function getEventDateText(offset, duration) {
             const week = ['일', '월', '화', '수', '목', '금', '토'];
             const start = new Date();
             start.setDate(start.getDate() + offset);
             const end = new Date(start);
             end.setDate(end.getDate() + (duration - 1));
-
             const fmtDate = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
             const fmtShortDate = (d) => `${d.getMonth() + 1}월 ${d.getDate()}일 (${week[d.getDay()]})`;
-
-            let dateRange = "";
-            if (duration === 1) {
-                dateRange = fmtDate(start);
-            } else {
-                const startTxt = fmtDate(start);
-                const endTxt = (start.getMonth() === end.getMonth()) ? `${end.getDate()}일 (${week[end.getDay()]})` : fmtShortDate(end);
-                dateRange = `${startTxt} ~ ${endTxt}`;
-            }
-
-            return `📢 정육 카톡 행사\n🥩 기간: ${dateRange}`;
+            let range = duration === 1 ? fmtDate(start) : `${fmtDate(start)} ~ ${fmtShortDate(end)}`;
+            return `📢 정육 카톡 행사\n🥩 기간: ${range}`;
         }
 
         function updateNumbers() {
             container.querySelectorAll('.row').forEach((el, idx) => {
                 el.querySelector('.row-number').textContent = `품목 ${idx + 1}`;
             });
+            saveAllData();
         }
 
-        function checkCompletion(row) {
-            const isNoNormal = noNormalPriceCheck.checked;
-            const normVal = row.querySelector('.normal-price').value;
-            const saleVal = row.querySelector('.sale-price').value;
-            let isComplete = isNoNormal ? (saleVal !== "") : (normVal !== "" && saleVal !== "");
-            if (isComplete) row.classList.add('completed');
-            else row.classList.remove('completed');
-        }
-
-        noNormalPriceCheck.addEventListener('change', () => {
-            if (noNormalPriceCheck.checked) container.classList.add('hide-normal-price');
-            else container.classList.remove('hide-normal-price');
-            container.querySelectorAll('.row').forEach(row => checkCompletion(row));
-        });
-
-        plusBtn.onclick = () => {
+        function addRow(savedItem = null) {
             const row = document.createElement('div');
             row.className = 'row';
-
-            let targetItem = productList.find(item => item === "한우 국거리") || productList[0];
-
-            const lastRow = container.lastElementChild;
-            if (lastRow) {
-                const sel = lastRow.querySelector('.product-select');
-                if(sel){
+            
+            let targetItem = savedItem ? savedItem.prod : (productList.find(p => p === "한우 국거리") || productList[0]);
+            if (!savedItem && container.lastElementChild) {
+                const sel = container.lastElementChild.querySelector('.product-select');
+                if(sel) {
                     let lastIdx = productList.indexOf(sel.value);
-                    if (lastIdx !== -1) {
-                        let nextIdx = (lastIdx + 1) % productList.length;
-                        while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) {
-                            nextIdx = (nextIdx + 1) % productList.length;
-                        }
-                        targetItem = productList[nextIdx];
-                    }
+                    let nextIdx = (lastIdx + 1) % productList.length;
+                    while(productList[nextIdx] && productList[nextIdx].includes("🟥🟥")) nextIdx = (nextIdx + 1) % productList.length;
+                    targetItem = productList[nextIdx];
                 }
             }
 
             row.innerHTML = `
-                <div class="row-header">
-                    <span class="row-number"></span>
+                <div class="row-header"><span class="row-number"></span>
                     <div class="checkbox-group">
-                        <label class="check-box-label"><input type="checkbox" class="manual-check"> 상품명 직접 입력</label>
-                        <label class="check-box-label"><input type="checkbox" class="limit-check"> 한정판매</label>
+                        <label class="check-box-label"><input type="checkbox" class="manual-check" ${savedItem?.manual ? 'checked' : ''}> 상품명 직접 입력</label>
+                        <label class="check-box-label"><input type="checkbox" class="limit-check" ${savedItem?.limit ? 'checked' : ''}> 한정판매</label>
                     </div>
                 </div>
                 <div class="controls">
-                    <button class="control-btn up-btn">↑</button>
-                    <button class="control-btn down-btn">↓</button>
-                    <button class="control-btn del-btn">삭제</button>
+                    <button class="control-btn up-btn">↑</button><button class="control-btn down-btn">↓</button><button class="control-btn del-btn">삭제</button>
                 </div>
-                <div style="width:100%" class="product-input-area">
-                    <select class="product-select">
-                        ${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''} ${item === targetItem ? 'selected' : ''}>${item}</option>`).join('')}
-                    </select>
-                </div>
-                <select class="unit-select">${unitList.map(u => `<option value="${u}">${u}</option>`).join('')}</select>
-                <input type="number" class="normal-price" placeholder="정상가">
-                <input type="number" class="sale-price" placeholder="판매가">
+                <div style="width:100%" class="product-input-area"></div>
+                <select class="unit-select">${unitList.map(u => `<option value="${u}" ${savedItem?.unit === u ? 'selected' : ''}>${u}</option>`).join('')}</select>
+                <input type="number" class="normal-price" placeholder="정상가" value="${savedItem?.norm || ''}">
+                <input type="number" class="sale-price" placeholder="판매가" value="${savedItem?.sale || ''}">
             `;
 
             const manualCheck = row.querySelector('.manual-check');
             const inputArea = row.querySelector('.product-input-area');
-            manualCheck.onchange = () => {
-                if (manualCheck.checked) inputArea.innerHTML = `<input type="text" class="product-manual" placeholder="상품명 직접 입력">`;
-                else inputArea.innerHTML = `<select class="product-select">${productList.map(item => `<option value="${item}" ${item.includes('🟥🟥') ? 'disabled' : ''}>${item}</option>`).join('')}</select>`;
+            const renderInput = () => {
+                if (manualCheck.checked) inputArea.innerHTML = `<input type="text" class="product-manual" placeholder="상품명 직접 입력" value="${savedItem?.manual ? savedItem.prod : ''}">`;
+                else inputArea.innerHTML = `<select class="product-select">${productList.map(p => `<option value="${p}" ${p.includes('🟥🟥') ? 'disabled' : ''} ${p === targetItem ? 'selected' : ''}>${p}</option>`).join('')}</select>`;
             };
+            manualCheck.onchange = () => { renderInput(); saveAllData(); };
+            renderInput();
 
-            row.addEventListener('input', () => checkCompletion(row));
+            row.addEventListener('input', () => { 
+                const isNoNormal = noNormalPriceCheck.checked;
+                const complete = isNoNormal ? row.querySelector('.sale-price').value !== "" : (row.querySelector('.normal-price').value !== "" && row.querySelector('.sale-price').value !== "");
+                row.classList.toggle('completed', complete);
+                saveAllData();
+            });
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             row.querySelector('.up-btn').onclick = () => { if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); } };
             row.querySelector('.down-btn').onclick = () => { if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); } };
-
+            
             container.appendChild(row);
             updateNumbers();
-            row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if(!savedItem) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        plusBtn.onclick = () => addRow();
+
+        resetBtn.onclick = () => {
+            if(confirm("모든 품목을 삭제하고 초기화하시겠습니까?")) {
+                localStorage.removeItem('kakaoPromoData');
+                location.reload();
+            }
         };
 
         extractBtn.onclick = () => {
@@ -227,28 +241,18 @@
             if (!rows.length) return alert("품목을 추가해주세요.");
             const isNoNormal = noNormalPriceCheck.checked;
             let resultText = getEventDateText(parseInt(startOffsetInput.value), parseInt(durationInput.value)) + "\n\n";
-
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
-                const manualCheck = row.querySelector('.manual-check').checked;
-                const limitCheck = row.querySelector('.limit-check').checked;
-                let prod = manualCheck ? row.querySelector('.product-manual').value : row.querySelector('.product-select').value;
+                const manual = row.querySelector('.manual-check').checked;
+                let prod = manual ? row.querySelector('.product-manual').value : row.querySelector('.product-select').value;
+                if (row.querySelector('.limit-check').checked) prod += "(한정판매)";
                 const unit = row.querySelector('.unit-select').value;
                 const norm = row.querySelector('.normal-price').value;
                 const sale = row.querySelector('.sale-price').value;
-
-                if (!prod) { alert(`${i+1}번 상품명을 입력해주세요.`); return; }
-                if (!isNoNormal && !norm) { alert(`${i+1}번 정상가를 입력해주세요.`); return; }
-                if (!sale) { alert(`${i+1}번 판매가를 입력해주세요.`); return; }
-
-                if (limitCheck) {
-                    prod += "(한정판매)";
-                }
-
+                if (!prod || (!isNoNormal && !norm) || !sale) return alert(`${i+1}번 품목을 모두 입력해주세요.`);
                 const fmt = (n) => Number(n).toLocaleString();
                 resultText += isNoNormal ? `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(sale)}원\n` : `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
             }
-
             resultArea.textContent = resultText.trim();
             resultArea.style.display = "block";
             copyBtn.style.display = "block";
@@ -256,21 +260,20 @@
         };
 
         copyBtn.onclick = () => {
-            const text = resultArea.textContent;
-            navigator.clipboard.writeText(text).then(() => alert("복사 완료!")).catch(() => {
-                const t = document.createElement("textarea");
-                t.value = text; document.body.appendChild(t); t.select();
-                document.execCommand('copy'); document.body.removeChild(t);
-                alert("복사 완료!");
-            });
+            navigator.clipboard.writeText(resultArea.textContent).then(() => alert("복사 완료!"));
         };
 
-        document.getElementById('startMinus').onclick = () => { if(startOffsetInput.value > 0) startOffsetInput.value--; };
-        document.getElementById('startPlus').onclick = () => { startOffsetInput.value++; };
-        document.getElementById('durationMinus').onclick = () => { if(durationInput.value > 1) durationInput.value--; };
-        document.getElementById('durationPlus').onclick = () => { durationInput.value++; };
+        // 날짜/옵션 변경 시 저장
+        [startOffsetInput, durationInput, noNormalPriceCheck].forEach(el => el.addEventListener('change', saveAllData));
+        document.getElementById('startMinus').onclick = () => { if(startOffsetInput.value > 0) { startOffsetInput.value--; saveAllData(); }};
+        document.getElementById('startPlus').onclick = () => { startOffsetInput.value++; saveAllData(); };
+        document.getElementById('durationMinus').onclick = () => { if(durationInput.value > 1) { durationInput.value--; saveAllData(); }};
+        document.getElementById('durationPlus').onclick = () => { durationInput.value++; saveAllData(); };
 
-        window.onload = () => plusBtn.click();
+        // 실수로 나가는 것 방지
+        window.onbeforeunload = () => "작성 중인 내용이 사라질 수 있습니다.";
+
+        window.onload = loadSavedData;
     </script>
 </body>
 </html>
