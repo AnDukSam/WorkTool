@@ -87,18 +87,6 @@
                 { name: 'B목살', unit: '박스' }
             ];
 
-            // 동그라미 숫자 변환 함수 (1~50 지원)
-            function getCircleNumber(n) {
-                if (n >= 1 && n <= 20) {
-                    return String.fromCharCode(0x2460 + n - 1); // ① ~ ⑳
-                } else if (n >= 21 && n <= 35) {
-                    return String.fromCharCode(0x3251 + n - 21); // ㉑ ~ ㉟
-                } else if (n >= 36 && n <= 50) {
-                    return String.fromCharCode(0x32B1 + n - 36); // ㊱ ~ ㊲... ㊿
-                }
-                return n + ")"; // 50 초과 시 예외 처리
-            }
-
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'item-row';
@@ -111,7 +99,7 @@
                         <span class="suffix-display">${item.unit}</span>
                     </div>
                 `;
-                
+
                 const minusBtn = row.querySelector('.minus-btn');
                 const plusBtn = row.querySelector('.plus-btn');
                 const display = row.querySelector('.number-display');
@@ -139,8 +127,8 @@
                     const unit = row.querySelector('.suffix-display').textContent;
 
                     if (val > 0) {
-                        // 동그라미 숫자 함수 적용
-                        resultText += `${getCircleNumber(count++)} ${name}: ${val}${unit}\n`;
+                        // 넘버링 양식을 일반 '숫자)' 형태로 수정
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
                         hasItem = true;
                     }
                 });
