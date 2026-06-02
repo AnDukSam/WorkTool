@@ -108,7 +108,6 @@
         const durationInput = document.getElementById('durationInput');
         const noNormalPriceCheck = document.getElementById('noNormalPrice');
 
-        // --- 자동 저장 및 불러오기 로직 ---
         function saveAllData() {
             const rows = [];
             container.querySelectorAll('.row').forEach(row => {
@@ -122,35 +121,19 @@
                     sale: row.querySelector('.sale-price').value
                 });
             });
-
-            const data = {
-                startOffset: startOffsetInput.value,
-                duration: durationInput.value,
-                noNormal: noNormalPriceCheck.checked,
-                items: rows
-            };
+            const data = { startOffset: startOffsetInput.value, duration: durationInput.value, noNormal: noNormalPriceCheck.checked, items: rows };
             localStorage.setItem('kakaoPromoData', JSON.stringify(data));
         }
 
         function loadSavedData() {
             const saved = localStorage.getItem('kakaoPromoData');
-            if (!saved) {
-                plusBtn.click();
-                return;
-            }
+            if (!saved) { plusBtn.click(); return; }
             const data = JSON.parse(saved);
             startOffsetInput.value = data.startOffset;
             durationInput.value = data.duration;
             noNormalPriceCheck.checked = data.noNormal;
             if (data.noNormal) container.classList.add('hide-normal-price');
-
             data.items.forEach(item => addRow(item));
-        }
-
-        // --- 기존 로직 수정 ---
-        function getCircleNum(n) {
-            const circleNums = ["①","②","③","④","⑤","⑥","⑦","⑧","⑨","⑩","⑪","⑫","⑬","⑭","⑮","⑯","⑰","⑱","⑲","⑳","㉑","㉒","㉓","㉔","㉕","㉖","㉗","㉘","㉙","㉚","㉛","㉜","㉝","㉞","㉟","㊱","㊲","㊳","㊴","㊵","㊶","㊷","㊸","㊹","㊺","㊻","㊼","㊽","㊾","㊿"];
-            return circleNums[n - 1] || `${n})`;
         }
 
         function getEventDateText(offset, duration) {
@@ -175,7 +158,7 @@
         function addRow(savedItem = null) {
             const row = document.createElement('div');
             row.className = 'row';
-            
+
             let targetItem = savedItem ? savedItem.prod : (productList.find(p => p === "한우 국거리") || productList[0]);
             if (!savedItem && container.lastElementChild) {
                 const sel = container.lastElementChild.querySelector('.product-select');
@@ -212,7 +195,7 @@
             manualCheck.onchange = () => { renderInput(); saveAllData(); };
             renderInput();
 
-            row.addEventListener('input', () => { 
+            row.addEventListener('input', () => {
                 const isNoNormal = noNormalPriceCheck.checked;
                 const complete = isNoNormal ? row.querySelector('.sale-price').value !== "" : (row.querySelector('.normal-price').value !== "" && row.querySelector('.sale-price').value !== "");
                 row.classList.toggle('completed', complete);
@@ -221,7 +204,7 @@
             row.querySelector('.del-btn').onclick = () => { row.remove(); updateNumbers(); };
             row.querySelector('.up-btn').onclick = () => { if (row.previousElementSibling) { container.insertBefore(row, row.previousElementSibling); updateNumbers(); } };
             row.querySelector('.down-btn').onclick = () => { if (row.nextElementSibling) { container.insertBefore(row.nextElementSibling, row); updateNumbers(); } };
-            
+
             container.appendChild(row);
             updateNumbers();
             if(!savedItem) row.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -251,7 +234,9 @@
                 const sale = row.querySelector('.sale-price').value;
                 if (!prod || (!isNoNormal && !norm) || !sale) return alert(`${i+1}번 품목을 모두 입력해주세요.`);
                 const fmt = (n) => Number(n).toLocaleString();
-                resultText += isNoNormal ? `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(sale)}원\n` : `${getCircleNum(i + 1)} ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
+
+                // 원형 숫자 대신 '숫자)' 형태로 수정
+                resultText += isNoNormal ? `${i + 1}) ${prod} ${unit} ${fmt(sale)}원\n` : `${i + 1}) ${prod} ${unit} ${fmt(norm)}원 ➝ ${fmt(sale)}원\n`;
             }
             resultArea.textContent = resultText.trim();
             resultArea.style.display = "block";
@@ -263,16 +248,13 @@
             navigator.clipboard.writeText(resultArea.textContent).then(() => alert("복사 완료!"));
         };
 
-        // 날짜/옵션 변경 시 저장
         [startOffsetInput, durationInput, noNormalPriceCheck].forEach(el => el.addEventListener('change', saveAllData));
         document.getElementById('startMinus').onclick = () => { if(startOffsetInput.value > 0) { startOffsetInput.value--; saveAllData(); }};
         document.getElementById('startPlus').onclick = () => { startOffsetInput.value++; saveAllData(); };
         document.getElementById('durationMinus').onclick = () => { if(durationInput.value > 1) { durationInput.value--; saveAllData(); }};
         document.getElementById('durationPlus').onclick = () => { durationInput.value++; saveAllData(); };
 
-        // 실수로 나가는 것 방지
         window.onbeforeunload = () => "작성 중인 내용이 사라질 수 있습니다.";
-
         window.onload = loadSavedData;
     </script>
 </body>
