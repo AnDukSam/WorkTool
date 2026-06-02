@@ -148,19 +148,7 @@
                 itemContainer.appendChild(trayDiv);
             });
 
-            // 원문자 변환 함수 (1~50 지원)
-            function getCircledNumber(num) {
-                const circled = [
-                    "", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
-                    "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
-                    "㉑", "㉒", "㉓", "㉔", "㉕", "㉖", "㉗", "㉘", "㉙", "㉚",
-                    "㉛", "㉜", "㉝", "㉞", "㉟", "㊱", "㊲", "㊳", "㊴", "㊵",
-                    "㊶", "㊷", "㊸", "㊹", "㊺", "㊻", "㊼", "㊽", "㊾", "㊿"
-                ];
-                return circled[num] || num + ")"; // 50 초과 시 기본 형식 출력
-            }
-
-            // 텍스트 추출 로직 (원문자 적용)
+            // 텍스트 추출 로직 (숫자+닫는 괄호 적용)
             extractBtn.onclick = () => {
                 const branch = branchSelect.value;
                 let resultText = `우리축산 ${branch}입니다.\n\n`;
@@ -174,7 +162,7 @@
                     const unit = row.querySelector('.suffix-display').textContent;
 
                     if (val > 0) {
-                        resultText += `${getCircledNumber(count++)} ${name}: ${val}${unit}\n`;
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
                         hasItem = true;
                     }
                 });
