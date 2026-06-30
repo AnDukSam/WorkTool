@@ -108,6 +108,35 @@
                 }
             ];
 
+            // 데이터 실시간 저장 함수
+            function saveAllData() {
+                const itemData = {};
+                document.querySelectorAll('.item-row').forEach(row => {
+                    const name = row.querySelector('.left-panel-item').textContent;
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    if (val > 0) {
+                        itemData[name] = val; // 수량이 유효한 것만 저장
+                    }
+                });
+                const data = {
+                    branch: branchSelect.value,
+                    items: itemData
+                };
+                localStorage.setItem('equipmentOrderData', JSON.stringify(data));
+            }
+
+            // 데이터 불러오기 함수
+            function loadSavedData() {
+                const saved = localStorage.getItem('equipmentOrderData');
+                if (!saved) return null;
+                return JSON.parse(saved);
+            }
+
+            const savedData = loadSavedData();
+            if (savedData && savedData.branch) {
+                branchSelect.value = savedData.branch;
+            }
+
             // 화면 생성
             categories.forEach(cat => {
                 const titleDiv = document.createElement('div');
@@ -120,13 +149,17 @@
 
                 cat.items.forEach(itemName => {
                     const unit = suffixMap[itemName] || '줄';
+
+                    // 백업된 수량이 있으면 복원, 없으면 0
+                    const savedValue = (savedData && savedData.items && savedData.items[itemName]) ? savedData.items[itemName] : 0;
+
                     const row = document.createElement('div');
                     row.className = 'item-row';
                     row.innerHTML = `
                         <div class="left-panel-item">${itemName}</div>
                         <div class="right-controls">
                             <button class="minus-btn">-</button>
-                            <input type="text" class="number-display" value="0" readonly>
+                            <input type="text" class="number-display" value="${savedValue}" readonly>
                             <button class="plus-btn">+</button>
                             <span class="suffix-display">${unit}</span>
                         </div>
@@ -138,17 +171,24 @@
 
                     minusBtn.onclick = () => {
                         let val = parseInt(display.value);
-                        if (val > 0) display.value = val - 1;
+                        if (val > 0) {
+                            display.value = val - 1;
+                            saveAllData(); // 값이 바뀌면 실시간 저장
+                        }
                     };
                     plusBtn.onclick = () => {
                         display.value = parseInt(display.value) + 1;
+                        saveAllData(); // 값이 바뀌면 실시간 저장
                     };
                     trayDiv.appendChild(row);
                 });
                 itemContainer.appendChild(trayDiv);
             });
 
-            // 텍스트 추출 로직 (숫자+닫는 괄호 적용)
+            // 지점 변경 시에도 실시간 저장
+            branchSelect.onchange = saveAllData;
+
+            // 텍스트 추출 로직 (추출 완료 후 저장된 데이터 삭제하지 않음)
             extractBtn.onclick = () => {
                 const branch = branchSelect.value;
                 let resultText = `우리축산 ${branch}입니다.\n\n`;
@@ -183,6 +223,8 @@
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textToCopy).then(() => {
                         alert("복사 완료!");
+                        // 전송 및 복사가 완벽히 완료되어 초기화하고 싶을 때 수동으로 클리어 하려면 아래 주석을 푸세요.
+                        // localStorage.removeItem('equipmentOrderData');
                     }).catch(() => fallbackCopy(textToCopy));
                 } else {
                     fallbackCopy(textToCopy);
@@ -206,6 +248,9 @@
                 }
                 document.body.removeChild(textArea);
             }
+
+            // 뒤로가기나 창 닫기 시 경고창 띄우기
+            window.onbeforeunload = () => "작성 중인 내용이 사라질 수 있습니다.";
         });
     </script>
 </body>
