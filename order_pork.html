@@ -40,6 +40,7 @@
         
         #extractBtn { background: linear-gradient(135deg, #2196F3, #1976D2); }
         #copyBtn { background: #333; display: none; }
+        #clearBtn { background: #757575; max-width: 90px; }
     </style>
 </head>
 <body>
@@ -62,6 +63,7 @@
     <div id="resultArea"></div>
 
     <div id="action-buttons">
+        <button class="action-btn" id="clearBtn">전체 삭제</button>
         <button class="action-btn" id="extractBtn">텍스트 추출</button>
         <button class="action-btn" id="copyBtn">📋 텍스트 복사</button>
     </div>
@@ -71,8 +73,12 @@
             const itemTray = document.getElementById('itemTray');
             const extractBtn = document.getElementById('extractBtn');
             const copyBtn = document.getElementById('copyBtn');
+            const clearBtn = document.getElementById('clearBtn');
             const resultArea = document.getElementById('resultArea');
             const branchSelect = document.getElementById('branchSelect');
+
+            const STORAGE_KEY_ITEMS = 'porkOrder_items';
+            const STORAGE_KEY_BRANCH = 'porkOrder_branch';
 
             const items = [
                 { name: '삼겹살', unit: '박스' },
@@ -87,14 +93,58 @@
                 { name: 'B목살', unit: '박스' }
             ];
 
+            // 1. 저장된 데이터를 불러오는 함수
+            function loadState() {
+                const savedBranch = localStorage.getItem(STORAGE_KEY_BRANCH);
+                if (savedBranch) {
+                    branchSelect.value = savedBranch;
+                }
+
+                const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS)) || {};
+                return savedItems;
+            }
+
+            // 2. 현재 입력 값을 localStorage에 저장하는 함수
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY_BRANCH, branchSelect.value);
+
+                const itemData = {};
+                const rows = document.querySelectorAll('.item-row');
+                rows.forEach(row => {
+                    const name = row.querySelector('.left-panel-item').textContent;
+                    const val = parseInt(row.querySelector('.number-display').value) || 0;
+                    itemData[name] = val;
+                });
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(itemData));
+            }
+
+            // 3. 데이터 전체 삭제 / 초기화 처리 함수
+            function clearAllData() {
+                if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
+                    const displays = document.querySelectorAll('.number-display');
+                    displays.forEach(display => display.value = 0);
+
+                    localStorage.removeItem(STORAGE_KEY_ITEMS);
+
+                    resultArea.style.display = "none";
+                    resultArea.innerText = "";
+                    copyBtn.style.display = "none";
+                }
+            }
+
+            const savedItemData = loadState();
+
+            // 4. UI 생성 및 저장된 값 세팅
             items.forEach(item => {
+                const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
+
                 const row = document.createElement('div');
                 row.className = 'item-row';
                 row.innerHTML = `
                     <div class="left-panel-item">${item.name}</div>
                     <div class="right-controls">
                         <button class="minus-btn">-</button>
-                        <input type="text" class="number-display" value="0" readonly>
+                        <input type="text" class="number-display" value="${initialVal}" readonly>
                         <button class="plus-btn">+</button>
                         <span class="suffix-display">${item.unit}</span>
                     </div>
@@ -106,13 +156,24 @@
 
                 minusBtn.onclick = () => {
                     let val = parseInt(display.value);
-                    if (val > 0) display.value = val - 1;
+                    if (val > 0) {
+                        display.value = val - 1;
+                        saveState();
+                    }
                 };
                 plusBtn.onclick = () => {
                     display.value = parseInt(display.value) + 1;
+                    saveState();
                 };
                 itemTray.appendChild(row);
             });
+
+            branchSelect.onchange = () => {
+                saveState();
+            };
+
+            // 하단 전체 삭제 버튼 이벤트 바인딩
+            clearBtn.onclick = clearAllData;
 
             extractBtn.onclick = () => {
                 const branch = branchSelect.value;
@@ -127,7 +188,6 @@
                     const unit = row.querySelector('.suffix-display').textContent;
 
                     if (val > 0) {
-                        // 넘버링 양식을 일반 '숫자)' 형태로 수정
                         resultText += `${count++}) ${name}: ${val}${unit}\n`;
                         hasItem = true;
                     }
