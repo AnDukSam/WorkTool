@@ -12,7 +12,7 @@
         .main-title { text-align: center; padding: 20px 0; margin: 0 -15px 20px -15px; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; font-size: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); letter-spacing: 1px; }
 
         /* 지점 선택 섹션 */
-        .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
         .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; }
 
@@ -41,7 +41,20 @@
 
         /* 하단 액션 버튼 */
         #action-buttons { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; padding: 15px; gap: 10px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .action-btn { flex: 1; height: 55px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; color: white; cursor: pointer; }
+        .action-btn {
+            flex: 1;
+            height: 55px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+        #clearBtn {
+            background: #757575;
+            max-width: 90px;
+        }
         #extractBtn { background: linear-gradient(135deg, #2196F3, #1976D2); }
         #copyBtn { background: #333; display: none; }
     </style>
@@ -65,6 +78,7 @@
     <div id="resultArea"></div>
 
     <div id="action-buttons">
+        <button class="action-btn" id="clearBtn">초기화</button>
         <button class="action-btn" id="extractBtn">텍스트 추출</button>
         <button class="action-btn" id="copyBtn">📋 텍스트 복사</button>
     </div>
@@ -74,8 +88,11 @@
             const itemTray = document.getElementById('itemTray');
             const extractBtn = document.getElementById('extractBtn');
             const copyBtn = document.getElementById('copyBtn');
+            const clearBtn = document.getElementById('clearBtn');
             const resultArea = document.getElementById('resultArea');
             const branchSelect = document.getElementById('branchSelect');
+
+            const STORAGE_KEY = 'meat_order_data_v1';
 
             const items = [
                 { name: '목전지', unit: '박스' }, { name: '앞다리살', unit: '박스' },
@@ -85,32 +102,106 @@
                 { name: '척갈비', unit: '박스' }
             ];
 
+            // 1. 상태 저장 함수
+            function saveState() {
+                const quantities = {};
+                const rows = document.querySelectorAll('.item-row');
+                rows.forEach(row => {
+                    const name = row.querySelector('.left-panel-item').textContent;
+                    const val = parseInt(row.querySelector('.number-display').value) || 0;
+                    quantities[name] = val;
+                });
+
+                const stateData = {
+                    branch: branchSelect.value,
+                    quantities: quantities
+                };
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(stateData));
+            }
+
+            // 2. 상태 불러오기 함수
+            function loadState() {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (!saved) return null;
+                try {
+                    return JSON.parse(saved);
+                } catch(e) {
+                    return null;
+                }
+            }
+
+            const savedState = loadState();
+
+            // 지점 복구
+            if (savedState && savedState.branch) {
+                branchSelect.value = savedState.branch;
+            }
+
+            // UI 생성
             items.forEach(item => {
                 const row = document.createElement('div');
                 row.className = 'item-row';
+
+                // 저장되어 있던 수량 복구 (없으면 0)
+                const initialQty = (savedState && savedState.quantities && savedState.quantities[item.name]) ? savedState.quantities[item.name] : 0;
+
                 row.innerHTML = `
                     <div class="left-panel-item">${item.name}</div>
                     <div class="right-controls">
                         <button class="minus-btn">-</button>
-                        <input type="text" class="number-display" value="0" readonly>
+                        <input type="text" class="number-display" value="${initialQty}" readonly>
                         <button class="plus-btn">+</button>
                         <span class="suffix-display">${item.unit}</span>
                     </div>
                 `;
+
                 const minusBtn = row.querySelector('.minus-btn');
                 const plusBtn = row.querySelector('.plus-btn');
                 const display = row.querySelector('.number-display');
 
                 minusBtn.onclick = () => {
                     let val = parseInt(display.value);
-                    if (val > 0) display.value = val - 1;
+                    if (val > 0) {
+                        display.value = val - 1;
+                        saveState();
+                    }
                 };
+
                 plusBtn.onclick = () => {
                     display.value = parseInt(display.value) + 1;
+                    saveState();
                 };
+
                 itemTray.appendChild(row);
             });
 
+            // 지점 변경시 자동 저장
+            branchSelect.onchange = () => {
+                saveState();
+            };
+
+            // 수량 초기화 버튼 동작
+            clearBtn.onclick = () => {
+                if (confirm("입력한 발주 수량을 모두 초기화하시겠습니까?")) {
+                    document.querySelectorAll('.number-display').forEach(input => {
+                        input.value = "0";
+                    });
+                    resultArea.style.display = "none";
+                    copyBtn.style.display = "none";
+                    saveState();
+                }
+            };
+
+            // 모바일에서 홈 키 누르거나 백그라운드로 빠질 때 안전하게 저장
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    saveState();
+                }
+            });
+            window.addEventListener('pagehide', saveState);
+
+            // 텍스트 추출 버튼
             extractBtn.onclick = () => {
                 const branch = branchSelect.value;
                 let resultText = `우리축산 ${branch}입니다.\n\n`;
@@ -124,7 +215,6 @@
                     const unit = row.querySelector('.suffix-display').textContent;
 
                     if (val > 0) {
-                        // 수정 포인트: 기존의 1) 2) 형태로 복구
                         resultText += `${count++}) ${name}: ${val}${unit}\n`;
                         hasItem = true;
                     }
@@ -141,6 +231,7 @@
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             };
 
+            // 텍스트 복사 버튼
             copyBtn.onclick = () => {
                 const textToCopy = resultArea.innerText;
                 navigator.clipboard.writeText(textToCopy).then(() => {
