@@ -53,7 +53,7 @@
         .hide-normal-price .event-normal-price { display: none; }
 
         /* 하단 버튼 고정 영역 스타일 수정 (스마트폰 항상 고정) */
-        .event-header-btns, .pork-header-btns, .import-header-btns, .equipment-header-btns {
+        .event-header-btns, .pork-header-btns, .chicken-header-btns, .import-header-btns, .equipment-header-btns {
             position: fixed;
             bottom: 0;
             left: 0;
@@ -71,7 +71,7 @@
 
         /* 데스크톱(md 이상)에서는 일반 플로우 배치가 되도록 복원 */
         @media (min-width: 768px) {
-            .event-header-btns, .pork-header-btns, .import-header-btns, .equipment-header-btns {
+            .event-header-btns, .pork-header-btns, .chicken-header-btns, .import-header-btns, .equipment-header-btns {
                 position: static;
                 background: transparent;
                 backdrop-filter: none;
@@ -89,17 +89,17 @@
         #event-result-area { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #event-copy-btn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; }
 
-        /* 발주 툴 공통 스타일 (돼지 / 수입고기 / 비품) - 내부 여백 0, 테두리 및 배경색 제거 */
-        .pork-tool-pane, .import-tool-pane, .equipment-tool-pane {
+        /* 발주 툴 공통 스타일 (돼지 / 닭 / 수입고기 / 비품) - 내부 여백 0, 테두리 및 배경색 제거 */
+        .pork-tool-pane, .chicken-tool-pane, .import-tool-pane, .equipment-tool-pane {
             background-color: transparent !important;
             padding: 0 !important;
             border: none !important;
             box-shadow: none !important;
         }
 
-        .pork-tool-pane .header-setting, .import-tool-pane .header-setting, .equipment-tool-pane .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
-        .pork-tool-pane .header-setting label, .import-tool-pane .header-setting label, .equipment-tool-pane .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
-        .pork-tool-pane .header-setting select, .import-tool-pane .header-setting select, .equipment-tool-pane .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; height: 45px; }
+        .pork-tool-pane .header-setting, .chicken-tool-pane .header-setting, .import-tool-pane .header-setting, .equipment-tool-pane .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+        .pork-tool-pane .header-setting label, .chicken-tool-pane .header-setting label, .import-tool-pane .header-setting label, .equipment-tool-pane .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
+        .pork-tool-pane .header-setting select, .chicken-tool-pane .header-setting select, .import-tool-pane .header-setting select, .equipment-tool-pane .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; height: 45px; }
 
         .category-title { font-size: 16px; font-weight: bold; color: #2E7D32; margin: 25px 0 10px 5px; display: flex; align-items: center; }
         .category-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background-color: #4CAF50; margin-right: 8px; border-radius: 2px; }
@@ -124,9 +124,9 @@
 
         .suffix-display { font-size: 13px; color: #666; width: 35px; text-align: right; margin-left: 2px; margin-right: 2px; }
 
-        .pork-header-btns button, .import-header-btns button, .equipment-header-btns button { height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; }
-        #pork-clear-btn, #import-clear-btn, #equipment-clear-btn { background: #757575; flex: 0 0 100px; width: auto !important; }
-        #pork-extract-btn, #import-extract-btn, #equipment-extract-btn { background: linear-gradient(135deg, #2196F3, #1976D2); flex: 1; }
+        .pork-header-btns button, .chicken-header-btns button, .import-header-btns button, .equipment-header-btns button { height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; }
+        #pork-clear-btn, #chicken-clear-btn, #import-clear-btn, #equipment-clear-btn { background: #757575; flex: 0 0 100px; width: auto !important; }
+        #pork-extract-btn, #chicken-extract-btn, #import-extract-btn, #equipment-extract-btn { background: linear-gradient(135deg, #2196F3, #1976D2); flex: 1; }
 
         /* 모바일 스크롤 시 버튼에 내용이 가리지 않도록 하단 여백(padding-bottom) 추가 */
         .tool-content { padding-bottom: 90px; }
@@ -134,8 +134,8 @@
             .tool-content { padding-bottom: 0; }
         }
 
-        #pork-result-area, #import-result-area, #equipment-result-area { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
-        #pork-copy-btn, #import-copy-btn, #equipment-copy-btn { background-color: #333; display: none; width: 100%; height: 55px; margin-top: 15px; border-radius: 10px; border: none; font-size: 17px; font-weight: bold; color: white; cursor: pointer; }
+        #pork-result-area, #chicken-result-area, #import-result-area, #equipment-result-area { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
+        #pork-copy-btn, #chicken-copy-btn, #import-copy-btn, #equipment-copy-btn { background-color: #333; display: none; width: 100%; height: 55px; margin-top: 15px; border-radius: 10px; border: none; font-size: 17px; font-weight: bold; color: white; cursor: pointer; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col md:flex-row overflow-x-hidden">
@@ -175,6 +175,10 @@
             <button id="btn-pork-order" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer">
                 <i class="fa-solid fa-piggy-bank w-5"></i>
                 <span>돼지 발주</span>
+            </button>
+            <button id="btn-chicken-order" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer">
+                <i class="fa-solid fa-kiwi-bird w-5"></i>
+                <span>닭 발주</span>
             </button>
             <button id="btn-import-order" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer">
                 <i class="fa-solid fa-boxes-stacked w-5"></i>
@@ -256,6 +260,30 @@
                 <button id="pork-copy-btn">텍스트 복사</button>
             </section>
 
+            <!-- 닭 발주 툴 -->
+            <section id="chicken-order" class="tool-content max-w-2xl chicken-tool-pane w-full" style="display: none;">
+                <div class="header-setting">
+                    <label>발주 지점 선택</label>
+                    <select id="chickenBranchSelect">
+                        <option value="2호점">2호점</option>
+                        <option value="만촌점" selected>만촌점</option>
+                        <option value="시지점">시지점</option>
+                        <option value="온천점">온천점</option>
+                        <option value="혁신점">혁신점</option>
+                    </select>
+                </div>
+
+                <div class="tray" id="chickenItemTray"></div>
+
+                <div class="chicken-header-btns">
+                    <button id="chicken-clear-btn">전체 삭제</button>
+                    <button id="chicken-extract-btn">텍스트 추출</button>
+                </div>
+
+                <div id="chicken-result-area"></div>
+                <button id="chicken-copy-btn">텍스트 복사</button>
+            </section>
+
             <!-- 수입고기 발주 툴 -->
             <section id="import-order" class="tool-content max-w-2xl import-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
@@ -311,21 +339,25 @@
         // 탭 전환 로직
         const tabBtnEvent = document.getElementById('btn-event-promo');
         const tabBtnPork = document.getElementById('btn-pork-order');
+        const tabBtnChicken = document.getElementById('btn-chicken-order');
         const tabBtnImport = document.getElementById('btn-import-order');
         const tabBtnEquipment = document.getElementById('btn-equipment-order');
         const contentEvent = document.getElementById('event-promo');
         const contentPork = document.getElementById('pork-order');
+        const contentChicken = document.getElementById('chicken-order');
         const contentImport = document.getElementById('import-order');
         const contentEquipment = document.getElementById('equipment-order');
 
         function switchTab(targetTab) {
             tabBtnEvent.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
             tabBtnPork.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
+            tabBtnChicken.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
             tabBtnImport.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
             tabBtnEquipment.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
 
             contentEvent.style.display = "none";
             contentPork.style.display = "none";
+            contentChicken.style.display = "none";
             contentImport.style.display = "none";
             contentEquipment.style.display = "none";
 
@@ -337,6 +369,10 @@
                 tabBtnPork.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
                 contentPork.style.display = "block";
                 localStorage.setItem('activeWorkTool', 'pork');
+            } else if (targetTab === 'chicken') {
+                tabBtnChicken.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
+                contentChicken.style.display = "block";
+                localStorage.setItem('activeWorkTool', 'chicken');
             } else if (targetTab === 'import') {
                 tabBtnImport.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
                 contentImport.style.display = "block";
@@ -353,6 +389,7 @@
 
         tabBtnEvent.onclick = () => switchTab('event');
         tabBtnPork.onclick = () => switchTab('pork');
+        tabBtnChicken.onclick = () => switchTab('chicken');
         tabBtnImport.onclick = () => switchTab('import');
         tabBtnEquipment.onclick = () => switchTab('equipment');
 
@@ -369,12 +406,15 @@
         window.onload = function() {
             loadEventSavedData();
             initPorkOrderTool();
+            initChickenOrderTool();
             initImportOrderTool();
             initEquipmentOrderTool();
 
             const activeTab = localStorage.getItem('activeWorkTool');
             if (activeTab === 'pork') {
                 switchTab('pork');
+            } else if (activeTab === 'chicken') {
+                switchTab('chicken');
             } else if (activeTab === 'import') {
                 switchTab('import');
             } else if (activeTab === 'equipment') {
@@ -655,6 +695,170 @@
                 let count = 1;
 
                 const rows = document.querySelectorAll('#itemTray .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    const unit = row.querySelector('.suffix-display').textContent;
+
+                    if (val > 0) {
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        hasItem = true;
+                    }
+                });
+
+                if (!hasItem) {
+                    alert("발주할 수량을 먼저 입력해주세요.");
+                    return;
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // [닭 발주] 로직
+        function initChickenOrderTool() {
+            const itemTray = document.getElementById('chickenItemTray');
+            const extractBtn = document.getElementById('chicken-extract-btn');
+            const copyBtn = document.getElementById('chicken-copy-btn');
+            const clearBtn = document.getElementById('chicken-clear-btn');
+            const resultArea = document.getElementById('chicken-result-area');
+            const branchSelect = document.getElementById('chickenBranchSelect');
+
+            const STORAGE_KEY_ITEMS = 'chickenOrder_items';
+            const STORAGE_KEY_BRANCH = 'chickenOrder_branch';
+
+            const items = [
+                { name: '11호 벌크', unit: '캔' },
+                { name: '13호 벌크', unit: '캔' },
+                { name: '닭발 편육', unit: '개' },
+                { name: '무뼈 닭발(1kg)', unit: '팩' },
+                { name: '참진 토종닭', unit: '박스' },
+                { name: '토종닭 비품', unit: '캔' },
+                { name: '영계 벌크', unit: '캔' },
+                { name: '황기', unit: '박스' },
+                { name: '삼계탕 재료', unit: '박스' },
+                { name: '닭다리(냉동)', unit: '박스' },
+                { name: '닭가슴살(냉동)', unit: '박스' },
+                { name: '닭염통 꼬치(1kg)', unit: '박스' },
+                { name: '닭염통 꼬치(500g)', unit: '박스' }
+            ];
+
+            function loadState() {
+                const savedBranch = localStorage.getItem(STORAGE_KEY_BRANCH);
+                if (savedBranch) {
+                    branchSelect.value = savedBranch;
+                }
+                const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS)) || {};
+                return savedItems;
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY_BRANCH, branchSelect.value);
+
+                const itemData = {};
+                const rows = document.querySelectorAll('#chickenItemTray .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value) || 0;
+                    itemData[name] = val;
+                });
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(itemData));
+            }
+
+            function clearAllData() {
+                if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
+                    const displays = document.querySelectorAll('#chickenItemTray .number-display');
+                    displays.forEach(display => display.value = 0);
+
+                    localStorage.removeItem(STORAGE_KEY_ITEMS);
+
+                    resultArea.style.display = "none";
+                    resultArea.innerText = "";
+                    copyBtn.style.display = "none";
+                }
+            }
+
+            const savedItemData = loadState();
+
+            items.forEach(item => {
+                const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
+
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.setAttribute('data-raw-name', item.name);
+                row.innerHTML = `
+                    <div class="left-panel-item">${item.name}</div>
+                    <div class="right-controls">
+                        <button class="minus-btn">-</button>
+                        <input type="text" class="number-display" value="${initialVal}" readonly>
+                        <button class="plus-btn">+</button>
+                        <span class="suffix-display">${item.unit}</span>
+                    </div>
+                `;
+
+                const minusBtn = row.querySelector('.minus-btn');
+                const plusBtn = row.querySelector('.plus-btn');
+                const display = row.querySelector('.number-display');
+
+                minusBtn.onclick = () => {
+                    let val = parseInt(display.value);
+                    if (val > 0) {
+                        display.value = val - 1;
+                        saveState();
+                    }
+                };
+                plusBtn.onclick = () => {
+                    display.value = parseInt(display.value) + 1;
+                    saveState();
+                };
+                itemTray.appendChild(row);
+            });
+
+            branchSelect.onchange = () => {
+                saveState();
+            };
+
+            clearBtn.onclick = clearAllData;
+
+            extractBtn.onclick = () => {
+                const branch = branchSelect.value;
+                let resultText = `우리축산 ${branch}입니다.\n\n`;
+                let hasItem = false;
+                let count = 1;
+
+                const rows = document.querySelectorAll('#chickenItemTray .item-row');
                 rows.forEach(row => {
                     const name = row.getAttribute('data-raw-name');
                     const val = parseInt(row.querySelector('.number-display').value);
