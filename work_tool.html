@@ -61,7 +61,14 @@
         #event-result-area { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #event-copy-btn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; }
 
-        /* 발주 툴 공통 스타일 (돼지 / 수입고기 / 비품) */
+        /* 발주 툴 공통 스타일 (돼지 / 수입고기 / 비품) - 내부 여백 0, 테두리 및 배경색 제거 */
+        .pork-tool-pane, .import-tool-pane, .equipment-tool-pane {
+            background-color: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
         .pork-tool-pane .header-setting, .import-tool-pane .header-setting, .equipment-tool-pane .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
         .pork-tool-pane .header-setting label, .import-tool-pane .header-setting label, .equipment-tool-pane .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
         .pork-tool-pane .header-setting select, .import-tool-pane .header-setting select, .equipment-tool-pane .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; height: 45px; }
@@ -98,10 +105,10 @@
         #pork-copy-btn, #import-copy-btn, #equipment-copy-btn { background-color: #333; display: none; width: 100%; height: 55px; margin-top: 15px; border-radius: 10px; border: none; font-size: 17px; font-weight: bold; color: white; cursor: pointer; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 flex flex-col md:flex-row h-screen overflow-hidden">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
     <!-- 모바일 상단 바 -->
-    <header class="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-800 shrink-0 z-20">
+    <header class="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-800 sticky top-0 z-30 shrink-0">
         <div class="flex items-center gap-3">
             <button onclick="toggleMobileSidebar()" class="text-xl text-slate-300 hover:text-white focus:outline-none cursor-pointer p-1">
                 <i class="fa-solid fa-bars"></i>
@@ -148,8 +155,8 @@
     </aside>
 
     <!-- 메인 콘텐츠 영역 -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden">
-        <div class="flex-1 p-4 md:p-8 overflow-y-auto bg-gray-50 flex flex-col">
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div class="flex-1 p-4 md:p-8 bg-gray-50 flex flex-col pb-20">
 
             <!-- 행사내용 작성 툴 -->
             <section id="event-promo" class="tool-content max-w-2xl bg-transparent p-0 border-0 shadow-none event-tool-pane w-full">
@@ -193,7 +200,7 @@
             </section>
 
             <!-- 돼지 발주 툴 -->
-            <section id="pork-order" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 pork-tool-pane w-full" style="display: none;">
+            <section id="pork-order" class="tool-content max-w-2xl pork-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
                     <select id="branchSelect">
@@ -217,7 +224,7 @@
             </section>
 
             <!-- 수입고기 발주 툴 -->
-            <section id="import-order" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 import-tool-pane w-full" style="display: none;">
+            <section id="import-order" class="tool-content max-w-2xl import-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
                     <select id="importBranchSelect">
@@ -241,7 +248,7 @@
             </section>
 
             <!-- 비품 발주 툴 -->
-            <section id="equipment-order" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 equipment-tool-pane w-full" style="display: none;">
+            <section id="equipment-order" class="tool-content max-w-2xl equipment-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
                     <select id="equipmentBranchSelect">
@@ -848,7 +855,7 @@
                 '미트페이퍼(그린유엔아이)': '박스', '백설)아이스팩(15x20)': '묶음', '벌집삼겹살 스티커': '묶음',
                 '보냉팩(중/28x35x5)': '묶음', '샤브샤브 육수(50g)': '팩', '세일 스티커': '묶음', '속지(32x45)': '묶음',
                 '속지(40x60)': '묶음', '롤백 40': '개', '스티로폼(등2호)': '개', '스티로폼(등3호)': '개',
-                '스티로폼(등4호)': '개', '쎄니콜70': '개', '야ส리': '개', '월계수 잎': '통', '이개비(단풍모양/녹색)': '박스',
+                '스티로폼(등4호)': '개', '쎄니콜70': '개', '야스리': '개', '월계수 잎': '통', '이개비(단풍모양/녹색)': '박스',
                 '재단 비닐(작업 비닐)': '묶음', '진공 필름(갈비)(25x35)': '묶음', '진공 필름(목살)(25x45)': '묶음',
                 '진공 필름(삼겹살)(40x65)': '묶음', '진공 필름(전지)(35x45)': '묶음', '투명 비닐(9x25)': '묶음',
                 '퓨어채반(2호/검정)': '개', '퓨어채반(3호/검정)': '개', '퓨어채반(4호/검정)': '개',
@@ -925,7 +932,7 @@
                         { rawName: '쎄니콜70', labelHtml: '쎄니콜70' },
                         { rawName: '나이스)숯불갈비맛스테이크', labelHtml: '나이스)숯불갈비맛스테이크' },
                         { rawName: '이개비(단풍모양/녹색)', labelHtml: '이개비(단풍모양/녹색)' },
-                        { rawName: '야ส리', labelHtml: '야ส리' },
+                        { rawName: '야스리', labelHtml: '야ส리' },
                         { rawName: '독일 뼈칼 3165-15 P(2)', labelHtml: '독일 뼈칼 3165-15 P(2)' },
                         { rawName: '골절기 톱날(JWB-330D)', labelHtml: '골절기 톱날(JWB-330D)' }
                     ]
