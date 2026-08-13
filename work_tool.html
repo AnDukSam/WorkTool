@@ -52,7 +52,35 @@
 
         .hide-normal-price .event-normal-price { display: none; }
 
-        .event-header-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+        /* 하단 버튼 고정 영역 스타일 수정 (스마트폰 항상 고정) */
+        .event-header-btns, .pork-header-btns, .import-header-btns, .equipment-header-btns {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 10px 16px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.08);
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+            margin-top: 0;
+            box-sizing: border-box;
+        }
+
+        /* 데스크톱(md 이상)에서는 일반 플로우 배치가 되도록 복원 */
+        @media (min-width: 768px) {
+            .event-header-btns, .pork-header-btns, .import-header-btns, .equipment-header-btns {
+                position: static;
+                background: transparent;
+                backdrop-filter: none;
+                padding: 0;
+                box-shadow: none;
+                margin-top: 20px;
+            }
+        }
+
         .event-header-btns button { flex: 1; height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
         #event-plus-btn { background-color: #4CAF50; color: white; }
         #event-extract-btn { background-color: #2196F3; color: white; }
@@ -96,10 +124,15 @@
 
         .suffix-display { font-size: 13px; color: #666; width: 35px; text-align: right; margin-left: 2px; margin-right: 2px; }
 
-        .pork-header-btns, .import-header-btns, .equipment-header-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .pork-header-btns button, .import-header-btns button, .equipment-header-btns button { height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; }
-        #pork-clear-btn, #import-clear-btn, #equipment-clear-btn { background: #757575; flex: 0 0 100px; }
+        .pork-header-btns button, .import-header-btns button, .equipment-header-btns button { height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; }
+        #pork-clear-btn, #import-clear-btn, #equipment-clear-btn { background: #757575; flex: 0 0 100px; width: auto !important; }
         #pork-extract-btn, #import-extract-btn, #equipment-extract-btn { background: linear-gradient(135deg, #2196F3, #1976D2); flex: 1; }
+
+        /* 모바일 스크롤 시 버튼에 내용이 가리지 않도록 하단 여백(padding-bottom) 추가 */
+        .tool-content { padding-bottom: 90px; }
+        @media (min-width: 768px) {
+            .tool-content { padding-bottom: 0; }
+        }
 
         #pork-result-area, #import-result-area, #equipment-result-area { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
         #pork-copy-btn, #import-copy-btn, #equipment-copy-btn { background-color: #333; display: none; width: 100%; height: 55px; margin-top: 15px; border-radius: 10px; border: none; font-size: 17px; font-weight: bold; color: white; cursor: pointer; }
@@ -932,7 +965,7 @@
                         { rawName: '쎄니콜70', labelHtml: '쎄니콜70' },
                         { rawName: '나이스)숯불갈비맛스테이크', labelHtml: '나이스)숯불갈비맛스테이크' },
                         { rawName: '이개비(단풍모양/녹색)', labelHtml: '이개비(단풍모양/녹색)' },
-                        { rawName: '야스리', labelHtml: '야ส리' },
+                        { rawName: '야스리', labelHtml: '야스리' },
                         { rawName: '독일 뼈칼 3165-15 P(2)', labelHtml: '독일 뼈칼 3165-15 P(2)' },
                         { rawName: '골절기 톱날(JWB-330D)', labelHtml: '골절기 톱날(JWB-330D)' }
                     ]
