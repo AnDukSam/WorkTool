@@ -32,23 +32,24 @@
         .event-no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
         #event-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
-        .event-row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
+        .event-row { background-color: white; padding: 12px 10px 12px 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 6px; position: relative; transition: background-color 0.3s ease; align-items: center; }
         .event-row.completed { background-color: #fff9c4; border: 1px solid #ffe082; }
 
-        .event-row-header { width: 100%; display: flex; flex-direction: column; gap: 5px; }
-        .event-row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
-        .event-checkbox-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 5px; }
-        .event-check-box-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; cursor: pointer; width: fit-content; }
-        .event-check-box-label input { width: 16px; height: 16px; cursor: pointer; }
+        .event-row-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; padding-right: 110px; }
+        .event-row-number { font-weight: bold; color: #4CAF50; font-size: 13px; }
+        .event-checkbox-group { display: flex; gap: 10px; align-items: center; }
+        .event-check-box-label { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #555; cursor: pointer; white-space: nowrap; }
+        .event-check-box-label input { width: 15px; height: 15px; cursor: pointer; }
 
-        .event-controls { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; }
-        .event-control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
+        .event-controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 3px; }
+        .event-control-btn { padding: 4px 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; cursor: pointer; background: #fff; color: #333; }
         .event-del-btn { background-color: #ff5252; color: white; border: none; }
 
-        .event-tool-pane select, .event-tool-pane input:not([type="checkbox"]) { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        .event-tool-pane select, .event-tool-pane input:not([type="checkbox"]) { height: 40px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .event-product-input-area { flex: 1; min-width: 140px; }
         .event-product-select, .event-product-manual { width: 100%; }
-        .event-unit-select { flex: 1; min-width: 85px; }
-        .event-normal-price, .event-sale-price { flex: 1; min-width: 95px; }
+        .event-unit-select { width: 75px; flex-shrink: 0; }
+        .event-normal-price, .event-sale-price { width: 78px; flex-shrink: 0; }
 
         .hide-normal-price .event-normal-price { display: none; }
 
@@ -60,6 +61,42 @@
 
         #event-result-area { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #event-copy-btn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; }
+
+        /* 발주 툴 공통 스타일 (돼지 / 수입고기 / 비품) */
+        .pork-tool-pane .header-setting, .import-tool-pane .header-setting, .equipment-tool-pane .header-setting { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+        .pork-tool-pane .header-setting label, .import-tool-pane .header-setting label, .equipment-tool-pane .header-setting label { font-weight: bold; font-size: 15px; color: #333; }
+        .pork-tool-pane .header-setting select, .import-tool-pane .header-setting select, .equipment-tool-pane .header-setting select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 15px; outline: none; background: #f9f9f9; cursor: pointer; min-width: 120px; height: 45px; }
+
+        .category-title { font-size: 16px; font-weight: bold; color: #2E7D32; margin: 25px 0 10px 5px; display: flex; align-items: center; }
+        .category-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background-color: #4CAF50; margin-right: 8px; border-radius: 2px; }
+
+        .tray { display: flex; flex-direction: column; gap: 10px; }
+        .item-row {
+            background-color: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #e0e0e0;
+        }
+        .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
+
+        .right-controls { display: flex; align-items: center; gap: 4px; }
+        .right-controls button { width: 38px; height: 38px; background-color: #eee; border: 1px solid #ddd; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #333; }
+        .right-controls button:active { background-color: #ddd; }
+        .number-display { width: 45px; height: 38px; text-align: center; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #f9f9f9; font-weight: bold; color: #333; }
+
+        .suffix-display { font-size: 13px; color: #666; width: 35px; text-align: right; margin-left: 2px; margin-right: 2px; }
+
+        .pork-header-btns, .import-header-btns, .equipment-header-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .pork-header-btns button, .import-header-btns button, .equipment-header-btns button { height: 50px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; }
+        #pork-clear-btn, #import-clear-btn, #equipment-clear-btn { background: #757575; flex: 0 0 100px; }
+        #pork-extract-btn, #import-extract-btn, #equipment-extract-btn { background: linear-gradient(135deg, #2196F3, #1976D2); flex: 1; }
+
+        #pork-result-area, #import-result-area, #equipment-result-area { margin-top: 25px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; font-size: 14px; display: none; line-height: 1.6; white-space: pre-wrap; color: #333; }
+        #pork-copy-btn, #import-copy-btn, #equipment-copy-btn { background-color: #333; display: none; width: 100%; height: 55px; margin-top: 15px; border-radius: 10px; border: none; font-size: 17px; font-weight: bold; color: white; cursor: pointer; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col md:flex-row h-screen overflow-hidden">
@@ -92,9 +129,21 @@
             </button>
         </div>
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <button id="btn-event-promo" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium">
+            <button id="btn-event-promo" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer">
                 <i class="fa-solid fa-rectangle-ad w-5"></i>
                 <span>행사내용 작성</span>
+            </button>
+            <button id="btn-pork-order" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer">
+                <i class="fa-solid fa-piggy-bank w-5"></i>
+                <span>돼지 발주</span>
+            </button>
+            <button id="btn-import-order" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer">
+                <i class="fa-solid fa-boxes-stacked w-5"></i>
+                <span>수입고기 발주</span>
+            </button>
+            <button id="btn-equipment-order" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer">
+                <i class="fa-solid fa-boxes-packing w-5"></i>
+                <span>비품 발주</span>
             </button>
         </nav>
     </aside>
@@ -136,18 +185,138 @@
 
                 <div class="event-header-btns">
                     <button id="event-plus-btn">품목 추가</button>
-                    <button id="event-reset-btn">🧹 전체 삭제</button>
+                    <button id="event-reset-btn">전체 삭제</button>
                     <button id="event-extract-btn">텍스트 추출</button>
                 </div>
 
                 <div id="event-result-area"></div>
-                <button id="event-copy-btn">📋 텍스트 복사</button>
+                <button id="event-copy-btn">텍스트 복사</button>
+            </section>
+
+            <!-- 돼지 발주 툴 -->
+            <section id="pork-order" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 pork-tool-pane w-full" style="display: none;">
+                <div class="header-setting">
+                    <label>발주 지점 선택</label>
+                    <select id="branchSelect">
+                        <option value="2호점">2호점</option>
+                        <option value="만촌점" selected>만촌점</option>
+                        <option value="시지점">시지점</option>
+                        <option value="온천점">온천점</option>
+                        <option value="혁신점">혁신점</option>
+                    </select>
+                </div>
+
+                <div class="tray" id="itemTray"></div>
+
+                <div class="pork-header-btns">
+                    <button id="pork-clear-btn">전체 삭제</button>
+                    <button id="pork-extract-btn">텍스트 추출</button>
+                </div>
+
+                <div id="pork-result-area"></div>
+                <button id="pork-copy-btn">텍스트 복사</button>
+            </section>
+
+            <!-- 수입고기 발주 툴 -->
+            <section id="import-order" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 import-tool-pane w-full" style="display: none;">
+                <div class="header-setting">
+                    <label>발주 지점 선택</label>
+                    <select id="importBranchSelect">
+                        <option value="2호점">2호점</option>
+                        <option value="만촌점" selected>만촌점</option>
+                        <option value="시지점">시지점</option>
+                        <option value="온천점">온천점</option>
+                        <option value="혁신점">혁신점</option>
+                    </select>
+                </div>
+
+                <div class="tray" id="importItemTray"></div>
+
+                <div class="import-header-btns">
+                    <button id="import-clear-btn">전체 삭제</button>
+                    <button id="import-extract-btn">텍스트 추출</button>
+                </div>
+
+                <div id="import-result-area"></div>
+                <button id="import-copy-btn">텍스트 복사</button>
+            </section>
+
+            <!-- 비품 발주 툴 -->
+            <section id="equipment-order" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 equipment-tool-pane w-full" style="display: none;">
+                <div class="header-setting">
+                    <label>발주 지점 선택</label>
+                    <select id="equipmentBranchSelect">
+                        <option value="2호점">2호점</option>
+                        <option value="만촌점" selected>만촌점</option>
+                        <option value="시지점">시지점</option>
+                        <option value="온천점">온천점</option>
+                        <option value="혁신점">혁신점</option>
+                    </select>
+                </div>
+
+                <div id="equipmentItemContainer"></div>
+
+                <div class="equipment-header-btns">
+                    <button id="equipment-clear-btn">전체 삭제</button>
+                    <button id="equipment-extract-btn">텍스트 추출</button>
+                </div>
+
+                <div id="equipment-result-area"></div>
+                <button id="equipment-copy-btn">텍스트 복사</button>
             </section>
 
         </div>
     </main>
 
     <script>
+        // 탭 전환 로직
+        const tabBtnEvent = document.getElementById('btn-event-promo');
+        const tabBtnPork = document.getElementById('btn-pork-order');
+        const tabBtnImport = document.getElementById('btn-import-order');
+        const tabBtnEquipment = document.getElementById('btn-equipment-order');
+        const contentEvent = document.getElementById('event-promo');
+        const contentPork = document.getElementById('pork-order');
+        const contentImport = document.getElementById('import-order');
+        const contentEquipment = document.getElementById('equipment-order');
+
+        function switchTab(targetTab) {
+            tabBtnEvent.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
+            tabBtnPork.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
+            tabBtnImport.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
+            tabBtnEquipment.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white font-medium cursor-pointer";
+
+            contentEvent.style.display = "none";
+            contentPork.style.display = "none";
+            contentImport.style.display = "none";
+            contentEquipment.style.display = "none";
+
+            if (targetTab === 'event') {
+                tabBtnEvent.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
+                contentEvent.style.display = "block";
+                localStorage.setItem('activeWorkTool', 'event');
+            } else if (targetTab === 'pork') {
+                tabBtnPork.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
+                contentPork.style.display = "block";
+                localStorage.setItem('activeWorkTool', 'pork');
+            } else if (targetTab === 'import') {
+                tabBtnImport.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
+                contentImport.style.display = "block";
+                localStorage.setItem('activeWorkTool', 'import');
+            } else if (targetTab === 'equipment') {
+                tabBtnEquipment.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium cursor-pointer";
+                contentEquipment.style.display = "block";
+                localStorage.setItem('activeWorkTool', 'equipment');
+            }
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            }
+        }
+
+        tabBtnEvent.onclick = () => switchTab('event');
+        tabBtnPork.onclick = () => switchTab('pork');
+        tabBtnImport.onclick = () => switchTab('import');
+        tabBtnEquipment.onclick = () => switchTab('equipment');
+
         // 모바일 사이드바 토글 함수
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -160,6 +329,18 @@
         // 초기화 및 기본 데이터 세팅
         window.onload = function() {
             loadEventSavedData();
+            initPorkOrderTool();
+            initImportOrderTool();
+            initEquipmentOrderTool();
+
+            const activeTab = localStorage.getItem('activeWorkTool');
+            if (activeTab === 'pork') {
+                switchTab('pork');
+            } else if (activeTab === 'import') {
+                switchTab('import');
+            } else if (activeTab === 'equipment') {
+                switchTab('equipment');
+            }
         };
 
         // [행사내용 작성] 로직
@@ -239,16 +420,17 @@
             }
 
             row.innerHTML = `
-                <div class="event-row-header"><span class="event-row-number"></span>
+                <div class="event-row-header">
+                    <span class="event-row-number"></span>
                     <div class="event-checkbox-group">
-                        <label class="event-check-box-label"><input type="checkbox" class="event-manual-check" ${savedItem?.manual ? 'checked' : ''}> 상품명 직접 입력</label>
+                        <label class="event-check-box-label"><input type="checkbox" class="event-manual-check" ${savedItem?.manual ? 'checked' : ''}> 직접입력</label>
                         <label class="event-check-box-label"><input type="checkbox" class="event-limit-check" ${savedItem?.limit ? 'checked' : ''}> 한정판매</label>
                     </div>
                 </div>
                 <div class="event-controls">
                     <button class="event-control-btn event-up-btn">↑</button><button class="event-control-btn event-down-btn">↓</button><button class="event-control-btn event-del-btn">삭제</button>
                 </div>
-                <div style="width:100%" class="event-product-input-area"></div>
+                <div class="event-product-input-area"></div>
                 <select class="event-unit-select">${eventUnitList.map(u => `<option value="${u}" ${savedItem?.unit === u ? 'selected' : ''}>${u}</option>`).join('')}</select>
                 <input type="number" class="event-normal-price" placeholder="정상가" value="${savedItem?.norm || ''}">
                 <input type="number" class="event-sale-price" placeholder="판매가" value="${savedItem?.sale || ''}">
@@ -325,6 +507,580 @@
         document.getElementById('event-start-plus').onclick = () => { eventStartOffsetInput.value++; saveEventAllData(); };
         document.getElementById('event-duration-minus').onclick = () => { if(eventDurationInput.value > 1) { eventDurationInput.value--; saveEventAllData(); }};
         document.getElementById('event-duration-plus').onclick = () => { eventDurationInput.value++; saveEventAllData(); };
+
+        // [돼지 발주] 로직
+        function initPorkOrderTool() {
+            const itemTray = document.getElementById('itemTray');
+            const extractBtn = document.getElementById('pork-extract-btn');
+            const copyBtn = document.getElementById('pork-copy-btn');
+            const clearBtn = document.getElementById('pork-clear-btn');
+            const resultArea = document.getElementById('pork-result-area');
+            const branchSelect = document.getElementById('branchSelect');
+
+            const STORAGE_KEY_ITEMS = 'porkOrder_items';
+            const STORAGE_KEY_BRANCH = 'porkOrder_branch';
+
+            const items = [
+                { name: '삼겹살', unit: '박스' },
+                { name: '삼겹살(수육용)', unit: '박스' },
+                { name: '목살', unit: '박스' },
+                { name: '앞다리살(냉장)', unit: '박스' }, { name: '앞다리살(냉동)', unit: '박스' },
+                { name: '사태', unit: '벌' }, { name: '안심', unit: 'kg' },
+                { name: '등심', unit: '줄' }, { name: '갈비', unit: '박스' },
+                { name: '등갈비', unit: '줄' }, { name: '항정살', unit: 'kg' },
+                { name: '가브리살', unit: 'kg' }, { name: '등뼈', unit: '박스' },
+                { name: '뒷다리살(냉장)', unit: '박스' }, { name: '뒷다리살(냉동)', unit: '박스' },
+                { name: 'B목살(냉동)', unit: '박스' }
+            ];
+
+            function loadState() {
+                const savedBranch = localStorage.getItem(STORAGE_KEY_BRANCH);
+                if (savedBranch) {
+                    branchSelect.value = savedBranch;
+                }
+                const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS)) || {};
+                return savedItems;
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY_BRANCH, branchSelect.value);
+
+                const itemData = {};
+                const rows = document.querySelectorAll('#itemTray .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value) || 0;
+                    itemData[name] = val;
+                });
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(itemData));
+            }
+
+            function clearAllData() {
+                if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
+                    const displays = document.querySelectorAll('#itemTray .number-display');
+                    displays.forEach(display => display.value = 0);
+
+                    localStorage.removeItem(STORAGE_KEY_ITEMS);
+
+                    resultArea.style.display = "none";
+                    resultArea.innerText = "";
+                    copyBtn.style.display = "none";
+                }
+            }
+
+            const savedItemData = loadState();
+
+            items.forEach(item => {
+                const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
+
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.setAttribute('data-raw-name', item.name);
+                row.innerHTML = `
+                    <div class="left-panel-item">${item.name}</div>
+                    <div class="right-controls">
+                        <button class="minus-btn">-</button>
+                        <input type="text" class="number-display" value="${initialVal}" readonly>
+                        <button class="plus-btn">+</button>
+                        <span class="suffix-display">${item.unit}</span>
+                    </div>
+                `;
+
+                const minusBtn = row.querySelector('.minus-btn');
+                const plusBtn = row.querySelector('.plus-btn');
+                const display = row.querySelector('.number-display');
+
+                minusBtn.onclick = () => {
+                    let val = parseInt(display.value);
+                    if (val > 0) {
+                        display.value = val - 1;
+                        saveState();
+                    }
+                };
+                plusBtn.onclick = () => {
+                    display.value = parseInt(display.value) + 1;
+                    saveState();
+                };
+                itemTray.appendChild(row);
+            });
+
+            branchSelect.onchange = () => {
+                saveState();
+            };
+
+            clearBtn.onclick = clearAllData;
+
+            extractBtn.onclick = () => {
+                const branch = branchSelect.value;
+                let resultText = `우리축산 ${branch}입니다.\n\n`;
+                let hasItem = false;
+                let count = 1;
+
+                const rows = document.querySelectorAll('#itemTray .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    const unit = row.querySelector('.suffix-display').textContent;
+
+                    if (val > 0) {
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        hasItem = true;
+                    }
+                });
+
+                if (!hasItem) {
+                    alert("발주할 수량을 먼저 입력해주세요.");
+                    return;
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // [수입고기 발주] 로직
+        function initImportOrderTool() {
+            const itemTray = document.getElementById('importItemTray');
+            const extractBtn = document.getElementById('import-extract-btn');
+            const copyBtn = document.getElementById('import-copy-btn');
+            const clearBtn = document.getElementById('import-clear-btn');
+            const resultArea = document.getElementById('import-result-area');
+            const branchSelect = document.getElementById('importBranchSelect');
+
+            const STORAGE_KEY_ITEMS = 'importOrder_items';
+            const STORAGE_KEY_BRANCH = 'importOrder_branch';
+
+            const items = [
+                { name: '목전지', unit: '박스' },
+                { name: '앞다리살', unit: '박스' },
+                { name: '닭정육', unit: '박스' },
+                { name: '삼겹살', unit: '박스' },
+                { name: '차돌박이', unit: '박스' },
+                { name: '우삼겹', unit: '박스' },
+                { name: '알목심', unit: '박스' },
+                { name: 'LA갈비', unit: '박스' },
+                { name: '척갈비', unit: '박스' }
+            ];
+
+            function loadState() {
+                const savedBranch = localStorage.getItem(STORAGE_KEY_BRANCH);
+                if (savedBranch) {
+                    branchSelect.value = savedBranch;
+                }
+                const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS)) || {};
+                return savedItems;
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY_BRANCH, branchSelect.value);
+
+                const itemData = {};
+                const rows = document.querySelectorAll('#importItemTray .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value) || 0;
+                    itemData[name] = val;
+                });
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(itemData));
+            }
+
+            function clearAllData() {
+                if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
+                    const displays = document.querySelectorAll('#importItemTray .number-display');
+                    displays.forEach(display => display.value = 0);
+
+                    localStorage.removeItem(STORAGE_KEY_ITEMS);
+
+                    resultArea.style.display = "none";
+                    resultArea.innerText = "";
+                    copyBtn.style.display = "none";
+                }
+            }
+
+            const savedItemData = loadState();
+
+            items.forEach(item => {
+                const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
+
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.setAttribute('data-raw-name', item.name);
+                row.innerHTML = `
+                    <div class="left-panel-item">${item.name}</div>
+                    <div class="right-controls">
+                        <button class="minus-btn">-</button>
+                        <input type="text" class="number-display" value="${initialVal}" readonly>
+                        <button class="plus-btn">+</button>
+                        <span class="suffix-display">${item.unit}</span>
+                    </div>
+                `;
+
+                const minusBtn = row.querySelector('.minus-btn');
+                const plusBtn = row.querySelector('.plus-btn');
+                const display = row.querySelector('.number-display');
+
+                minusBtn.onclick = () => {
+                    let val = parseInt(display.value);
+                    if (val > 0) {
+                        display.value = val - 1;
+                        saveState();
+                    }
+                };
+                plusBtn.onclick = () => {
+                    display.value = parseInt(display.value) + 1;
+                    saveState();
+                };
+                itemTray.appendChild(row);
+            });
+
+            branchSelect.onchange = () => {
+                saveState();
+            };
+
+            clearBtn.onclick = clearAllData;
+
+            extractBtn.onclick = () => {
+                const branch = branchSelect.value;
+                let resultText = `우리축산 ${branch}입니다.\n\n`;
+                let hasItem = false;
+                let count = 1;
+
+                const rows = document.querySelectorAll('#importItemTray .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    const unit = row.querySelector('.suffix-display').textContent;
+
+                    if (val > 0) {
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        hasItem = true;
+                    }
+                });
+
+                if (!hasItem) {
+                    alert("발주할 수량을 먼저 입력해주세요.");
+                    return;
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // [비품 발주] 로직
+        function initEquipmentOrderTool() {
+            const itemContainer = document.getElementById('equipmentItemContainer');
+            const extractBtn = document.getElementById('equipment-extract-btn');
+            const copyBtn = document.getElementById('equipment-copy-btn');
+            const clearBtn = document.getElementById('equipment-clear-btn');
+            const resultArea = document.getElementById('equipment-result-area');
+            const branchSelect = document.getElementById('equipmentBranchSelect');
+
+            const STORAGE_KEY_ITEMS = 'equipmentOrder_items';
+            const STORAGE_KEY_BRANCH = 'equipmentOrder_branch';
+
+            const suffixMap = {
+                'LA갈비 스티커(원)': '묶음', '가방(등2호)': '개', '가방(등3호)': '개', '가방(등4호)': '개',
+                '강황 소금(3g)': '박스', '나이스)참소스(300g)': '박스', '나이스)꼬치소스(매운맛)': '박스',
+                '나이스)꼬치소스(순한맛)': '박스', '나이스)숯불갈비맛스테이크': '박스', '나이스)육회소스(30g)': '박스',
+                '나이스)참소스(20g)': '박스', '니트릴장갑(크린스킨 블랙마스터)': '박스', '독일 뼈칼 3165-15 P(2)': '개',
+                '골절기 톱날(JWB-330D)': '개', '모닝랩': '박스', '뭉티기 소스(50g)': '박스', '미국산스티커16': '묶음',
+                '미트페이퍼(그린유엔아이)': '박스', '백설)아이스팩(15x20)': '묶음', '벌집삼겹살 스티커': '묶음',
+                '보냉팩(중/28x35x5)': '묶음', '샤브샤브 육수(50g)': '팩', '세일 스티커': '묶음', '속지(32x45)': '묶음',
+                '속지(40x60)': '묶음', '롤백 40': '개', '스티로폼(등2호)': '개', '스티로폼(등3호)': '개',
+                '스티로폼(등4호)': '개', '쎄니콜70': '개', '야ส리': '개', '월계수 잎': '통', '이개비(단풍모양/녹색)': '박스',
+                '재단 비닐(작업 비닐)': '묶음', '진공 필름(갈비)(25x35)': '묶음', '진공 필름(목살)(25x45)': '묶음',
+                '진공 필름(삼겹살)(40x65)': '묶음', '진공 필름(전지)(35x45)': '묶음', '투명 비닐(9x25)': '묶음',
+                '퓨어채반(2호/검정)': '개', '퓨어채반(3호/검정)': '개', '퓨어채반(4호/검정)': '개',
+                '핑크 솔트(5g)': '박스', '한돈스티커-4': '묶음', '한우스티커(CMSB-02)': '묶음', '흡수지': '박스'
+            };
+
+            const categories = [
+                {
+                    title: '트레이',
+                    items: [
+                        { rawName: '적그물 8호', labelHtml: '적그물 8호' },
+                        { rawName: '적그물 18호', labelHtml: '적그물 18호' },
+                        { rawName: '적그물 77호', labelHtml: '적그물 77호' },
+                        { rawName: '적그물 26호', labelHtml: '적그물 26호' },
+                        { rawName: '적그물 27호', labelHtml: '적그물 27호' },
+                        { rawName: '적그물 E-280', labelHtml: '적그물 E-280' },
+                        { rawName: '적그물 E-330', labelHtml: '적그물 E-330' },
+                        { rawName: 'SJ-18호(금색)', labelHtml: 'SJ-18호(금색)' },
+                        { rawName: 'SJ-26호(금색)', labelHtml: 'SJ-26호(금색)' },
+                        { rawName: 'TY-70(검은색)', labelHtml: 'TY-70(검은색)' },
+                        { rawName: 'TY-70(하얀색)', labelHtml: 'TY-70(하얀색)' },
+                        { rawName: 'DL-212', labelHtml: 'DL-212' },
+                        { rawName: '경냄비 01442', labelHtml: '경냄비 01442' },
+                        { rawName: '가방(등2호)', labelHtml: '가방(등2호)' },
+                        { rawName: '가방(등3호)', labelHtml: '가방(등3호)' },
+                        { rawName: '가방(등4호)', labelHtml: '가방(등4호)' },
+                        { rawName: '퓨어채반(2호/검정)', labelHtml: '퓨어채반(2호/검정)' },
+                        { rawName: '퓨어채반(3호/검정)', labelHtml: '퓨어채반(3호/검정)' },
+                        { rawName: '퓨어채반(4호/검정)', labelHtml: '퓨어채반(4호/검정)' },
+                        { rawName: '스티로폼(등2호)', labelHtml: '스티로폼(등2호)' },
+                        { rawName: '스티로폼(등3호)', labelHtml: '스티로폼(등3호)' },
+                        { rawName: '스티로폼(등4호)', labelHtml: '스티로폼(등4호)' }
+                    ]
+                },
+                {
+                    title: '양념',
+                    items: [
+                        { rawName: '뭉티기 소스(50g)', labelHtml: '뭉티기 소스(50g)' },
+                        { rawName: '나이스)육회소스(30g)', labelHtml: '나이스)육회소스(30g)' },
+                        { rawName: '나이스)참소스(20g)', labelHtml: '나이스)참소스(20g)' },
+                        { rawName: '나이스)참소스(300g)', labelHtml: '나이스)참소스(300g)' },
+                        { rawName: '나이스)꼬치소스(순한맛)', labelHtml: '나이스)꼬치소스(순한맛)' },
+                        { rawName: '나이스)꼬치소스(매운맛)', labelHtml: '나이스)꼬치소스(매운맛)' },
+                        { rawName: '월계수 잎', labelHtml: '월계수 잎' },
+                        { rawName: '핑크 솔트(5g)', labelHtml: '핑크 솔트(5g)' },
+                        { rawName: '강황 소금(3g)', labelHtml: '강황 소금(3g)' },
+                        { rawName: '샤브샤브 육수(50g)', labelHtml: '샤브샤브 육수(50g)' }
+                    ]
+                },
+                {
+                    title: '기타',
+                    items: [
+                        { rawName: '속지(32x45)', labelHtml: '속지(32x45) <span style="color: red;">(중)</span>' },
+                        { rawName: '속지(40x60)', labelHtml: '속지(40x60) <span style="color: red;">(대)</span>' },
+                        { rawName: '롤백 40', labelHtml: '롤백 40 <span style="color: red;">(40x60)(대)</span>' },
+                        { rawName: '진공 필름(갈비)(25x35)', labelHtml: '진공 필름(갈비)(25x35)' },
+                        { rawName: '진공 필름(목살)(25x45)', labelHtml: '진공 필름(목살)(25x45)' },
+                        { rawName: '진공 필름(전지)(35x45)', labelHtml: '진공 필름(전지)(35x45)' },
+                        { rawName: '진공 필름(삼겹살)(40x65)', labelHtml: '진공 필름(삼겹살)(40x65)' },
+                        { rawName: '투명 비닐(9x25)', labelHtml: '투명 비닐(9x25)' },
+                        { rawName: '재단 비닐(작업 비닐)', labelHtml: '재단 비닐(작업 비닐)' },
+                        { rawName: '한돈스티커-4', labelHtml: '한돈스티커-4' },
+                        { rawName: '한우스티커(CMSB-02)', labelHtml: '한우스티커(CMSB-02)' },
+                        { rawName: '벌집삼겹살 스티커', labelHtml: '벌집삼겹살 스티커' },
+                        { rawName: '세일 스티커', labelHtml: '세일 스티커' },
+                        { rawName: 'LA갈비 스티커(원)', labelHtml: 'LA갈비 스티커(원)' },
+                        { rawName: '미국산스티커16', labelHtml: '미국산스티커16' },
+                        { rawName: '흡수지', labelHtml: '흡수지' },
+                        { rawName: '모닝랩', labelHtml: '모닝랩' },
+                        { rawName: '니트릴장갑(크린스킨 블랙마스터)', labelHtml: '니트릴장갑(크린스킨 블랙마스터)' },
+                        { rawName: '미트페이퍼(그린유엔아이)', labelHtml: '미트페이퍼(그린유엔아이)' },
+                        { rawName: '백설)아이스팩(15x20)', labelHtml: '백설)아이스팩(15x20)' },
+                        { rawName: '보냉팩(중/28x35x5)', labelHtml: '보냉팩(중/28x35x5)' },
+                        { rawName: '쎄니콜70', labelHtml: '쎄니콜70' },
+                        { rawName: '나이스)숯불갈비맛스테이크', labelHtml: '나이스)숯불갈비맛스테이크' },
+                        { rawName: '이개비(단풍모양/녹색)', labelHtml: '이개비(단풍모양/녹색)' },
+                        { rawName: '야ส리', labelHtml: '야ส리' },
+                        { rawName: '독일 뼈칼 3165-15 P(2)', labelHtml: '독일 뼈칼 3165-15 P(2)' },
+                        { rawName: '골절기 톱날(JWB-330D)', labelHtml: '골절기 톱날(JWB-330D)' }
+                    ]
+                }
+            ];
+
+            function loadState() {
+                const savedBranch = localStorage.getItem(STORAGE_KEY_BRANCH);
+                if (savedBranch) {
+                    branchSelect.value = savedBranch;
+                }
+                const savedItems = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS)) || {};
+                return savedItems;
+            }
+
+            function saveState() {
+                localStorage.setItem(STORAGE_KEY_BRANCH, branchSelect.value);
+
+                const itemData = {};
+                const rows = document.querySelectorAll('#equipmentItemContainer .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value) || 0;
+                    itemData[name] = val;
+                });
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(itemData));
+            }
+
+            function clearAllData() {
+                if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
+                    const displays = document.querySelectorAll('#equipmentItemContainer .number-display');
+                    displays.forEach(display => display.value = 0);
+
+                    localStorage.removeItem(STORAGE_KEY_ITEMS);
+
+                    resultArea.style.display = "none";
+                    resultArea.innerText = "";
+                    copyBtn.style.display = "none";
+                }
+            }
+
+            const savedItemData = loadState();
+
+            categories.forEach(cat => {
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.textContent = cat.title;
+                itemContainer.appendChild(titleDiv);
+
+                const trayDiv = document.createElement('div');
+                trayDiv.className = 'tray';
+
+                cat.items.forEach(itemObj => {
+                    const unit = suffixMap[itemObj.rawName] || '개';
+                    const initialVal = savedItemData[itemObj.rawName] !== undefined ? savedItemData[itemObj.rawName] : 0;
+
+                    const row = document.createElement('div');
+                    row.className = 'item-row';
+                    row.setAttribute('data-raw-name', itemObj.rawName);
+                    row.innerHTML = `
+                        <div class="left-panel-item">${itemObj.labelHtml}</div>
+                        <div class="right-controls">
+                            <button class="minus-btn">-</button>
+                            <input type="text" class="number-display" value="${initialVal}" readonly>
+                            <button class="plus-btn">+</button>
+                            <span class="suffix-display">${unit}</span>
+                        </div>
+                    `;
+
+                    const minusBtn = row.querySelector('.minus-btn');
+                    const plusBtn = row.querySelector('.plus-btn');
+                    const display = row.querySelector('.number-display');
+
+                    minusBtn.onclick = () => {
+                        let val = parseInt(display.value);
+                        if (val > 0) {
+                            display.value = val - 1;
+                            saveState();
+                        }
+                    };
+                    plusBtn.onclick = () => {
+                        display.value = parseInt(display.value) + 1;
+                        saveState();
+                    };
+                    trayDiv.appendChild(row);
+                });
+                itemContainer.appendChild(trayDiv);
+            });
+
+            branchSelect.onchange = () => {
+                saveState();
+            };
+
+            clearBtn.onclick = clearAllData;
+
+            extractBtn.onclick = () => {
+                const branch = branchSelect.value;
+                let resultText = `우리축산 ${branch}입니다.\n\n`;
+                let hasItem = false;
+                let count = 1;
+
+                const rows = document.querySelectorAll('#equipmentItemContainer .item-row');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-raw-name');
+                    const val = parseInt(row.querySelector('.number-display').value);
+                    const unit = row.querySelector('.suffix-display').textContent;
+
+                    if (val > 0) {
+                        resultText += `${count++}) ${name}: ${val}${unit}\n`;
+                        hasItem = true;
+                    }
+                });
+
+                if (!hasItem) {
+                    alert("발주할 수량을 먼저 입력해주세요.");
+                    return;
+                }
+
+                resultArea.innerText = resultText.trim();
+                resultArea.style.display = "block";
+                copyBtn.style.display = "block";
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            copyBtn.onclick = () => {
+                const textToCopy = resultArea.innerText;
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert("복사 완료!");
+                    }).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+            };
+
+            function fallbackCopy(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = `-9999px`;
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert("복사 완료!");
+                } catch (err) {
+                    alert("복사 실패.");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
 
         window.onbeforeunload = () => "작성 중인 내용이 사라질 수 있습니다.";
     </script>
