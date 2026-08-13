@@ -32,24 +32,23 @@
         .event-no-price-mode label { font-size: 14px; font-weight: bold; color: #555; cursor: pointer; }
 
         #event-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
-        .event-row { background-color: white; padding: 12px 10px 12px 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 6px; position: relative; transition: background-color 0.3s ease; align-items: center; }
+        .event-row { background-color: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 8px; position: relative; transition: background-color 0.3s ease; }
         .event-row.completed { background-color: #fff9c4; border: 1px solid #ffe082; }
 
-        .event-row-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; padding-right: 110px; }
-        .event-row-number { font-weight: bold; color: #4CAF50; font-size: 13px; }
-        .event-checkbox-group { display: flex; gap: 10px; align-items: center; }
-        .event-check-box-label { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #555; cursor: pointer; white-space: nowrap; }
-        .event-check-box-label input { width: 15px; height: 15px; cursor: pointer; }
+        .event-row-header { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+        .event-row-number { font-weight: bold; color: #4CAF50; font-size: 14px; }
+        .event-checkbox-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 5px; }
+        .event-check-box-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; cursor: pointer; width: fit-content; }
+        .event-check-box-label input { width: 16px; height: 16px; cursor: pointer; }
 
-        .event-controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 3px; }
-        .event-control-btn { padding: 4px 8px; border-radius: 6px; border: 1px solid #ddd; font-size: 12px; cursor: pointer; background: #fff; color: #333; }
+        .event-controls { position: absolute; top: 12px; right: 12px; display: flex; gap: 4px; }
+        .event-control-btn { padding: 6px 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px; cursor: pointer; background: #fff; color: #333; }
         .event-del-btn { background-color: #ff5252; color: white; border: none; }
 
-        .event-tool-pane select, .event-tool-pane input:not([type="checkbox"]) { height: 40px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-        .event-product-input-area { flex: 1; min-width: 140px; }
+        .event-tool-pane select, .event-tool-pane input:not([type="checkbox"]) { height: 45px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         .event-product-select, .event-product-manual { width: 100%; }
-        .event-unit-select { width: 75px; flex-shrink: 0; }
-        .event-normal-price, .event-sale-price { width: 78px; flex-shrink: 0; }
+        .event-unit-select { flex: 1; min-width: 85px; }
+        .event-normal-price, .event-sale-price { flex: 1; min-width: 95px; }
 
         .hide-normal-price .event-normal-price { display: none; }
 
@@ -420,17 +419,16 @@
             }
 
             row.innerHTML = `
-                <div class="event-row-header">
-                    <span class="event-row-number"></span>
+                <div class="event-row-header"><span class="event-row-number"></span>
                     <div class="event-checkbox-group">
-                        <label class="event-check-box-label"><input type="checkbox" class="event-manual-check" ${savedItem?.manual ? 'checked' : ''}> 직접입력</label>
+                        <label class="event-check-box-label"><input type="checkbox" class="event-manual-check" ${savedItem?.manual ? 'checked' : ''}> 상품명 직접 입력</label>
                         <label class="event-check-box-label"><input type="checkbox" class="event-limit-check" ${savedItem?.limit ? 'checked' : ''}> 한정판매</label>
                     </div>
                 </div>
                 <div class="event-controls">
                     <button class="event-control-btn event-up-btn">↑</button><button class="event-control-btn event-down-btn">↓</button><button class="event-control-btn event-del-btn">삭제</button>
                 </div>
-                <div class="event-product-input-area"></div>
+                <div style="width:100%" class="event-product-input-area"></div>
                 <select class="event-unit-select">${eventUnitList.map(u => `<option value="${u}" ${savedItem?.unit === u ? 'selected' : ''}>${u}</option>`).join('')}</select>
                 <input type="number" class="event-normal-price" placeholder="정상가" value="${savedItem?.norm || ''}">
                 <input type="number" class="event-sale-price" placeholder="판매가" value="${savedItem?.sale || ''}">
@@ -1067,7 +1065,7 @@
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
                 textArea.style.position = "fixed";
-                textArea.style.left = `-9999px`;
+                textArea.style.left = "-9999px";
                 textArea.style.top = "0";
                 document.body.appendChild(textArea);
                 textArea.focus();
