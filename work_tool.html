@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 유틸리티 툴박스</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .msg-error { color: #e74c3c; background: #fdeded; }
+        .msg-success { color: #27ae60; background: #eafaf1; }
+
+        /* 공통 플레이스홀더 및 폰트 스타일 통일 */
+        textarea::placeholder, input::placeholder {
+            font-family: inherit;
+            font-weight: 400;
+            color: #9ca3af;
+        }
+
+        /* 계산기 전용 스타일 병합 (중앙 정렬 마진 제거 및 좌측 정렬) */
+        .calc-wrapper {
+            background-color: #ffffff;
+            border: 1px solid #d1d9e0;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0 0 20px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .calc-wrapper h3 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #1F8EEB;
+            color: #1F8EEB;
+            display: inline-block;
+        }
+
+        .calc-formula {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        .calc-table td {
+            padding: 8px 0;
+            vertical-align: middle;
+        }
+
+        .td-label {
+            width: 40%;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: left;
+            padding-right: 5px;
+            color: #333;
+        }
+
+        .td-content {
+            width: 60%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .calc-txt-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #d1d9e0;
+            border-radius: 8px;
+            width: 120px;
+            height: 44px;
+            text-align: right;
+            background-color: #eef2f6;
+            box-sizing: border-box;
+            vertical-align: middle;
+        }
+
+        .calc-txt-short {
+            width: 70px !important;
+        }
+
+        .calc-txt-input:focus {
+            outline: none;
+            border-color: #1F8EEB;
+            background-color: #fff;
+        }
+
+        .calc-txt-result {
+            background-color: #fff9db !important;
+            font-weight: bold;
+            border-color: #fab005 !important;
+        }
+
+        .stepper {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .minus-plus-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 1px solid #d1d9e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .minus-plus-btn:active {
+            background-color: #e9ecef;
+        }
+
+        .calc-unit {
+            display: inline-block;
+            margin-left: 4px;
+            font-size: 14px;
+            color: #555;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col md:flex-row h-screen overflow-hidden">
+
+    <!-- 모바일 상단 바 (모바일에서만 표시) -->
+    <header class="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-800 shrink-0 z-20">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMobileSidebar()" class="text-xl text-slate-300 hover:text-white focus:outline-none cursor-pointer p-1">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-toolbox text-blue-400"></i>
+                <span>My Tool</span>
+            </span>
+        </div>
+    </header>
+
+    <!-- 모바일 백드롭 오버레이 -->
+    <div id="mobile-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+    <!-- 사이드바 메뉴 -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-slate-900 text-white flex flex-col shadow-lg z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
+        <div class="p-6 text-xl font-bold border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-toolbox text-blue-400"></i>
+                <span>My Tool</span>
+            </div>
+            <!-- 모바일에서 닫기 버튼 -->
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('date-generator')" id="btn-date-generator" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium">
+                <i class="fa-solid fa-calendar-days w-5"></i>
+                <span>날짜 생성</span>
+            </button>
+            <button onclick="switchTab('text-button-gen')" id="btn-text-button-gen" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-grip w-5"></i>
+                <span>텍스트 버튼 생성</span>
+            </button>
+            <button onclick="switchTab('order-attach')" id="btn-order-attach" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-list-ol w-5"></i>
+                <span>순서 붙이기</span>
+            </button>
+            <button onclick="switchTab('traffic-report')" id="btn-traffic-report" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-car-burst w-5"></i>
+                <span>교통 위반 신고</span>
+            </button>
+            <button onclick="switchTab('json-lyrics')" id="btn-json-lyrics" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-music w-5"></i>
+                <span>JSON 가사 변환</span>
+            </button>
+            <button onclick="switchTab('calculator-tool')" id="btn-calculator-tool" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i class="fa-solid fa-calculator w-5"></i>
+                <span>각종 계산기</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <div class="flex-1 p-4 md:p-8 overflow-y-auto bg-gray-50 flex flex-col">
+
+            <!-- 1. 날짜 생성 툴 -->
+            <section id="date-generator" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200">
+                <div class="flex gap-4 mb-6">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-600 mb-1">년도</label>
+                        <select id="select-year" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-600 mb-1">월</label>
+                        <select id="select-month" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-600 mb-1">구분자</label>
+                        <select id="select-separator" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="-">- (하이픈)</option>
+                            <option value="/">/ (슬래시)</option>
+                            <option value=".">. (마침표)</option>
+                            <option value=",">, (쉼표)</option>
+                            <option value=". ">. (마침표+띄어쓰기)</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="generateDateList()" class="w-full px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">날짜 리스트 생성</button>
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-600 mb-1">결과 (시트 붙여넣기용)</label>
+                    <textarea id="date-list-result" rows="10" class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 font-mono text-sm resize-none outline-none" readonly></textarea>
+
+                    <div id="date-copy-status" class="mt-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center">정보를 입력하고 버튼을 눌러주세요.</div>
+
+                    <button onclick="copyResult()" class="mt-3 w-full px-5 py-2 bg-slate-800 text-white font-medium text-sm rounded-lg hover:bg-slate-900 transition">결과 복사하기</button>
+                </div>
+            </section>
+
+            <!-- 2. 텍스트 버튼 생성 툴 -->
+            <section id="text-button-gen" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 hidden">
+                <textarea id="text-input-area" rows="6" placeholder="버튼으로 만들 텍스트를 줄바꿈으로 입력하세요.&#10;예:&#10;떡볶이&#10;돈가스" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4 resize-vertical"></textarea>
+                <button onclick="createButtons()" class="w-full px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition mb-4">버튼 생성</button>
+
+                <div id="copy-status" class="mt-2 mb-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center">정보를 입력하고 버튼을 눌러주세요.</div>
+
+                <div id="button-container" class="flex flex-wrap gap-2 pt-4 border-t border-gray-100"></div>
+            </section>
+
+            <!-- 3. 순서 붙이기 툴 -->
+            <section id="order-attach" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 hidden">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1" for="order-style-select">머릿말 스타일</label>
+                    <select id="order-style-select" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
+                        <option value="num-paren">1) 2) 3) ... (기본)</option>
+                        <option value="paren-num">(1) (2) (3) ...</option>
+                        <option value="bracket-num">[1] [2] [3] ...</option>
+                        <option value="num-dot">1. 2. 3. ...</option>
+                        <option value="num-dash">1 - 2 - 3 - ...</option>
+                        <option value="num-tilde">1~ 2~ 3~ ...</option>
+                        <option value="alpha-paren">a) b) c) ...</option>
+                        <option value="roman-dot">I. II. III. ...</option>
+                    </select>
+                </div>
+
+                <textarea id="order-input-area" rows="6" placeholder="순서를 붙일 텍스트를 줄바꿈으로 입력하세요.&#10;예:&#10;떡볶이&#10;돈가스" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4 resize-vertical"></textarea>
+                <button onclick="createOrderButtons()" class="w-full px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition mb-4">순서 붙이기</button>
+
+                <div id="order-copy-status" class="mt-2 mb-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center">정보를 입력하고 버튼을 눌러주세요.</div>
+
+                <textarea id="order-result-area" rows="6" placeholder="결과가 여기에 표시됩니다..." class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 font-mono text-sm resize-vertical outline-none mb-4" readonly></textarea>
+
+                <button onclick="copyOrderResult()" class="w-full px-5 py-2 bg-slate-800 text-white font-medium text-sm rounded-lg hover:bg-slate-900 transition">결과 복사하기</button>
+            </section>
+
+            <!-- 4. 교통 위반 신고 툴 -->
+            <section id="traffic-report" class="tool-content max-w-2xl bg-white p-6 rounded-xl shadow-xs border border-gray-200 hidden">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1" for="txtNumber">위반 대상 차량 번호</label>
+                    <input type="text" id="txtNumber" placeholder="예: 12가3456" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1" for="txtDate">위반 일시</label>
+                    <div class="flex gap-2 flex-wrap">
+                        <input type="datetime-local" id="txtDate" class="flex-1 min-w-[180px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <div class="flex gap-1">
+                            <button type="button" class="px-3 py-2 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600" onclick="adjustDate(-1)">-1일</button>
+                            <button type="button" class="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700" onclick="setToday()">오늘</button>
+                            <button type="button" class="px-3 py-2 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600" onclick="adjustDate(1)">+1일</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-600 mb-1" for="txtPlace">위반 장소</label>
+                    <input type="text" id="txtPlace" placeholder="위반 장소를 입력하세요" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-2">
+                    <select id="selQuickPlace" onchange="setQuickPlace(this.value)" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer">
+                        <option value="">-- 자주 위반하는 장소 선택 --</option>
+                        <option value="대구광역시 수성구 범물동 1235-9">오늘 이닭 앞 사거리</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-600 mb-1" for="txtContent">위반 내용</label>
+                    <textarea id="txtContent" placeholder="예: 신호위반, 중앙선 침범 등" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-24 resize-vertical"></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button class="flex-1 px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition" onclick="copyTitle()">제목 복사</button>
+                    <button class="flex-1 px-5 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition" onclick="copyContent()">내용 복사</button>
+                </div>
+
+                <div id="traffic-message" class="mt-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center">정보를 입력하고 버튼을 눌러주세요.</div>
+            </section>
+
+            <!-- 5. JSON 가사 변환 툴 -->
+            <section id="json-lyrics" class="tool-content flex-1 flex flex-col h-full hidden">
+                <div class="bg-slate-800 text-white p-4 rounded-xl shadow-xs mb-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center flex-wrap gap-4">
+                        <div>
+                            <div class="text-xs text-slate-300 space-y-1">
+                                <div>👉 첫 가사가 2초 이상 걸린다면 '[00:00.000]♪' 추가</div>
+                                <div>👉 시간은 있는데 가사가 빈 줄이라면 음표 특수문자(♪) 추가</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 text-sm font-medium">
+                            <label class="cursor-pointer flex items-center gap-1.5"><input type="radio" name="lang" value="ko" checked onchange="toggleLyricsMode()"> 한국어</label>
+                            <label class="cursor-pointer flex items-center gap-1.5"><input type="radio" name="lang" value="en" onchange="toggleLyricsMode()"> 영어</label>
+                            <label class="cursor-pointer flex items-center gap-1.5"><input type="radio" name="lang" value="ja" onchange="toggleLyricsMode()"> 일본어</label>
+                        </div>
+                    </div>
+                    <button class="w-full px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition text-sm cursor-pointer" id="copyBtn" onclick="copyLyricsResult()">결과 복사</button>
+                </div>
+
+                <div id="lyrics-container" class="grid gap-4 flex-1 pb-2 mode-ko" style="min-height: 400px;">
+                    <textarea id="json-input" placeholder="여기에 JSON 데이터를 붙여넣으세요..." class="w-full h-full p-4 font-mono text-sm border-2 border-gray-300 rounded-xl focus:border-blue-500 bg-white resize-none outline-none"></textarea>
+                    <textarea id="extra-input" placeholder="" class="w-full h-full p-4 font-mono text-sm border-2 border-gray-300 rounded-xl focus:border-blue-500 bg-white resize-none outline-none hidden"></textarea>
+                    <textarea id="trans-input" placeholder="" class="w-full h-full p-4 font-mono text-sm border-2 border-gray-300 rounded-xl focus:border-blue-500 bg-white resize-none outline-none hidden"></textarea>
+                    <textarea id="json-output" placeholder="변환된 결과가 여기에 표시됩니다..." class="w-full h-full p-4 font-mono text-sm border-2 border-gray-300 rounded-xl bg-gray-100 resize-none outline-none" readonly></textarea>
+                </div>
+            </section>
+
+            <!-- 6. 각종 계산기 툴 -->
+            <section id="calculator-tool" class="tool-content flex-col items-start hidden max-w-2xl w-full">
+                <!-- 첫 번째 계산기: 매출 총이익률 -->
+                <div class="calc-wrapper">
+                    <h3>매출 총이익률</h3>
+                    <div class="calc-formula">(판매가 - 원가) ÷ 판매가</div>
+                    <table class="calc-table">
+                        <tr>
+                            <td class="td-label">매입가(원가)</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input" id="txtProductCost" type="number" placeholder="0">
+                                <span class="calc-unit">원</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label">판매가</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input" id="txtSellPrice" type="number" placeholder="0" onkeyup="calculateProfitRate()">
+                                <span class="calc-unit">원</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label">매출 총이익률</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input calc-txt-result calc-txt-short" id="txtProfitRate" type="number" readonly>
+                                <span class="calc-unit">%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label">순이익</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input calc-txt-result" id="txtNetProfit" type="number" readonly>
+                                <span class="calc-unit">원</span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="mt-4">
+                        <button class="w-full px-5 py-2.5 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition" onclick="resetProfitRate()">초기화</button>
+                    </div>
+                </div>
+
+                <!-- 두 번째 계산기: 판매가 계산 -->
+                <div class="calc-wrapper">
+                    <h3>판매가 계산</h3>
+                    <div style="height: 10px;"></div>
+                    <table class="calc-table">
+                        <tr>
+                            <td class="td-label">매입가(원가)</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input" id="txtProductCost2" type="number" placeholder="0" onkeyup="calculateProductCost()">
+                                <span class="calc-unit">원</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label">목표 이익률</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input calc-txt-result calc-txt-short" id="txtProfitRate2" type="number" value="30" readonly>
+                                <span class="calc-unit">%</span>
+                                <div class="stepper">
+                                    <button class="minus-plus-btn" onclick="decreaseProfitRate2()">-</button>
+                                    <button class="minus-plus-btn" onclick="increaseProfitRate2()">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-label">권장 판매가</td>
+                            <td class="td-content">
+                                <input class="calc-txt-input calc-txt-result" id="txtSellPrice2" type="number" readonly>
+                                <span class="calc-unit">원</span>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="mt-4">
+                        <button class="w-full px-5 py-2.5 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition" onclick="resetProductCost()">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // 모바일 사이드바 토글 함수
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobile-backdrop');
+
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        // 초기화 및 기본 데이터 세팅
+        window.onload = function() {
+            // 날짜 생성 초기화
+            const yearSelect = document.getElementById('select-year');
+            const monthSelect = document.getElementById('select-month');
+            const currentYear = new Date().getFullYear();
+            for (let y = 1980; y <= currentYear + 1; y++) {
+                let opt = document.createElement('option');
+                opt.value = y; opt.innerHTML = y + '년';
+                if (y === currentYear) opt.selected = true;
+                yearSelect.appendChild(opt);
+            }
+            for (let m = 1; m <= 12; m++) {
+                let opt = document.createElement('option');
+                opt.value = m; opt.innerHTML = m + '월';
+                if (m === (new Date().getMonth() + 1)) opt.selected = true;
+                monthSelect.appendChild(opt);
+            }
+
+            // 가사 변환 모드 초기 실행
+            toggleLyricsMode();
+        };
+
+        // 탭 전환
+        function switchTab(toolId) {
+            document.querySelectorAll('.tool-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+
+            const targetEl = document.getElementById(toolId);
+            targetEl.classList.remove('hidden');
+            if(toolId === 'calculator-tool') {
+                targetEl.classList.add('flex');
+            }
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition text-slate-300 hover:bg-slate-800 hover:text-white";
+            });
+            document.getElementById('btn-' + toolId).className = "tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition bg-blue-600 text-white font-medium";
+
+            // 모바일 환경에서 메뉴를 클릭하면 자동으로 사이드바 닫기
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            }
+        }
+
+        // [날짜 생성] 피드백 메시지 공통 함수
+        const dateMsgEl = document.getElementById("date-copy-status");
+
+        function showDateMessage(msg, isSuccess = false) {
+            dateMsgEl.innerHTML = msg;
+            dateMsgEl.className = `mt-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center ${isSuccess ? 'msg-success' : 'msg-error'}`;
+        }
+
+        // [날짜 생성] 로직
+        function generateDateList() {
+            const year = parseInt(document.getElementById('select-year').value);
+            const month = parseInt(document.getElementById('select-month').value);
+            const separator = document.getElementById('select-separator').value;
+            const lastDay = new Date(year, month, 0).getDate();
+            let result = [];
+            for (let d = 1; d <= lastDay; d++) result.push(`${year}${separator}${month}${separator}${d}`);
+            const resultStr = result.join('\n');
+            document.getElementById('date-list-result').value = resultStr;
+            showDateMessage("날짜 리스트가 생성되었습니다.", true);
+        }
+
+        function copyResult() {
+            const textarea = document.getElementById('date-list-result');
+
+            if(!textarea.value) {
+                showDateMessage("먼저 날짜 리스트를 생성해주세요.");
+                return;
+            }
+
+            textarea.select();
+            document.execCommand('copy');
+
+            showDateMessage("날짜 리스트가 클립보드에 복사되었습니다.", true);
+        }
+
+        // [텍스트 버튼 생성] 피드백 메시지 공통 함수
+        const textBtnMsgEl = document.getElementById("copy-status");
+
+        function showTextBtnMessage(msg, isSuccess = false) {
+            textBtnMsgEl.innerHTML = msg;
+            textBtnMsgEl.className = `mt-2 mb-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center ${isSuccess ? 'msg-success' : 'msg-error'}`;
+        }
+
+        // [텍스트 버튼 생성] 로직
+        function createButtons() {
+            const input = document.getElementById('text-input-area').value;
+            const container = document.getElementById('button-container');
+            container.innerHTML = '';
+
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            if(lines.length === 0) {
+                showTextBtnMessage("텍스트를 한 줄 이상 입력해주세요.");
+                return;
+            }
+
+            lines.forEach(text => {
+                const cleanText = text.trim();
+                const btn = document.createElement('button');
+                btn.innerText = cleanText;
+                btn.className = "px-4 py-2 bg-slate-100 border border-slate-300 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition text-sm font-medium cursor-pointer";
+
+                btn.onclick = () => {
+                    navigator.clipboard.writeText(cleanText).then(() => {
+                        showTextBtnMessage(`'${cleanText}' 복사 완료!`, true);
+                    });
+                };
+                container.appendChild(btn);
+            });
+            showTextBtnMessage("버튼이 성공적으로 생성되었습니다.", true);
+        }
+
+        // [순서 붙이기] 피드백 메시지 공통 함수
+        const orderBtnMsgEl = document.getElementById("order-copy-status");
+
+        function showOrderBtnMessage(msg, isSuccess = false) {
+            orderBtnMsgEl.innerHTML = msg;
+            orderBtnMsgEl.className = `mt-2 mb-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center ${isSuccess ? 'msg-success' : 'msg-error'}`;
+        }
+
+        // [순서 붙이기] 로직
+        function createOrderButtons() {
+            const input = document.getElementById('order-input-area').value;
+            const style = document.getElementById('order-style-select').value;
+            const resultArea = document.getElementById('order-result-area');
+
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            if(lines.length === 0) {
+                showOrderBtnMessage("텍스트를 한 줄 이상 입력해주세요.");
+                resultArea.value = '';
+                return;
+            }
+
+            // 알파벳 변환 헬퍼 (1->a, 2->b...)
+            function getAlpha(n) {
+                return String.fromCharCode(96 + n);
+            }
+
+            // 로마자 변환 헬퍼
+            function getRoman(n) {
+                const roman = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+                               "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"];
+                return roman[n] || n;
+            }
+
+            let orderedLines = [];
+            lines.forEach((text, index) => {
+                const cleanText = text.trim();
+                const num = index + 1;
+                let prefix = "";
+
+                switch(style) {
+                    case 'num-paren': prefix = `${num})`; break;
+                    case 'paren-num': prefix = `(${num})`; break;
+                    case 'bracket-num': prefix = `[${num}]`; break;
+                    case 'num-dot': prefix = `${num}.`; break;
+                    case 'num-dash': prefix = `${num} -`; break;
+                    case 'num-tilde': prefix = `${num}~`; break;
+                    case 'alpha-paren': prefix = `${getAlpha(num)})`; break;
+                    case 'roman-dot': prefix = `${getRoman(num)}.`; break;
+                    default: prefix = `${num})`;
+                }
+
+                orderedLines.push(`${prefix} ${cleanText}`);
+            });
+
+            resultArea.value = orderedLines.join('\n');
+            showOrderBtnMessage("순서 붙이기가 완료되었습니다.", true);
+        }
+
+        // [순서 붙이기 결과 복사] 로직
+        function copyOrderResult() {
+            const textarea = document.getElementById('order-result-area');
+
+            if(!textarea.value) {
+                showOrderBtnMessage("먼저 순서 붙이기를 실행해주세요.");
+                return;
+            }
+
+            textarea.select();
+            document.execCommand('copy');
+
+            showOrderBtnMessage("결과가 클립보드에 복사되었습니다.", true);
+        }
+
+        // [교통 위반 신고] 로직
+        const trafficMsgEl = document.getElementById("traffic-message");
+
+        function showTrafficMessage(msg, isSuccess = false) {
+            trafficMsgEl.innerHTML = msg;
+            trafficMsgEl.className = `mt-4 p-3 rounded-lg text-sm text-center min-h-[40px] transition-all flex items-center justify-center ${isSuccess ? 'msg-success' : 'msg-error'}`;
+        }
+
+        function setQuickPlace(address) {
+            if (address !== "") {
+                const placeEl = document.getElementById("txtPlace");
+                placeEl.value = address;
+                showTrafficMessage("장소가 자동으로 입력되었습니다.", true);
+            }
+        }
+
+        function formatDateTime(date) {
+            const z = (n) => (n < 10 ? '0' : '') + n;
+            return date.getFullYear() + '-' + z(date.getMonth() + 1) + '-' + z(date.getDate()) +
+                   'T' + z(date.getHours()) + ':' + z(date.getMinutes());
+        }
+
+        function setToday() {
+            const now = new Date();
+            const dateEl = document.getElementById("txtDate");
+            dateEl.value = formatDateTime(now);
+            showTrafficMessage("현재 시간으로 설정되었습니다.", true);
+        }
+
+        function adjustDate(days) {
+            const dateInput = document.getElementById("txtDate");
+            let currentVal = dateInput.value;
+            let targetDate = currentVal ? new Date(currentVal) : new Date();
+            targetDate.setDate(targetDate.getDate() + days);
+            dateInput.value = formatDateTime(targetDate);
+            const label = days > 0 ? '하루 뒤' : '하루 전';
+            showTrafficMessage(`날짜가 ${label}로 변경되었습니다.`, true);
+        }
+
+        function copyTitle() {
+            const number = document.getElementById("txtNumber").value.trim();
+            if (!number) {
+                showTrafficMessage("차량 번호를 입력해주세요.");
+                return;
+            }
+            window.navigator.clipboard.writeText(number + " 교통위반")
+                .then(() => showTrafficMessage("제목이 클립보드에 복사되었습니다.", true));
+        }
+
+        function copyContent() {
+            const number = document.getElementById("txtNumber").value.trim();
+            const dateVal = document.getElementById("txtDate").value;
+            const place = document.getElementById("txtPlace").value.trim();
+            const content = document.getElementById("txtContent").value.trim();
+
+            if (!dateVal) {
+                showTrafficMessage("위반 일시를 입력해주세요.");
+                return;
+            }
+
+            const dateStr = convertToKoreanDate(dateVal);
+            const result = `위반 대상 차량 번호: ${number}\n\n위반 일시: ${dateStr}\n\n위반 장소: ${place}\n\n위반 내용: ${content}`;
+
+            window.navigator.clipboard.writeText(result)
+                .then(() => showTrafficMessage("신고 내용이 클립보드에 복사되었습니다.", true));
+        }
+
+        function convertToKoreanDate(val) {
+            const d = new Date(val);
+            const y = d.getFullYear();
+            const m = d.getMonth() + 1;
+            const day = d.getDate();
+            const h = d.getHours();
+            const min = d.getMinutes();
+            const ampm = h < 12 ? "오전" : "오후";
+            const h12 = h % 12 === 0 ? 12 : h % 12;
+            return `${y}년 ${m}월 ${day}일 ${ampm} ${h12}시 ${min}분`;
+        }
+
+        // [JSON 가사 변환] 로직
+        const lyricsContainer = document.getElementById('lyrics-container');
+        const jsonInput = document.getElementById('json-input');
+        const extraInput = document.getElementById('extra-input');
+        const transInput = document.getElementById('trans-input');
+        const jsonOutput = document.getElementById('json-output');
+        const copyBtn = document.getElementById('copyBtn');
+
+        function toggleLyricsMode() {
+            const lang = document.querySelector('input[name="lang"]:checked').value;
+            transInput.classList.add('hidden');
+            extraInput.classList.add('hidden');
+
+            if (lang === 'ko') {
+                lyricsContainer.className = "grid gap-4 flex-1 pb-2";
+                lyricsContainer.style.gridTemplateColumns = "1fr 1fr";
+            } else if (lang === 'en') {
+                lyricsContainer.className = "grid gap-4 flex-1 pb-2";
+                lyricsContainer.style.gridTemplateColumns = "1fr 1fr 1fr";
+                transInput.classList.remove('hidden');
+                transInput.placeholder = "여기에 영어 가사 해석을 입력하세요...";
+            } else if (lang === 'ja') {
+                lyricsContainer.className = "grid gap-4 flex-1 pb-2";
+                lyricsContainer.style.gridTemplateColumns = "1fr 1fr";
+                extraInput.classList.remove('hidden');
+                transInput.classList.remove('hidden');
+                extraInput.placeholder = "여기에 일본어 가사 발음을 입력하세요...";
+                transInput.placeholder = "여기에 일본어 가사 해석을 입력하세요...";
+            }
+            processJsonLyrics();
+        }
+
+        function formatTime(ms) {
+            const totalMs = parseInt(ms, 10);
+            if (isNaN(totalMs)) return "00:00.000";
+            const mm = String(Math.floor(totalMs / 60000)).padStart(2, '0');
+            const ss = String(Math.floor((totalMs % 60000) / 1000)).padStart(2, '0');
+            const mmm = String(totalMs % 1000).padStart(3, '0');
+            return `${mm}:${ss}.${mmm}`;
+        }
+
+        [jsonInput, extraInput, transInput].forEach(el => el.addEventListener('keyup', processJsonLyrics));
+
+        function processJsonLyrics() {
+            const rawValue = jsonInput.value.trim();
+            const extraLines = extraInput.value.trim().split('\n').filter(l => l.trim() !== "");
+            const transLines = transInput.value.trim().split('\n').filter(l => l.trim() !== "");
+
+            if (!rawValue) {
+                jsonOutput.value = "";
+                return;
+            }
+
+            try {
+                const data = JSON.parse(rawValue);
+                const lines = data.lyrics?.lines;
+                if (!Array.isArray(lines) || lines.length === 0) return;
+
+                let resultLines = [];
+                if (parseInt(lines[0].startTimeMs, 10) >= 2000) resultLines.push("[00:00.000]♪");
+
+                const actualCount = lines.filter(l => l.words && l.words.trim() !== "" && l.words.trim() !== "♪").length;
+
+                const isExtraMatch = extraLines.length === actualCount;
+                const isTransMatch = transLines.length === actualCount;
+
+                let eIdx = 0;
+                let tIdx = 0;
+
+                lines.forEach((line) => {
+                    const time = formatTime(line.startTimeMs);
+                    const isBlank = !line.words || line.words.trim() === "" || line.words.trim() === "♪";
+                    const lyric = isBlank ? "♪" : line.words;
+
+                    resultLines.push(`[${time}]${lyric}`);
+
+                    if (!isBlank) {
+                        if (extraLines.length > 0 && isExtraMatch) {
+                            resultLines.push(`[${time}]${extraLines[eIdx].trim()}`);
+                            eIdx++;
+                        }
+                        if (transLines.length > 0 && isTransMatch) {
+                            resultLines.push(`[${time}]${transLines[tIdx].trim()}`);
+                            tIdx++;
+                        }
+                    }
+                });
+                jsonOutput.value = resultLines.join('\n');
+            } catch (e) {
+                jsonOutput.value = "올바른 JSON 형식이 아닙니다.";
+            }
+        }
+
+        async function copyLyricsResult() {
+            const text = jsonOutput.value.trim();
+            if (!text) return;
+            try {
+                await navigator.clipboard.writeText(text);
+                copyBtn.textContent = "복사 완료";
+                copyBtn.style.backgroundColor = "#27ae60";
+                setTimeout(() => {
+                    copyBtn.textContent = "결과 복사";
+                    copyBtn.style.backgroundColor = "#2563eb";
+                }, 1500);
+            } catch (err) { alert("복사 실패"); }
+        }
+
+        // [각종 계산기] 로직
+        function calculateProfitRate() {
+            var a = document.getElementById("txtProductCost");
+            var b = document.getElementById("txtSellPrice");
+            var c = document.getElementById("txtProfitRate");
+            var d = document.getElementById("txtNetProfit");
+
+            if (!a.value || !b.value || parseFloat(b.value) === 0) {
+                c.value = ""; d.value = "";
+                return;
+            }
+
+            var k = (parseFloat(b.value) - parseFloat(a.value)) / parseFloat(b.value) * 100;
+            c.value = k.toFixed(2);
+            d.value = Math.floor(parseFloat(b.value) - parseFloat(a.value));
+        }
+
+        function resetProfitRate() {
+            document.getElementById("txtProductCost").value = "";
+            document.getElementById("txtSellPrice").value = "";
+            document.getElementById("txtProfitRate").value = "";
+            document.getElementById("txtNetProfit").value = "";
+            document.getElementById("txtProductCost").focus();
+        }
+
+        function calculateProductCost() {
+            var a = document.getElementById("txtProfitRate2");
+            var b = document.getElementById("txtProductCost2");
+            var c = document.getElementById("txtSellPrice2");
+
+            var rate = parseFloat(a.value);
+            var cost = parseFloat(b.value);
+
+            if (isNaN(rate) || isNaN(cost) || rate >= 100) {
+                c.value = "";
+                return;
+            }
+            c.value = Math.floor(cost / (1 - (rate / 100)));
+        }
+
+        function increaseProfitRate2() {
+            var a = document.getElementById("txtProfitRate2");
+            var currentRate = parseFloat(a.value);
+
+            if (currentRate < 99) {
+                a.value = currentRate + 1;
+                calculateProductCost();
+            }
+        }
+
+        function decreaseProfitRate2() {
+            var a = document.getElementById("txtProfitRate2");
+            var currentRate = parseFloat(a.value);
+            if (currentRate > 0) {
+                a.value = currentRate - 1;
+                calculateProductCost();
+            }
+        }
+
+        function resetProductCost() {
+            document.getElementById("txtProductCost2").value = "";
+            document.getElementById("txtProfitRate2").value = 30;
+            document.getElementById("txtSellPrice2").value = "";
+            document.getElementById("txtProductCost2").focus();
+        }
+    </script>
+</body>
+</html>
