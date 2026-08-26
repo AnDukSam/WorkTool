@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>업무 유틸리티</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -51,7 +52,7 @@
 
         .hide-normal-price .event-normal-price { display: none; }
 
-        /* 하단 버튼 고정 영역 스타일 수정 (스마트폰 항상 고정) */
+        /* 하단 버튼 고정 영역 스타일 */
         .event-header-btns, .pork-header-btns, .chicken-header-btns, .import-header-btns, .equipment-header-btns {
             position: fixed;
             bottom: 0;
@@ -68,7 +69,6 @@
             box-sizing: border-box;
         }
 
-        /* 데스크톱(md 이상)에서는 일반 플로우 배치가 되도록 복원 */
         @media (min-width: 768px) {
             .event-header-btns, .pork-header-btns, .chicken-header-btns, .import-header-btns, .equipment-header-btns {
                 position: static;
@@ -88,7 +88,7 @@
         #event-result-area { margin-top: 20px; padding: 15px; background-color: #fff; border: 2px dashed #4CAF50; border-radius: 10px; white-space: pre-wrap; font-size: 14px; display: none; }
         #event-copy-btn { background-color: #333; color: white; margin-top: 15px; width: 100%; height: 55px; display: none; border: none; border-radius: 10px; font-size: 17px; font-weight: bold; cursor: pointer; }
 
-        /* 발주 툴 공통 스타일 (돼지 / 닭 / 수입고기 / 비품) - 내부 여백 0, 테두리 및 배경색 제거 */
+        /* 발주 툴 공통 스타일 */
         .pork-tool-pane, .chicken-tool-pane, .import-tool-pane, .equipment-tool-pane {
             background-color: transparent !important;
             padding: 0 !important;
@@ -113,6 +113,11 @@
             align-items: center;
             justify-content: space-between;
             border: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .item-row.completed {
+            background-color: #fff9c4;
+            border-color: #ffe082;
         }
         .left-panel-item { font-weight: bold; color: #333; font-size: 15px; flex: 1; }
 
@@ -127,7 +132,6 @@
         #pork-clear-btn, #chicken-clear-btn, #import-clear-btn, #equipment-clear-btn { background: #757575; flex: 0 0 100px; width: auto !important; }
         #pork-extract-btn, #chicken-extract-btn, #import-extract-btn, #equipment-extract-btn { background: linear-gradient(135deg, #2196F3, #1976D2); flex: 1; }
 
-        /* 모바일 스크롤 시 버튼에 내용이 가리지 않도록 하단 여백(padding-bottom) 추가 */
         .tool-content { padding-bottom: 90px; }
         @media (min-width: 768px) {
             .tool-content { padding-bottom: 0; }
@@ -139,6 +143,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col md:flex-row overflow-x-hidden">
 
+    <!-- 모바일 상단 바 -->
     <header class="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between border-b border-slate-800 sticky top-0 z-30 shrink-0">
         <div class="flex items-center gap-3">
             <button onclick="toggleMobileSidebar()" class="text-xl text-slate-300 hover:text-white focus:outline-none cursor-pointer p-1">
@@ -151,8 +156,10 @@
         </div>
     </header>
 
+    <!-- 모바일 백드롭 오버레이 -->
     <div id="mobile-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-35 hidden md:hidden"></div>
 
+    <!-- 사이드바 메뉴 -->
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-slate-900 text-white flex flex-col shadow-lg z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
         <div class="p-6 text-xl font-bold border-b border-slate-800 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -187,9 +194,11 @@
         </nav>
     </aside>
 
+    <!-- 메인 콘텐츠 영역 -->
     <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <div class="flex-1 p-4 md:p-8 bg-gray-50 flex flex-col pb-20">
 
+            <!-- 행사내용 작성 툴 -->
             <section id="event-promo" class="tool-content max-w-2xl bg-transparent p-0 border-0 shadow-none event-tool-pane w-full">
                 <div class="event-option-container">
                     <div class="event-date-section">
@@ -230,6 +239,7 @@
                 <button id="event-copy-btn">텍스트 복사</button>
             </section>
 
+            <!-- 돼지 발주 툴 -->
             <section id="pork-order" class="tool-content max-w-2xl pork-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
@@ -253,6 +263,7 @@
                 <button id="pork-copy-btn">텍스트 복사</button>
             </section>
 
+            <!-- 닭 발주 툴 -->
             <section id="chicken-order" class="tool-content max-w-2xl chicken-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
@@ -276,6 +287,7 @@
                 <button id="chicken-copy-btn">텍스트 복사</button>
             </section>
 
+            <!-- 수입고기 발주 툴 -->
             <section id="import-order" class="tool-content max-w-2xl import-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
@@ -299,6 +311,7 @@
                 <button id="import-copy-btn">텍스트 복사</button>
             </section>
 
+            <!-- 비품 발주 툴 -->
             <section id="equipment-order" class="tool-content max-w-2xl equipment-tool-pane w-full" style="display: none;">
                 <div class="header-setting">
                     <label>발주 지점 선택</label>
@@ -513,12 +526,19 @@
             manualCheck.onchange = () => { renderInput(); saveEventAllData(); };
             renderInput();
 
-            row.addEventListener('input', () => {
+            const checkComplete = () => {
                 const isNoNormal = eventNoNormalPriceCheck.checked;
                 const complete = isNoNormal ? row.querySelector('.event-sale-price').value !== "" : (row.querySelector('.event-normal-price').value !== "" && row.querySelector('.event-sale-price').value !== "");
                 row.classList.toggle('completed', complete);
+            };
+
+            row.addEventListener('input', () => {
+                checkComplete();
                 saveEventAllData();
             });
+
+            checkComplete();
+
             row.querySelector('.event-del-btn').onclick = () => { row.remove(); updateEventNumbers(); };
             row.querySelector('.event-up-btn').onclick = () => { if (row.previousElementSibling) { eventContainer.insertBefore(row, row.previousElementSibling); updateEventNumbers(); } };
             row.querySelector('.event-down-btn').onclick = () => { if (row.nextElementSibling) { eventContainer.insertBefore(row.nextElementSibling, row); updateEventNumbers(); } };
@@ -568,6 +588,12 @@
         [eventStartOffsetInput, eventDurationInput, eventNoNormalPriceCheck].forEach(el => el.addEventListener('change', () => {
             if(eventNoNormalPriceCheck.checked) eventContainer.classList.add('hide-normal-price');
             else eventContainer.classList.remove('hide-normal-price');
+
+            eventContainer.querySelectorAll('.event-row').forEach(row => {
+                const isNoNormal = eventNoNormalPriceCheck.checked;
+                const complete = isNoNormal ? row.querySelector('.event-sale-price').value !== "" : (row.querySelector('.event-normal-price').value !== "" && row.querySelector('.event-sale-price').value !== "");
+                row.classList.toggle('completed', complete);
+            });
             saveEventAllData();
         }));
 
@@ -625,8 +651,11 @@
 
             function clearAllData() {
                 if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
-                    const displays = document.querySelectorAll('#itemTray .number-display');
-                    displays.forEach(display => display.value = 0);
+                    const rows = document.querySelectorAll('#itemTray .item-row');
+                    rows.forEach(row => {
+                        row.querySelector('.number-display').value = 0;
+                        row.classList.remove('completed');
+                    });
 
                     localStorage.removeItem(STORAGE_KEY_ITEMS);
 
@@ -642,7 +671,7 @@
                 const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
 
                 const row = document.createElement('div');
-                row.className = 'item-row';
+                row.className = 'item-row' + (initialVal >= 1 ? ' completed' : '');
                 row.setAttribute('data-raw-name', item.name);
                 row.innerHTML = `
                     <div class="left-panel-item">${item.name}</div>
@@ -658,15 +687,24 @@
                 const plusBtn = row.querySelector('.plus-btn');
                 const display = row.querySelector('.number-display');
 
+                const updateHighlight = (val) => {
+                    row.classList.toggle('completed', val >= 1);
+                };
+
                 minusBtn.onclick = () => {
-                    let val = parseInt(display.value);
+                    let val = parseInt(display.value) || 0;
                     if (val > 0) {
-                        display.value = val - 1;
+                        val -= 1;
+                        display.value = val;
+                        updateHighlight(val);
                         saveState();
                     }
                 };
                 plusBtn.onclick = () => {
-                    display.value = parseInt(display.value) + 1;
+                    let val = parseInt(display.value) || 0;
+                    val += 1;
+                    display.value = val;
+                    updateHighlight(val);
                     saveState();
                 };
                 itemTray.appendChild(row);
@@ -789,8 +827,11 @@
 
             function clearAllData() {
                 if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
-                    const displays = document.querySelectorAll('#chickenItemTray .number-display');
-                    displays.forEach(display => display.value = 0);
+                    const rows = document.querySelectorAll('#chickenItemTray .item-row');
+                    rows.forEach(row => {
+                        row.querySelector('.number-display').value = 0;
+                        row.classList.remove('completed');
+                    });
 
                     localStorage.removeItem(STORAGE_KEY_ITEMS);
 
@@ -806,7 +847,7 @@
                 const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
 
                 const row = document.createElement('div');
-                row.className = 'item-row';
+                row.className = 'item-row' + (initialVal >= 1 ? ' completed' : '');
                 row.setAttribute('data-raw-name', item.name);
                 row.innerHTML = `
                     <div class="left-panel-item">${item.name}</div>
@@ -822,17 +863,37 @@
                 const plusBtn = row.querySelector('.plus-btn');
                 const display = row.querySelector('.number-display');
 
-                minusBtn.onclick = () => {
-                    let val = parseInt(display.value);
-                    if (val > 0) {
-                        display.value = val - 1;
-                        saveState();
-                    }
+                let step = 1;
+                if (item.name === '닭발 편육') {
+                    step = 5;
+                } else if (item.name === '무뼈 닭발(1kg)') {
+                    step = 10;
+                }
+
+                const updateHighlight = (val) => {
+                    row.classList.toggle('completed', val >= 1);
                 };
-                plusBtn.onclick = () => {
-                    display.value = parseInt(display.value) + 1;
+
+                minusBtn.onclick = () => {
+                    let val = parseInt(display.value) || 0;
+                    if (val >= step) {
+                        val -= step;
+                    } else {
+                        val = 0;
+                    }
+                    display.value = val;
+                    updateHighlight(val);
                     saveState();
                 };
+
+                plusBtn.onclick = () => {
+                    let val = parseInt(display.value) || 0;
+                    val += step;
+                    display.value = val;
+                    updateHighlight(val);
+                    saveState();
+                };
+
                 itemTray.appendChild(row);
             });
 
@@ -949,8 +1010,11 @@
 
             function clearAllData() {
                 if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
-                    const displays = document.querySelectorAll('#importItemTray .number-display');
-                    displays.forEach(display => display.value = 0);
+                    const rows = document.querySelectorAll('#importItemTray .item-row');
+                    rows.forEach(row => {
+                        row.querySelector('.number-display').value = 0;
+                        row.classList.remove('completed');
+                    });
 
                     localStorage.removeItem(STORAGE_KEY_ITEMS);
 
@@ -966,7 +1030,7 @@
                 const initialVal = savedItemData[item.name] !== undefined ? savedItemData[item.name] : 0;
 
                 const row = document.createElement('div');
-                row.className = 'item-row';
+                row.className = 'item-row' + (initialVal >= 1 ? ' completed' : '');
                 row.setAttribute('data-raw-name', item.name);
                 row.innerHTML = `
                     <div class="left-panel-item">${item.name}</div>
@@ -982,15 +1046,24 @@
                 const plusBtn = row.querySelector('.plus-btn');
                 const display = row.querySelector('.number-display');
 
+                const updateHighlight = (val) => {
+                    row.classList.toggle('completed', val >= 1);
+                };
+
                 minusBtn.onclick = () => {
-                    let val = parseInt(display.value);
+                    let val = parseInt(display.value) || 0;
                     if (val > 0) {
-                        display.value = val - 1;
+                        val -= 1;
+                        display.value = val;
+                        updateHighlight(val);
                         saveState();
                     }
                 };
                 plusBtn.onclick = () => {
-                    display.value = parseInt(display.value) + 1;
+                    let val = parseInt(display.value) || 0;
+                    val += 1;
+                    display.value = val;
+                    updateHighlight(val);
                     saveState();
                 };
                 itemTray.appendChild(row);
@@ -1195,8 +1268,11 @@
 
             function clearAllData() {
                 if (confirm("입력된 모든 수량을 삭제하고 초기화하시겠습니까?")) {
-                    const displays = document.querySelectorAll('#equipmentItemContainer .number-display');
-                    displays.forEach(display => display.value = 0);
+                    const rows = document.querySelectorAll('#equipmentItemContainer .item-row');
+                    rows.forEach(row => {
+                        row.querySelector('.number-display').value = 0;
+                        row.classList.remove('completed');
+                    });
 
                     localStorage.removeItem(STORAGE_KEY_ITEMS);
 
@@ -1222,7 +1298,7 @@
                     const initialVal = savedItemData[itemObj.rawName] !== undefined ? savedItemData[itemObj.rawName] : 0;
 
                     const row = document.createElement('div');
-                    row.className = 'item-row';
+                    row.className = 'item-row' + (initialVal >= 1 ? ' completed' : '');
                     row.setAttribute('data-raw-name', itemObj.rawName);
                     row.innerHTML = `
                         <div class="left-panel-item">${itemObj.labelHtml}</div>
@@ -1238,15 +1314,24 @@
                     const plusBtn = row.querySelector('.plus-btn');
                     const display = row.querySelector('.number-display');
 
+                    const updateHighlight = (val) => {
+                        row.classList.toggle('completed', val >= 1);
+                    };
+
                     minusBtn.onclick = () => {
-                        let val = parseInt(display.value);
+                        let val = parseInt(display.value) || 0;
                         if (val > 0) {
-                            display.value = val - 1;
+                            val -= 1;
+                            display.value = val;
+                            updateHighlight(val);
                             saveState();
                         }
                     };
                     plusBtn.onclick = () => {
-                        display.value = parseInt(display.value) + 1;
+                        let val = parseInt(display.value) || 0;
+                        val += 1;
+                        display.value = val;
+                        updateHighlight(val);
                         saveState();
                     };
                     trayDiv.appendChild(row);
